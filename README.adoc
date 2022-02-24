@@ -1,0 +1,4 @@
+= lgi-async-extra
+:toc:
+
+An asynchronous high(er)-level API wrapper for https://github.com/lgi-devs/lgi/[LGI].
