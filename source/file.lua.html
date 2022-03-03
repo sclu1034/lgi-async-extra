@@ -114,13 +114,14 @@
 </span><span class="comment">--        cb(err)
 </span><span class="comment">--    end)
 </span><span class="comment">--
-</span><span class="comment">-- The `GDataInputStream` adds additional reading utilities:
+</span><span class="comment">-- The [`GDataInputStream`](https://docs.gtk.org/gio/class.DataInputStream.html) adds additional reading utilities:
 </span><span class="comment">--
 </span><span class="comment">--    stream = Gio.DataInputStream.new(stream)
 </span><span class="comment">--
+</span><span class="comment">-- @async true
 </span><span class="comment">-- @tparam function cb
-</span><span class="comment">-- @asynctreturn GLib.Error err
-</span><a id="72"></a><span class="comment">-- @asynctreturn Gio.FileInputStream stream
+</span><span class="comment">-- @treturn[async] GLib.Error err
+</span><a id="73"></a><span class="comment">-- @treturn[async] Gio.FileInputStream stream
 </span><span class="keyword">function</span> handle:read_stream(cb)
     <span class="keyword">local</span> f = self._private.f
 
@@ -148,8 +149,8 @@
 </span><span class="comment">--  `"replace"` will truncate the file before writing, `"append"` will keep
 </span><span class="comment">--  any existing content and add the new data at the end.
 </span><span class="comment">-- @tparam function cb
-</span><span class="comment">-- @asynctreturn GLib.Error err
-</span><a id="101"></a><span class="comment">-- @asynctreturn Gio.FileOutputStream stream
+</span><span class="comment">-- @treturn[async] GLib.Error err
+</span><a id="102"></a><span class="comment">-- @treturn[async] Gio.FileOutputStream stream
 </span><span class="keyword">function</span> handle:write_stream(mode, cb)
     <span class="keyword">local</span> f = self._private.f
     <span class="keyword">local</span> priority = GLib.PRIORITY_DEFAULT
@@ -192,7 +193,7 @@
 </span><span class="comment">--  `"replace"` will truncate the file before writing, `"append"` will keep
 </span><span class="comment">--  any existing content and add the new data at the end.
 </span><span class="comment">-- @tparam function cb
-</span><a id="144"></a><span class="comment">-- @asynctreturn GLib.Error err
+</span><a id="145"></a><span class="comment">-- @treturn[async] GLib.Error err
 </span><span class="keyword">function</span> handle:write(data, mode, cb)
     <span class="keyword">local</span> priority = GLib.PRIORITY_DEFAULT
 
@@ -230,9 +231,9 @@
 </span><span class="comment">--
 </span><span class="comment">-- @tparam function cb The callback to call when reading finished.
 </span><span class="comment">--   Signature: `function(err, data)`
-</span><span class="comment">-- @asynctreturn Glib.Error err An instance of `GError` if there was an error,
+</span><span class="comment">-- @treturn[async] GLib.Error err An instance of `GError` if there was an error,
 </span><span class="comment">--   `nil` otherwise.
-</span><a id="184"></a><span class="comment">-- @asynctreturn string data A string read from the file.
+</span><a id="185"></a><span class="comment">-- @treturn[async] string data A string read from the file.
 </span><span class="keyword">function</span> handle:read_all(cb)
     <span class="keyword">local</span> priority = GLib.PRIORITY_DEFAULT
 
@@ -286,10 +287,10 @@
 </span><span class="comment">--
 </span><span class="comment">-- Inefficient when reading lines repeatedly from the same file.
 </span><span class="comment">--
-</span><span class="comment">-- @asynctreturn GLib.GError err An instance of `GError` if there was an error,
+</span><span class="comment">-- @treturn[async] GLib.Error err An instance of `GError` if there was an error,
 </span><span class="comment">--   `nil` otherwise.
-</span><span class="comment">-- @asynctreturn string line A string read from the file,
-</span><a id="241"></a><span class="comment">--   or `nil` if the end was reached.
+</span><span class="comment">-- @treturn[async] string line A string read from the file,
+</span><a id="242"></a><span class="comment">--   or `nil` if the end was reached.
 </span><span class="keyword">function</span> handle:read_line(cb)
     <span class="keyword">local</span> priority = GLib.PRIORITY_DEFAULT
 
@@ -332,7 +333,7 @@
 </span><span class="comment">-- @tparam function iteratee Function to call per line in the file. Signature:
 </span><span class="comment">--   `function(err, line, cb)`
 </span><span class="comment">-- @tparam function final_callback Function to call when iteration has stopped.
-</span><a id="284"></a><span class="comment">--   Signature: `function(err)`.
+</span><a id="285"></a><span class="comment">--   Signature: `function(err)`.
 </span><span class="keyword">function</span> handle:read_lines(iteratee, final_callback)
     <span class="keyword">local</span> priority = GLib.PRIORITY_DEFAULT
 
@@ -383,7 +384,7 @@
 </span><span class="comment">--
 </span><span class="comment">-- @tparam string destination New path to move to
 </span><span class="comment">-- @tparam function cb
-</span><a id="335"></a><span class="comment">-- @asynctreturn GLib.Error err
+</span><a id="336"></a><span class="comment">-- @treturn[async] GLib.Error err
 </span><span class="keyword">function</span> handle:move(destination, cb)
     <span class="keyword">local</span> f = self._private.f
     <span class="keyword">local</span> priority = GLib.PRIORITY_DEFAULT
@@ -406,7 +407,7 @@
 </span><span class="comment">-- Empty directories are deleted by this as well.
 </span><span class="comment">--
 </span><span class="comment">-- @tparam function cb
-</span><a id="358"></a><span class="comment">-- @asynctreturn GLib.Error err
+</span><a id="359"></a><span class="comment">-- @treturn[async] GLib.Error err
 </span><span class="keyword">function</span> handle:delete(cb)
     <span class="keyword">local</span> f = self._private.f
     <span class="keyword">local</span> priority = GLib.PRIORITY_DEFAULT
@@ -424,7 +425,7 @@
 </span><span class="comment">-- an error of type `Gio.IOErrorEnum.NOT_SUPPORTED` will be returned.
 </span><span class="comment">--
 </span><span class="comment">-- @tparam function cb
-</span><a id="376"></a><span class="comment">-- @asynctreturn GLib.Error err
+</span><a id="377"></a><span class="comment">-- @treturn[async] GLib.Error err
 </span><span class="keyword">function</span> handle:trash(cb)
     <span class="keyword">local</span> f = self._private.f
     <span class="keyword">local</span> priority = GLib.PRIORITY_DEFAULT
@@ -444,8 +445,8 @@
 </span><span class="comment">--
 </span><span class="comment">-- @tparam string attribute The GIO file info attribute to query for.
 </span><span class="comment">-- @tparam function cb
-</span><span class="comment">-- @asynctreturn GLib.Error err
-</span><a id="397"></a><span class="comment">-- @asynctreturn boolean `true` if the file exists on disk. exists
+</span><span class="comment">-- @treturn[async] GLib.Error err
+</span><a id="398"></a><span class="comment">-- @treturn[async] boolean `true` if the file exists on disk. exists
 </span><span class="keyword">function</span> handle:query_info(attribute, cb)
     <span class="keyword">local</span> f = self._private.f
     <span class="keyword">local</span> priority = GLib.PRIORITY_DEFAULT
@@ -468,8 +469,8 @@
 </span><span class="comment">-- to.
 </span><span class="comment">--
 </span><span class="comment">-- @tparam function cb
-</span><span class="comment">-- @asynctreturn GLib.Error err
-</span><a id="421"></a><span class="comment">-- @asynctreturn boolean `true` if the file exists on disk. exists
+</span><span class="comment">-- @treturn[async] GLib.Error err
+</span><a id="422"></a><span class="comment">-- @treturn[async] boolean `true` if the file exists on disk. exists
 </span><span class="keyword">function</span> handle:exists(cb)
     self:query_info(<span class="string">"standard::type"</span>, <span class="keyword">function</span> (err)
         <span class="keyword">if</span> err <span class="keyword">then</span>
@@ -493,8 +494,8 @@
 </span><span class="comment">-- that the user has no access to.
 </span><span class="comment">--
 </span><span class="comment">-- @tparam function cb
-</span><span class="comment">-- @asynctreturn GLib.Error err
-</span><a id="446"></a><span class="comment">-- @asynctreturn number size
+</span><span class="comment">-- @treturn[async] GLib.Error err
+</span><a id="447"></a><span class="comment">-- @treturn[async] number size
 </span><span class="keyword">function</span> handle:size(cb)
     self:query_info(<span class="string">"standard::size"</span>, <span class="keyword">function</span> (err, info)
         <span class="comment">-- For some reason, the bindings return a float for a byte size
@@ -520,8 +521,8 @@
 </span><span class="comment">-- that the user has not access to.
 </span><span class="comment">--
 </span><span class="comment">-- @tparam function cb
-</span><span class="comment">-- @asynctreturn GLib.Error err
-</span><a id="473"></a><span class="comment">-- @asynctreturn string type
+</span><span class="comment">-- @treturn[async] GLib.Error err
+</span><a id="474"></a><span class="comment">-- @treturn[async] string type
 </span><span class="keyword">function</span> handle:<span class="global">type</span>(cb)
     self:query_info(<span class="string">"standard::type"</span>, <span class="keyword">function</span> (err, info)
         cb(err, info <span class="keyword">and</span> Gio.FileType[info:get_file_type()])
@@ -534,7 +535,7 @@
 </span><span class="comment">-- The path is guaranteed to be absolute, by may contain unresolved symlinks.
 </span><span class="comment">-- However, a path may not exist, in which case `nil` will be returned.
 </span><span class="comment">--
-</span><a id="486"></a><span class="comment">-- @treturn string
+</span><a id="487"></a><span class="comment">-- @treturn string
 </span><span class="keyword">function</span> handle:get_path()
     <span class="keyword">return</span> self._private.f:get_path()
 <span class="keyword">end</span>
@@ -546,7 +547,7 @@
 <span class="comment">--- Create a file handle for the given path
 </span><span class="comment">--
 </span><span class="comment">-- @tparam string path
-</span><a id="498"></a><span class="comment">-- @treturn handle
+</span><a id="499"></a><span class="comment">-- @treturn handle
 </span><span class="keyword">function</span> file.new_for_path(path)
     <span class="keyword">local</span> f = File.new_for_path(path)
     <span class="keyword">local</span> ret = {
@@ -562,7 +563,7 @@
 <span class="comment">--- Create a file handle for the given remote URI.
 </span><span class="comment">--
 </span><span class="comment">-- @tparam string uri
-</span><a id="514"></a><span class="comment">-- @treturn handle
+</span><a id="515"></a><span class="comment">-- @treturn handle
 </span><span class="keyword">function</span> file.new_for_uri(uri)
     <span class="keyword">local</span> f = File.new_for_uri(uri)
     <span class="keyword">local</span> ret = {
@@ -582,8 +583,7 @@
 </span><span class="comment">-- directory components.
 </span><span class="comment">-- Otherwise, a default value will be used.
 </span><span class="comment">--
-</span><span class="comment">-- The directory is determined by `g_get_tmp_dir`.
-</span><span class="comment">-- @todo: Either link to GIO docs properly or create a binding for that function.
+</span><span class="comment">-- The directory is determined by [g_get_tmp_dir](https://docs.gtk.org/glib/func.get_tmp_dir.html).
 </span><span class="comment">--
 </span><span class="comment">-- The second return value is a `GIO.FileIOStream`, which contains both an input and output stream to the created
 </span><span class="comment">-- file. The caller is responsible for closing these streams.
@@ -617,7 +617,7 @@
 </div> <!-- id="main" -->
 <div id="about">
 <i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.6</a></i>
-<i style="float:right;">Last updated 2022-03-03 15:40:23 </i>
+<i style="float:right;">Last updated 2022-03-03 21:31:31 </i>
 </div> <!-- id="about" -->
 </div> <!-- id="container" -->
 </body>

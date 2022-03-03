@@ -186,7 +186,7 @@ read_non_existent_file(<span class="keyword">function</span>(err, data)
     <dt>
     <a name = "handle:read_stream"></a>
     <strong>handle:read_stream(cb)</strong>
-    <a style="float:right;" href="../source/file.lua.html#72">line 72</a>
+    <a style="float:right;" href="../source/file.lua.html#73">line 73</a>
     </dt>
     <dd>
     <p>Open a read stream. </p>
@@ -199,16 +199,12 @@ read_non_existent_file(<span class="keyword">function</span>(err, data)
 end)
 </code></pre>
 
-<p> The <code>GDataInputStream</code> adds additional reading utilities:</p>
+<p> The <a href="https://docs.gtk.org/gio/class.DataInputStream.html"><code>GDataInputStream</code></a> adds additional reading utilities:</p>
 
 <pre><code>stream = Gio.DataInputStream.new(stream)
 </code></pre>
 
 
-    <h3>Callback parameters:</h3>
-    <ul>
-         <li><span class="parameter">nil</span> <span class="types">nil</span> <span></span></li>
-         <li><span class="parameter">nil</span> <span class="types">nil</span> <span></span></li>
     </ul>
 
     <h3>Parameters:</h3>
@@ -220,6 +216,15 @@ end)
         </li>
     </ul>
 
+    <h3>Callback returns:</h3>
+    <ol>
+        <li>
+           <span class="types"><span class="type">GLib.Error</span></span>
+        err</li>
+        <li>
+           <span class="types"><span class="type">Gio.FileInputStream</span></span>
+        stream</li>
+    </ol>
 
 
 
@@ -228,7 +233,7 @@ end)
     <dt>
     <a name = "handle:write_stream"></a>
     <strong>handle:write_stream([mode="replace"], cb)</strong>
-    <a style="float:right;" href="../source/file.lua.html#101">line 101</a>
+    <a style="float:right;" href="../source/file.lua.html#102">line 102</a>
     </dt>
     <dd>
     <p>Open a write stream. </p>
@@ -246,10 +251,6 @@ end)
 </code></pre>
 
 
-    <h3>Callback parameters:</h3>
-    <ul>
-         <li><span class="parameter">nil</span> <span class="types">nil</span> <span></span></li>
-         <li><span class="parameter">nil</span> <span class="types">nil</span> <span></span></li>
     </ul>
 
     <h3>Parameters:</h3>
@@ -268,6 +269,15 @@ end)
         </li>
     </ul>
 
+    <h3>Returns:</h3>
+    <ol>
+        <li>
+           <span class="types"><span class="type">GLib.Error</span></span>
+        err</li>
+        <li>
+           <span class="types"><span class="type">Gio.FileOutputStream</span></span>
+        stream</li>
+    </ol>
 
 
 
@@ -276,14 +286,11 @@ end)
     <dt>
     <a name = "handle:write"></a>
     <strong>handle:write(data[, mode="replace"], cb)</strong>
-    <a style="float:right;" href="../source/file.lua.html#144">line 144</a>
+    <a style="float:right;" href="../source/file.lua.html#145">line 145</a>
     </dt>
     <dd>
     Write the data to the opened file.
 
-    <h3>Callback parameters:</h3>
-    <ul>
-         <span class="parameter">nil</span> <span class="types">nil</span> <span></span>
     </ul>
 
     <h3>Parameters:</h3>
@@ -306,6 +313,12 @@ end)
         </li>
     </ul>
 
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">GLib.Error</span></span>
+        err
+    </ol>
 
 
 
@@ -314,16 +327,11 @@ end)
     <dt>
     <a name = "handle:read_all"></a>
     <strong>handle:read_all(cb)</strong>
-    <a style="float:right;" href="../source/file.lua.html#184">line 184</a>
+    <a style="float:right;" href="../source/file.lua.html#185">line 185</a>
     </dt>
     <dd>
     Read the entire file&rsquo;s content into memory.
 
-    <h3>Callback parameters:</h3>
-    <ul>
-         <li><span class="parameter">err</span> <span class="types">Glib.Error</span> <span>An instance of <code>GError</code> if there was an error,
-   <code>nil</code> otherwise.</span></li>
-         <li><span class="parameter">data</span> <span class="types">string</span> <span>A string read from the file.</span></li>
     </ul>
 
     <h3>Parameters:</h3>
@@ -335,6 +343,16 @@ end)
         </li>
     </ul>
 
+    <h3>Returns:</h3>
+    <ol>
+        <li>
+           <span class="types"><span class="type">GLib.Error</span></span>
+        err An instance of <code>GError</code> if there was an error,
+   <code>nil</code> otherwise.</li>
+        <li>
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+        data A string read from the file.</li>
+    </ol>
 
 
 
@@ -343,19 +361,13 @@ end)
     <dt>
     <a name = "handle:read_line"></a>
     <strong>handle:read_line(cb)</strong>
-    <a style="float:right;" href="../source/file.lua.html#241">line 241</a>
+    <a style="float:right;" href="../source/file.lua.html#242">line 242</a>
     </dt>
     <dd>
     Read a line from the file. </p>
 
 <p> Inefficient when reading lines repeatedly from the same file.
 
-    <h3>Callback parameters:</h3>
-    <ul>
-         <li><span class="parameter">err</span> <span class="types">GLib.GError</span> <span>An instance of <code>GError</code> if there was an error,
-   <code>nil</code> otherwise.</span></li>
-         <li><span class="parameter">line</span> <span class="types">string</span> <span>A string read from the file,
-   or <code>nil</code> if the end was reached.</span></li>
     </ul>
 
     <h3>Parameters:</h3>
@@ -366,6 +378,17 @@ end)
         </li>
     </ul>
 
+    <h3>Returns:</h3>
+    <ol>
+        <li>
+           <span class="types"><span class="type">GLib.Error</span></span>
+        err An instance of <code>GError</code> if there was an error,
+   <code>nil</code> otherwise.</li>
+        <li>
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+        line A string read from the file,
+   or <code>nil</code> if the end was reached.</li>
+    </ol>
 
 
 
@@ -374,7 +397,7 @@ end)
     <dt>
     <a name = "handle:read_lines"></a>
     <strong>handle:read_lines(iteratee, final_callback)</strong>
-    <a style="float:right;" href="../source/file.lua.html#284">line 284</a>
+    <a style="float:right;" href="../source/file.lua.html#285">line 285</a>
     </dt>
     <dd>
     Asynchronously iterate over the file line by line. </p>
@@ -411,16 +434,13 @@ end)
     <dt>
     <a name = "handle:move"></a>
     <strong>handle:move(destination, cb)</strong>
-    <a style="float:right;" href="../source/file.lua.html#335">line 335</a>
+    <a style="float:right;" href="../source/file.lua.html#336">line 336</a>
     </dt>
     <dd>
     Move the file. </p>
 
 <p> Depends on https://gitlab.gnome.org/GNOME/glib/&ndash;/merge_requests/2469.
 
-    <h3>Callback parameters:</h3>
-    <ul>
-         <span class="parameter">nil</span> <span class="types">nil</span> <span></span>
     </ul>
 
     <h3>Parameters:</h3>
@@ -436,6 +456,12 @@ end)
         </li>
     </ul>
 
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">GLib.Error</span></span>
+        err
+    </ol>
 
 
 
@@ -444,7 +470,7 @@ end)
     <dt>
     <a name = "handle:delete"></a>
     <strong>handle:delete(cb)</strong>
-    <a style="float:right;" href="../source/file.lua.html#358">line 358</a>
+    <a style="float:right;" href="../source/file.lua.html#359">line 359</a>
     </dt>
     <dd>
     Delete the file. </p>
@@ -455,9 +481,6 @@ end)
 
 <p> Empty directories are deleted by this as well.
 
-    <h3>Callback parameters:</h3>
-    <ul>
-         <span class="parameter">nil</span> <span class="types">nil</span> <span></span>
     </ul>
 
     <h3>Parameters:</h3>
@@ -469,6 +492,12 @@ end)
         </li>
     </ul>
 
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">GLib.Error</span></span>
+        err
+    </ol>
 
 
 
@@ -477,7 +506,7 @@ end)
     <dt>
     <a name = "handle:trash"></a>
     <strong>handle:trash(cb)</strong>
-    <a style="float:right;" href="../source/file.lua.html#376">line 376</a>
+    <a style="float:right;" href="../source/file.lua.html#377">line 377</a>
     </dt>
     <dd>
     Move the file to trash. </p>
@@ -485,9 +514,6 @@ end)
 <p> Support for this depends on the platform and file system. If unsupported
  an error of type <code>Gio.IOErrorEnum.NOT_SUPPORTED</code> will be returned.
 
-    <h3>Callback parameters:</h3>
-    <ul>
-         <span class="parameter">nil</span> <span class="types">nil</span> <span></span>
     </ul>
 
     <h3>Parameters:</h3>
@@ -499,6 +525,12 @@ end)
         </li>
     </ul>
 
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">GLib.Error</span></span>
+        err
+    </ol>
 
 
 
@@ -507,17 +539,13 @@ end)
     <dt>
     <a name = "handle:query_info"></a>
     <strong>handle:query_info(attribute, cb)</strong>
-    <a style="float:right;" href="../source/file.lua.html#397">line 397</a>
+    <a style="float:right;" href="../source/file.lua.html#398">line 398</a>
     </dt>
     <dd>
     Query file information. </p>
 
 <p> This can be used to query for any file info attribute supported by GIO.
 
-    <h3>Callback parameters:</h3>
-    <ul>
-         <li><span class="parameter">nil</span> <span class="types">nil</span> <span></span></li>
-         <li><span class="parameter">`true`</span> <span class="types">boolean</span> <span>if the file exists on disk. exists</span></li>
     </ul>
 
     <h3>Parameters:</h3>
@@ -533,6 +561,15 @@ end)
         </li>
     </ul>
 
+    <h3>Returns:</h3>
+    <ol>
+        <li>
+           <span class="types"><span class="type">GLib.Error</span></span>
+        err</li>
+        <li>
+           <span class="types"><span class="type">boolean</span></span>
+        <code>true</code> if the file exists on disk. exists</li>
+    </ol>
 
 
 
@@ -541,7 +578,7 @@ end)
     <dt>
     <a name = "handle:exists"></a>
     <strong>handle:exists(cb)</strong>
-    <a style="float:right;" href="../source/file.lua.html#421">line 421</a>
+    <a style="float:right;" href="../source/file.lua.html#422">line 422</a>
     </dt>
     <dd>
     Check if the file exists. </p>
@@ -554,10 +591,6 @@ end)
  between a file that is actually absent and a file that the user has no access
  to.
 
-    <h3>Callback parameters:</h3>
-    <ul>
-         <li><span class="parameter">nil</span> <span class="types">nil</span> <span></span></li>
-         <li><span class="parameter">`true`</span> <span class="types">boolean</span> <span>if the file exists on disk. exists</span></li>
     </ul>
 
     <h3>Parameters:</h3>
@@ -569,6 +602,15 @@ end)
         </li>
     </ul>
 
+    <h3>Returns:</h3>
+    <ol>
+        <li>
+           <span class="types"><span class="type">GLib.Error</span></span>
+        err</li>
+        <li>
+           <span class="types"><span class="type">boolean</span></span>
+        <code>true</code> if the file exists on disk. exists</li>
+    </ol>
 
 
 
@@ -577,7 +619,7 @@ end)
     <dt>
     <a name = "handle:size"></a>
     <strong>handle:size(cb)</strong>
-    <a style="float:right;" href="../source/file.lua.html#446">line 446</a>
+    <a style="float:right;" href="../source/file.lua.html#447">line 447</a>
     </dt>
     <dd>
     Query the size of the file. </p>
@@ -585,10 +627,6 @@ end)
 <p> Note that due to limitations in GLib, this will return <code>0</code> for files
  that the user has no access to.
 
-    <h3>Callback parameters:</h3>
-    <ul>
-         <li><span class="parameter">nil</span> <span class="types">nil</span> <span></span></li>
-         <li><span class="parameter">nil</span> <span class="types">nil</span> <span></span></li>
     </ul>
 
     <h3>Parameters:</h3>
@@ -600,6 +638,15 @@ end)
         </li>
     </ul>
 
+    <h3>Returns:</h3>
+    <ol>
+        <li>
+           <span class="types"><span class="type">GLib.Error</span></span>
+        err</li>
+        <li>
+           <span class="types"><span class="type">number</span></span>
+        size</li>
+    </ol>
 
 
 
@@ -608,7 +655,7 @@ end)
     <dt>
     <a name = "handle:type"></a>
     <strong>handle:type(cb)</strong>
-    <a style="float:right;" href="../source/file.lua.html#473">line 473</a>
+    <a style="float:right;" href="../source/file.lua.html#474">line 474</a>
     </dt>
     <dd>
     Query the type of the file. </p>
@@ -628,10 +675,6 @@ end)
 <p> Note that due to limitations in GLib, this will return <code>UNKNOWN</code> for files
  that the user has not access to.
 
-    <h3>Callback parameters:</h3>
-    <ul>
-         <li><span class="parameter">nil</span> <span class="types">nil</span> <span></span></li>
-         <li><span class="parameter">nil</span> <span class="types">nil</span> <span></span></li>
     </ul>
 
     <h3>Parameters:</h3>
@@ -643,6 +686,15 @@ end)
         </li>
     </ul>
 
+    <h3>Returns:</h3>
+    <ol>
+        <li>
+           <span class="types"><span class="type">GLib.Error</span></span>
+        err</li>
+        <li>
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+        type</li>
+    </ol>
 
 
 
@@ -651,7 +703,7 @@ end)
     <dt>
     <a name = "handle:get_path"></a>
     <strong>handle:get_path()</strong>
-    <a style="float:right;" href="../source/file.lua.html#486">line 486</a>
+    <a style="float:right;" href="../source/file.lua.html#487">line 487</a>
     </dt>
     <dd>
     Get the file&rsquo;s path name. </p>
@@ -677,7 +729,7 @@ end)
     <dt>
     <a name = "new_for_path"></a>
     <strong>new_for_path(path)</strong>
-    <a style="float:right;" href="../source/file.lua.html#498">line 498</a>
+    <a style="float:right;" href="../source/file.lua.html#499">line 499</a>
     </dt>
     <dd>
     Create a file handle for the given path
@@ -708,7 +760,7 @@ end)
     <dt>
     <a name = "new_for_uri"></a>
     <strong>new_for_uri(uri)</strong>
-    <a style="float:right;" href="../source/file.lua.html#514">line 514</a>
+    <a style="float:right;" href="../source/file.lua.html#515">line 515</a>
     </dt>
     <dd>
     Create a file handle for the given remote URI.
@@ -749,7 +801,15 @@ end)
  directory components.
  Otherwise, a default value will be used.</p>
 
-<p> The directory is determined by <code>g_get_tmp_dir</code>.
+<p> The directory is determined by <a href="https://docs.gtk.org/glib/func.get_tmp_dir.html">g_get_tmp_dir</a>.</p>
+
+<p> The second return value is a <code>GIO.FileIOStream</code>, which contains both an input and output stream to the created
+ file. The caller is responsible for closing these streams.</p>
+
+<p> The third return value will be an instance of <code>GLib.Error</code> if the attempt to create the file failed. If this
+ is not <code>nil</code>, attempts to access the other return values will result in undefined behavior.</p>
+
+<p> See: <a href="https://docs.gtk.org/gio/type_func.File.new_tmp.html">Gio.File.new_tmp</a>
 
     </ul>
 
@@ -790,7 +850,7 @@ end)
 </div> <!-- id="main" -->
 <div id="about">
 <i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.6</a></i>
-<i style="float:right;">Last updated 2022-03-03 15:40:23 </i>
+<i style="float:right;">Last updated 2022-03-03 21:31:31 </i>
 </div> <!-- id="about" -->
 </div> <!-- id="container" -->
 </body>
