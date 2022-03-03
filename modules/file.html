@@ -1,0 +1,797 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>lgi-async-extra</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>lgi-async-extra</h1>
+
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Functions">Functions</a></li>
+</ul>
+
+
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><strong>file</strong></li>
+  <li><a href="../modules/stream.html">stream</a></li>
+</ul>
+<h2>Source</h2>
+<ul class="nowrap">
+  <li><a href="../source/file.lua.html">file.lua</a></li>
+  <li><a href="../source/stream.lua.html">stream.lua</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Module <code>file</code></h1>
+<p>High level file handling library.</p>
+<p> The API is callback based, so the use of <code>gears.async</code> for composition is
+ recommended. All callbacks receive an <code>err</code> value as first argument,
+ which is non-<code>nil</code> when an error ocurred, and any non-error return values
+ after that.</p>
+
+<p> Example to write and read-back a file:</p>
+
+<pre>
+<span class="keyword">local</span> f = File.new_for_path(<span class="string">"/tmp/foo.txt"</span>)
+async.waterfall({
+    <span class="keyword">function</span>(cb)
+        f:write(<span class="string">"hello"</span>, cb)
+    <span class="keyword">end</span>,
+    <span class="keyword">function</span>(cb)
+        f:write(<span class="string">"world"</span>, <span class="string">"append"</span>, cb)
+    <span class="keyword">end</span>,
+    <span class="keyword">function</span>(cb)
+        f:read_all(cb)
+    <span class="keyword">end</span>,
+}, <span class="keyword">function</span>(err, data)
+    <span class="global">print</span>(err)
+    <span class="global">print</span>(data)
+<span class="keyword">end</span>)
+</pre>
+
+
+<p> Error values passed to callback functions will almost always be instances of
+ <code>GLib.Error</code>:</p>
+
+<pre>
+read_non_existent_file(<span class="keyword">function</span>(err, data)
+    <span class="global">print</span>(err) <span class="comment">-- or `print(err.message)`
+</span>    <span class="global">assert</span>(err.domain == Gio.IOErrorEnum)
+    <span class="comment">-- Checking the error code against a constant is the recommended way,
+</span>    <span class="comment">-- but a bit verbose, due to LGI's mapping.
+</span>    <span class="comment">-- See: https://github.com/pavouk/lgi/blob/master/docs/guide.md
+</span>    <span class="global">assert</span>(err.code == Gio.IOErrorEnum[Gio.IOErrorEnum.NOT_FOUND])
+<span class="keyword">end</span>)
+</pre>
+
+
+<p> TODO: Add documentation for cheap vs. expensive functions.
+ E.g. the handles created with <code>file.new_for_xxx</code> are cheap, as they don&rsquo;t
+ actually open a file handle right away. They just wrap the path</p>
+    <h3>Info:</h3>
+    <ul>
+        <li><strong>License</strong>: GPL-v3-or-later</li>
+    </ul>
+
+
+<h2><a href="#Functions">Functions</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" ><a href="#handle:read_stream">handle:read_stream(cb)</a></td>
+	<td class="summary">Open a read stream.</td>
+	</tr>
+	<tr>
+	<td class="name" ><a href="#handle:write_stream">handle:write_stream([mode="replace"], cb)</a></td>
+	<td class="summary">Open a write stream.</td>
+	</tr>
+	<tr>
+	<td class="name" ><a href="#handle:write">handle:write(data[, mode="replace"], cb)</a></td>
+	<td class="summary">Write the data to the opened file.</td>
+	</tr>
+	<tr>
+	<td class="name" ><a href="#handle:read_all">handle:read_all(cb)</a></td>
+	<td class="summary">Read the entire file&rsquo;s content into memory.</td>
+	</tr>
+	<tr>
+	<td class="name" ><a href="#handle:read_line">handle:read_line(cb)</a></td>
+	<td class="summary">Read a line from the file.</td>
+	</tr>
+	<tr>
+	<td class="name" ><a href="#handle:read_lines">handle:read_lines(iteratee, final_callback)</a></td>
+	<td class="summary">Asynchronously iterate over the file line by line.</td>
+	</tr>
+	<tr>
+	<td class="name" ><a href="#handle:move">handle:move(destination, cb)</a></td>
+	<td class="summary">Move the file.</td>
+	</tr>
+	<tr>
+	<td class="name" ><a href="#handle:delete">handle:delete(cb)</a></td>
+	<td class="summary">Delete the file.</td>
+	</tr>
+	<tr>
+	<td class="name" ><a href="#handle:trash">handle:trash(cb)</a></td>
+	<td class="summary">Move the file to trash.</td>
+	</tr>
+	<tr>
+	<td class="name" ><a href="#handle:query_info">handle:query_info(attribute, cb)</a></td>
+	<td class="summary">Query file information.</td>
+	</tr>
+	<tr>
+	<td class="name" ><a href="#handle:exists">handle:exists(cb)</a></td>
+	<td class="summary">Check if the file exists.</td>
+	</tr>
+	<tr>
+	<td class="name" ><a href="#handle:size">handle:size(cb)</a></td>
+	<td class="summary">Query the size of the file.</td>
+	</tr>
+	<tr>
+	<td class="name" ><a href="#handle:type">handle:type(cb)</a></td>
+	<td class="summary">Query the type of the file.</td>
+	</tr>
+	<tr>
+	<td class="name" ><a href="#handle:get_path">handle:get_path()</a></td>
+	<td class="summary">Get the file&rsquo;s path name.</td>
+	</tr>
+	<tr>
+	<td class="name" ><a href="#new_for_path">new_for_path(path)</a></td>
+	<td class="summary">Create a file handle for the given path</td>
+	</tr>
+	<tr>
+	<td class="name" ><a href="#new_for_uri">new_for_uri(uri)</a></td>
+	<td class="summary">Create a file handle for the given remote URI.</td>
+	</tr>
+	<tr>
+	<td class="name" ><a href="#new_tmp">new_tmp([template])</a></td>
+	<td class="summary">Create a new file in a directory preferred for temporary storage.</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="Functions"></a>Functions</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "handle:read_stream"></a>
+    <strong>handle:read_stream(cb)</strong>
+    <a style="float:right;" href="../source/file.lua.html#72">line 72</a>
+    </dt>
+    <dd>
+    <p>Open a read stream. </p>
+
+<p> The consumer is responsible for properly closing the stream:</p>
+
+<pre><code>stream:close_async(GLib.PRIORITY_DEFAULT, nil, function(_, token)
+    local _, err = stream:close_finish(token)
+    cb(err)
+end)
+</code></pre>
+
+<p> The <code>GDataInputStream</code> adds additional reading utilities:</p>
+
+<pre><code>stream = Gio.DataInputStream.new(stream)
+</code></pre>
+
+
+    <h3>Callback parameters:</h3>
+    <ul>
+         <li><span class="parameter">nil</span> <span class="types">nil</span> <span></span></li>
+         <li><span class="parameter">nil</span> <span class="types">nil</span> <span></span></li>
+    </ul>
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">cb</span>
+            <span class="types"><span class="type">function</span></span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "handle:write_stream"></a>
+    <strong>handle:write_stream([mode="replace"], cb)</strong>
+    <a style="float:right;" href="../source/file.lua.html#101">line 101</a>
+    </dt>
+    <dd>
+    <p>Open a write stream. </p>
+
+<p> Write operations are buffered, so the stream needs to be flushed (or closed)
+ to be sure that changes are written to disk. Especially in <code>replace</code> mode,
+ reading before flushing will yield stale content.</p>
+
+<p> The consumer is responsible for properly closing the stream:</p>
+
+<pre><code>stream:close_async(GLib.PRIORITY_DEFAULT, nil, function(_, token)
+    local _, err = stream:close_finish(token)
+    cb(err)
+end)
+</code></pre>
+
+
+    <h3>Callback parameters:</h3>
+    <ul>
+         <li><span class="parameter">nil</span> <span class="types">nil</span> <span></span></li>
+         <li><span class="parameter">nil</span> <span class="types">nil</span> <span></span></li>
+    </ul>
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">mode</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         Either <code>"append"</code> or <code>"replace"</code>.
+  <code>"replace"</code> will truncate the file before writing, <code>"append"</code> will keep
+  any existing content and add the new data at the end.
+         (<em>default</em> "replace")
+        </li>
+        <li><span class="parameter">cb</span>
+            <span class="types"><span class="type">function</span></span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "handle:write"></a>
+    <strong>handle:write(data[, mode="replace"], cb)</strong>
+    <a style="float:right;" href="../source/file.lua.html#144">line 144</a>
+    </dt>
+    <dd>
+    Write the data to the opened file.
+
+    <h3>Callback parameters:</h3>
+    <ul>
+         <span class="parameter">nil</span> <span class="types">nil</span> <span></span>
+    </ul>
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">data</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         The data to write.
+        </li>
+        <li><span class="parameter">mode</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         Either <code>"append"</code> or <code>"replace"</code>.
+  <code>"replace"</code> will truncate the file before writing, <code>"append"</code> will keep
+  any existing content and add the new data at the end.
+         (<em>default</em> "replace")
+        </li>
+        <li><span class="parameter">cb</span>
+            <span class="types"><span class="type">function</span></span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "handle:read_all"></a>
+    <strong>handle:read_all(cb)</strong>
+    <a style="float:right;" href="../source/file.lua.html#184">line 184</a>
+    </dt>
+    <dd>
+    Read the entire file&rsquo;s content into memory.
+
+    <h3>Callback parameters:</h3>
+    <ul>
+         <li><span class="parameter">err</span> <span class="types">Glib.Error</span> <span>An instance of <code>GError</code> if there was an error,
+   <code>nil</code> otherwise.</span></li>
+         <li><span class="parameter">data</span> <span class="types">string</span> <span>A string read from the file.</span></li>
+    </ul>
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">cb</span>
+            <span class="types"><span class="type">function</span></span>
+         The callback to call when reading finished.
+   Signature: <code>function(err, data)</code>
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "handle:read_line"></a>
+    <strong>handle:read_line(cb)</strong>
+    <a style="float:right;" href="../source/file.lua.html#241">line 241</a>
+    </dt>
+    <dd>
+    Read a line from the file. </p>
+
+<p> Inefficient when reading lines repeatedly from the same file.
+
+    <h3>Callback parameters:</h3>
+    <ul>
+         <li><span class="parameter">err</span> <span class="types">GLib.GError</span> <span>An instance of <code>GError</code> if there was an error,
+   <code>nil</code> otherwise.</span></li>
+         <li><span class="parameter">line</span> <span class="types">string</span> <span>A string read from the file,
+   or <code>nil</code> if the end was reached.</span></li>
+    </ul>
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">cb</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "handle:read_lines"></a>
+    <strong>handle:read_lines(iteratee, final_callback)</strong>
+    <a style="float:right;" href="../source/file.lua.html#284">line 284</a>
+    </dt>
+    <dd>
+    Asynchronously iterate over the file line by line. </p>
+
+<p> This function opens a read stream and starts reading the file line-wise,
+ asynchronously. For every line read, the given <code>iteratee</code> is called with any
+ potential error, the line&rsquo;s content (without the trailing newline)
+ and a callback function. The callback must always be called to ensure the
+ file handle is cleaned up eventually. The expected signature for the callback
+ is <code>cb(err, stop)</code>. If <code>err ~= nil or stop ~= nil</code>, iteration stops
+ immediately and <code>final_callback</code> will be called.
+
+    </ul>
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">iteratee</span>
+            <span class="types"><span class="type">function</span></span>
+         Function to call per line in the file. Signature:
+   <code>function(err, line, cb)</code>
+        </li>
+        <li><span class="parameter">final_callback</span>
+            <span class="types"><span class="type">function</span></span>
+         Function to call when iteration has stopped.
+   Signature: <code>function(err)</code>.
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "handle:move"></a>
+    <strong>handle:move(destination, cb)</strong>
+    <a style="float:right;" href="../source/file.lua.html#335">line 335</a>
+    </dt>
+    <dd>
+    Move the file. </p>
+
+<p> Depends on https://gitlab.gnome.org/GNOME/glib/&ndash;/merge_requests/2469.
+
+    <h3>Callback parameters:</h3>
+    <ul>
+         <span class="parameter">nil</span> <span class="types">nil</span> <span></span>
+    </ul>
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">destination</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         New path to move to
+        </li>
+        <li><span class="parameter">cb</span>
+            <span class="types"><span class="type">function</span></span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "handle:delete"></a>
+    <strong>handle:delete(cb)</strong>
+    <a style="float:right;" href="../source/file.lua.html#358">line 358</a>
+    </dt>
+    <dd>
+    Delete the file. </p>
+
+<p> This has the same semantics as POSIX <code>unlink()</code>, i.e. the link at the given
+ path is removed. If it was the last link to the file, the disk space occupied
+ by that file is freed as well.</p>
+
+<p> Empty directories are deleted by this as well.
+
+    <h3>Callback parameters:</h3>
+    <ul>
+         <span class="parameter">nil</span> <span class="types">nil</span> <span></span>
+    </ul>
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">cb</span>
+            <span class="types"><span class="type">function</span></span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "handle:trash"></a>
+    <strong>handle:trash(cb)</strong>
+    <a style="float:right;" href="../source/file.lua.html#376">line 376</a>
+    </dt>
+    <dd>
+    Move the file to trash. </p>
+
+<p> Support for this depends on the platform and file system. If unsupported
+ an error of type <code>Gio.IOErrorEnum.NOT_SUPPORTED</code> will be returned.
+
+    <h3>Callback parameters:</h3>
+    <ul>
+         <span class="parameter">nil</span> <span class="types">nil</span> <span></span>
+    </ul>
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">cb</span>
+            <span class="types"><span class="type">function</span></span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "handle:query_info"></a>
+    <strong>handle:query_info(attribute, cb)</strong>
+    <a style="float:right;" href="../source/file.lua.html#397">line 397</a>
+    </dt>
+    <dd>
+    Query file information. </p>
+
+<p> This can be used to query for any file info attribute supported by GIO.
+
+    <h3>Callback parameters:</h3>
+    <ul>
+         <li><span class="parameter">nil</span> <span class="types">nil</span> <span></span></li>
+         <li><span class="parameter">`true`</span> <span class="types">boolean</span> <span>if the file exists on disk. exists</span></li>
+    </ul>
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">attribute</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         The GIO file info attribute to query for.
+        </li>
+        <li><span class="parameter">cb</span>
+            <span class="types"><span class="type">function</span></span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "handle:exists"></a>
+    <strong>handle:exists(cb)</strong>
+    <a style="float:right;" href="../source/file.lua.html#421">line 421</a>
+    </dt>
+    <dd>
+    Check if the file exists. </p>
+
+<p> Keep in mind that checking for existence before reading or writing a file is
+ subject to race conditions.
+ An external process may still alter a file between those two operations.</p>
+
+<p> Also note that, due to limitations in GLib, this method cannot distinguish
+ between a file that is actually absent and a file that the user has no access
+ to.
+
+    <h3>Callback parameters:</h3>
+    <ul>
+         <li><span class="parameter">nil</span> <span class="types">nil</span> <span></span></li>
+         <li><span class="parameter">`true`</span> <span class="types">boolean</span> <span>if the file exists on disk. exists</span></li>
+    </ul>
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">cb</span>
+            <span class="types"><span class="type">function</span></span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "handle:size"></a>
+    <strong>handle:size(cb)</strong>
+    <a style="float:right;" href="../source/file.lua.html#446">line 446</a>
+    </dt>
+    <dd>
+    Query the size of the file. </p>
+
+<p> Note that due to limitations in GLib, this will return <code>0</code> for files
+ that the user has no access to.
+
+    <h3>Callback parameters:</h3>
+    <ul>
+         <li><span class="parameter">nil</span> <span class="types">nil</span> <span></span></li>
+         <li><span class="parameter">nil</span> <span class="types">nil</span> <span></span></li>
+    </ul>
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">cb</span>
+            <span class="types"><span class="type">function</span></span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "handle:type"></a>
+    <strong>handle:type(cb)</strong>
+    <a style="float:right;" href="../source/file.lua.html#473">line 473</a>
+    </dt>
+    <dd>
+    Query the type of the file. </p>
+
+<p> Common scenarios would be to compare this against <code>Gio.FileType</code>:</p>
+
+<pre><code>f:type(function(err, type)
+    if err then cb(err) end
+    local is_dir = type == Gio.FileType.DIRECTORY
+    local is_link = type == Gio.FileType.SYMBOLIC_LINK
+    local is_file = type == Gio.FileType.REGULAR
+    -- get a string representation
+    print(Gio.FileType[type])
+end)
+</code></pre>
+
+<p> Note that due to limitations in GLib, this will return <code>UNKNOWN</code> for files
+ that the user has not access to.
+
+    <h3>Callback parameters:</h3>
+    <ul>
+         <li><span class="parameter">nil</span> <span class="types">nil</span> <span></span></li>
+         <li><span class="parameter">nil</span> <span class="types">nil</span> <span></span></li>
+    </ul>
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">cb</span>
+            <span class="types"><span class="type">function</span></span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "handle:get_path"></a>
+    <strong>handle:get_path()</strong>
+    <a style="float:right;" href="../source/file.lua.html#486">line 486</a>
+    </dt>
+    <dd>
+    Get the file&rsquo;s path name. </p>
+
+<p> The path is guaranteed to be absolute, by may contain unresolved symlinks.
+ However, a path may not exist, in which case <code>nil</code> will be returned.
+
+    </ul>
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+
+
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "new_for_path"></a>
+    <strong>new_for_path(path)</strong>
+    <a style="float:right;" href="../source/file.lua.html#498">line 498</a>
+    </dt>
+    <dd>
+    Create a file handle for the given path
+
+    </ul>
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">path</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+
+
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">handle</span></span>
+
+
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "new_for_uri"></a>
+    <strong>new_for_uri(uri)</strong>
+    <a style="float:right;" href="../source/file.lua.html#514">line 514</a>
+    </dt>
+    <dd>
+    Create a file handle for the given remote URI.
+
+    </ul>
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">uri</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+
+
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">handle</span></span>
+
+
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "new_tmp"></a>
+    <strong>new_tmp([template])</strong>
+    <a style="float:right;" href="../source/file.lua.html#548">line 548</a>
+    </dt>
+    <dd>
+    Create a new file in a directory preferred for temporary storage. </p>
+
+<p> If <code>template</code> is given, it must contain a sequence of six <code>X</code>s somewhere in the string, which
+ will replaced by a unique ID to ensure the file does not overwrite anything. It must not contain any
+ directory components.
+ Otherwise, a default value will be used.</p>
+
+<p> The directory is determined by <code>g_get_tmp_dir</code>.
+
+    </ul>
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">template</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+
+
+         (<em>optional</em>)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+        <li>
+           <span class="types"><span class="type">handle</span></span>
+
+</li>
+        <li>
+           <span class="types"><span class="type">GIO.FileIOStream</span></span>
+
+</li>
+        <li>
+           <span class="types"><span class="type">GLib.Error</span></span>
+
+</li>
+    </ol>
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.6</a></i>
+<i style="float:right;">Last updated 2022-03-03 15:40:23 </i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

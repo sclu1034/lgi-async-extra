@@ -1,0 +1,624 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>lgi-async-extra</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>lgi-async-extra</h1>
+
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+
+
+<h2>Source</h2>
+<ul class="nowrap">
+  <li><strong>file.lua</strong></li>
+  <li><a href="../source/stream.lua.html">stream.lua</a></li>
+</ul>
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><a href="../modules/file.html">file</a></li>
+  <li><a href="../modules/stream.html">stream</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+    <h2>file.lua</h2>
+<pre>
+<span class="comment">---------------------------------------------------------------------------
+</span><span class="comment">--- High level file handling library.
+</span><span class="comment">--
+</span><span class="comment">-- The API is callback based, so the use of `gears.async` for composition is
+</span><span class="comment">-- recommended. All callbacks receive an `err` value as first argument,
+</span><span class="comment">-- which is non-`nil` when an error ocurred, and any non-error return values
+</span><span class="comment">-- after that.
+</span><span class="comment">--
+</span><span class="comment">-- Example to write and read-back a file:
+</span><span class="comment">--
+</span><span class="comment">--    local f = File.new_for_path("/tmp/foo.txt")
+</span><span class="comment">--    async.waterfall({
+</span><span class="comment">--        function(cb)
+</span><span class="comment">--            f:write("hello", cb)
+</span><span class="comment">--        end,
+</span><span class="comment">--        function(cb)
+</span><span class="comment">--            f:write("world", "append", cb)
+</span><span class="comment">--        end,
+</span><span class="comment">--        function(cb)
+</span><span class="comment">--            f:read_all(cb)
+</span><span class="comment">--        end,
+</span><span class="comment">--    }, function(err, data)
+</span><span class="comment">--        print(err)
+</span><span class="comment">--        print(data)
+</span><span class="comment">--    end)
+</span><span class="comment">--
+</span><span class="comment">-- Error values passed to callback functions will almost always be instances of
+</span><span class="comment">-- `GLib.Error`:
+</span><span class="comment">--
+</span><span class="comment">--    read_non_existent_file(function(err, data)
+</span><span class="comment">--        print(err) -- or `print(err.message)`
+</span><span class="comment">--        assert(err.domain == Gio.IOErrorEnum)
+</span><span class="comment">--        -- Checking the error code against a constant is the recommended way,
+</span><span class="comment">--        -- but a bit verbose, due to LGI's mapping.
+</span><span class="comment">--        -- See: https://github.com/pavouk/lgi/blob/master/docs/guide.md
+</span><span class="comment">--        assert(err.code == Gio.IOErrorEnum[Gio.IOErrorEnum.NOT_FOUND])
+</span><span class="comment">--    end)
+</span><span class="comment">--
+</span><span class="comment">-- TODO: Add documentation for cheap vs. expensive functions.
+</span><span class="comment">-- E.g. the handles created with `file.new_for_xxx` are cheap, as they don't
+</span><span class="comment">-- actually open a file handle right away. They just wrap the path
+</span><span class="comment">--
+</span><span class="comment">-- @module file
+</span><span class="comment">-- @license GPL-v3-or-later
+</span><span class="comment">---------------------------------------------------------------------------
+</span>
+<span class="keyword">local</span> async = <span class="global">require</span>(<span class="string">"async"</span>)
+<span class="keyword">local</span> lgi = <span class="global">require</span>(<span class="string">"lgi"</span>)
+<span class="keyword">local</span> Gio = lgi.Gio
+<span class="keyword">local</span> GLib = lgi.GLib
+<span class="keyword">local</span> File = Gio.File
+
+<span class="keyword">local</span> handle = {}
+
+
+<span class="comment">--- Open a read stream.
+</span><span class="comment">--
+</span><span class="comment">-- The consumer is responsible for properly closing the stream:
+</span><span class="comment">--
+</span><span class="comment">--    stream:close_async(GLib.PRIORITY_DEFAULT, nil, function(_, token)
+</span><span class="comment">--        local _, err = stream:close_finish(token)
+</span><span class="comment">--        cb(err)
+</span><span class="comment">--    end)
+</span><span class="comment">--
+</span><span class="comment">-- The `GDataInputStream` adds additional reading utilities:
+</span><span class="comment">--
+</span><span class="comment">--    stream = Gio.DataInputStream.new(stream)
+</span><span class="comment">--
+</span><span class="comment">-- @tparam function cb
+</span><span class="comment">-- @asynctreturn GLib.Error err
+</span><a id="72"></a><span class="comment">-- @asynctreturn Gio.FileInputStream stream
+</span><span class="keyword">function</span> handle:read_stream(cb)
+    <span class="keyword">local</span> f = self._private.f
+
+    f:read_async(GLib.PRIORITY_DEFAULT, <span class="keyword">nil</span>, <span class="keyword">function</span>(_, token)
+        <span class="keyword">local</span> stream, err = f:read_finish(token)
+        cb(err, stream)
+    <span class="keyword">end</span>)
+<span class="keyword">end</span>
+
+
+<span class="comment">--- Open a write stream.
+</span><span class="comment">--
+</span><span class="comment">-- Write operations are buffered, so the stream needs to be flushed (or closed)
+</span><span class="comment">-- to be sure that changes are written to disk. Especially in `replace` mode,
+</span><span class="comment">-- reading before flushing will yield stale content.
+</span><span class="comment">--
+</span><span class="comment">-- The consumer is responsible for properly closing the stream:
+</span><span class="comment">--
+</span><span class="comment">--    stream:close_async(GLib.PRIORITY_DEFAULT, nil, function(_, token)
+</span><span class="comment">--        local _, err = stream:close_finish(token)
+</span><span class="comment">--        cb(err)
+</span><span class="comment">--    end)
+</span><span class="comment">--
+</span><span class="comment">-- @tparam[opt="replace"] string mode Either `"append"` or `"replace"`.
+</span><span class="comment">--  `"replace"` will truncate the file before writing, `"append"` will keep
+</span><span class="comment">--  any existing content and add the new data at the end.
+</span><span class="comment">-- @tparam function cb
+</span><span class="comment">-- @asynctreturn GLib.Error err
+</span><a id="101"></a><span class="comment">-- @asynctreturn Gio.FileOutputStream stream
+</span><span class="keyword">function</span> handle:write_stream(mode, cb)
+    <span class="keyword">local</span> f = self._private.f
+    <span class="keyword">local</span> priority = GLib.PRIORITY_DEFAULT
+
+    <span class="keyword">if</span> <span class="global">type</span>(mode) == <span class="string">"function"</span> <span class="keyword">then</span>
+        cb = mode
+        mode = <span class="keyword">nil</span>
+    <span class="keyword">end</span>
+
+    <span class="keyword">if</span> mode == <span class="string">"append"</span> <span class="keyword">then</span>
+        f:append_to_async(
+            Gio.FileCreateFlags.NONE,
+            priority,
+            <span class="keyword">nil</span>,
+            <span class="keyword">function</span>(_, token)
+                <span class="keyword">local</span> stream, err = f:append_to_finish(token)
+                cb(err, stream)
+            <span class="keyword">end</span>
+        )
+    <span class="keyword">else</span>
+        f:replace_async(
+            <span class="keyword">nil</span>,
+            <span class="keyword">false</span>,
+            Gio.FileCreateFlags.NONE,
+            priority,
+            <span class="keyword">nil</span>,
+            <span class="keyword">function</span>(_, token)
+                <span class="keyword">local</span> stream, err = f:replace_finish(token)
+                cb(err, stream)
+            <span class="keyword">end</span>
+        )
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+
+<span class="comment">--- Write the data to the opened file.
+</span><span class="comment">--
+</span><span class="comment">-- @tparam string data The data to write.
+</span><span class="comment">-- @tparam[opt="replace"] string mode Either `"append"` or `"replace"`.
+</span><span class="comment">--  `"replace"` will truncate the file before writing, `"append"` will keep
+</span><span class="comment">--  any existing content and add the new data at the end.
+</span><span class="comment">-- @tparam function cb
+</span><a id="144"></a><span class="comment">-- @asynctreturn GLib.Error err
+</span><span class="keyword">function</span> handle:write(data, mode, cb)
+    <span class="keyword">local</span> priority = GLib.PRIORITY_DEFAULT
+
+    <span class="keyword">if</span> <span class="global">type</span>(mode) == <span class="string">"function"</span> <span class="keyword">then</span>
+        cb = mode
+        mode = <span class="keyword">nil</span>
+    <span class="keyword">end</span>
+
+    async.waterfall({
+        <span class="keyword">function</span>(cb_inner)
+            self:write_stream(mode, cb_inner)
+        <span class="keyword">end</span>,
+        <span class="keyword">function</span>(stream, cb_inner)
+            stream:write_all_async(
+                data,
+                priority,
+                <span class="keyword">nil</span>,
+                <span class="keyword">function</span>(_, token)
+                <span class="keyword">local</span> _, _, err = stream:write_all_finish(token)
+                cb_inner(err, stream)
+            <span class="keyword">end</span>
+            )
+        <span class="keyword">end</span>,
+        <span class="keyword">function</span>(stream, cb_inner)
+            stream:close_async(priority, <span class="keyword">nil</span>, <span class="keyword">function</span>(_, token)
+                <span class="keyword">local</span> _, err = stream:close_finish(token)
+                cb_inner(err)
+            <span class="keyword">end</span>)
+        <span class="keyword">end</span>,
+    }, cb)
+<span class="keyword">end</span>
+
+
+<span class="comment">--- Read the entire file's content into memory.
+</span><span class="comment">--
+</span><span class="comment">-- @tparam function cb The callback to call when reading finished.
+</span><span class="comment">--   Signature: `function(err, data)`
+</span><span class="comment">-- @asynctreturn Glib.Error err An instance of `GError` if there was an error,
+</span><span class="comment">--   `nil` otherwise.
+</span><a id="184"></a><span class="comment">-- @asynctreturn string data A string read from the file.
+</span><span class="keyword">function</span> handle:read_all(cb)
+    <span class="keyword">local</span> priority = GLib.PRIORITY_DEFAULT
+
+    async.dag({
+        size = <span class="keyword">function</span>(_, cb_inner)
+            self:size(cb_inner)
+        <span class="keyword">end</span>,
+        stream = <span class="keyword">function</span>(_, cb_inner)
+            self:read_stream(cb_inner)
+        <span class="keyword">end</span>,
+        bytes = { <span class="string">"size"</span>, <span class="string">"stream"</span>, <span class="keyword">function</span>(results, cb_inner)
+            <span class="keyword">local</span> size = <span class="global">table</span>.<span class="global">unpack</span>(results.size)
+            <span class="keyword">local</span> stream = <span class="global">table</span>.<span class="global">unpack</span>(results.stream)
+
+            <span class="keyword">if</span> size == <span class="number">0</span> <span class="keyword">then</span>
+                <span class="keyword">return</span> cb_inner(<span class="keyword">nil</span>, <span class="string">""</span>)
+            <span class="keyword">end</span>
+
+            stream:read_bytes_async(size, priority, <span class="keyword">nil</span>, <span class="keyword">function</span>(_, token)
+                <span class="keyword">local</span> bytes, err = stream:read_bytes_finish(token)
+
+                <span class="keyword">if</span> err <span class="keyword">then</span>
+                    <span class="keyword">return</span> cb_inner(err)
+                <span class="keyword">end</span>
+
+                <span class="keyword">if</span> bytes:get_size() ~= size <span class="keyword">then</span>
+                    <span class="keyword">return</span> cb_inner(<span class="string">"not enough bytes read"</span>)
+                <span class="keyword">end</span>
+
+                cb_inner(<span class="keyword">nil</span>, bytes:get_data())
+            <span class="keyword">end</span>)
+        <span class="keyword">end</span> },
+        close = { <span class="string">"stream"</span>, <span class="string">"bytes"</span>, <span class="keyword">function</span>(results, cb_inner)
+            <span class="keyword">local</span> stream = <span class="global">table</span>.<span class="global">unpack</span>(results.stream)
+            stream:close_async(priority, <span class="keyword">nil</span>, <span class="keyword">function</span>(_, token)
+                <span class="keyword">local</span> _, err = stream:close_finish(token)
+                cb_inner(err)
+            <span class="keyword">end</span>)
+        <span class="keyword">end</span> }
+    }, <span class="keyword">function</span>(err, results)
+        <span class="keyword">if</span> err <span class="keyword">then</span>
+            cb(err)
+        <span class="keyword">else</span>
+            cb(<span class="keyword">nil</span>, <span class="global">table</span>.<span class="global">unpack</span>(results.bytes))
+        <span class="keyword">end</span>
+    <span class="keyword">end</span>)
+<span class="keyword">end</span>
+
+
+<span class="comment">--- Read a line from the file.
+</span><span class="comment">--
+</span><span class="comment">-- Inefficient when reading lines repeatedly from the same file.
+</span><span class="comment">--
+</span><span class="comment">-- @asynctreturn GLib.GError err An instance of `GError` if there was an error,
+</span><span class="comment">--   `nil` otherwise.
+</span><span class="comment">-- @asynctreturn string line A string read from the file,
+</span><a id="241"></a><span class="comment">--   or `nil` if the end was reached.
+</span><span class="keyword">function</span> handle:read_line(cb)
+    <span class="keyword">local</span> priority = GLib.PRIORITY_DEFAULT
+
+    async.waterfall({
+        <span class="keyword">function</span>(cb_inner)
+            self:read_stream(cb_inner)
+        <span class="keyword">end</span>,
+        <span class="keyword">function</span>(stream, cb_inner)
+            stream = Gio.DataInputStream.new(stream)
+            stream:read_line_async(priority, <span class="keyword">nil</span>, <span class="keyword">function</span>(_, token)
+                <span class="keyword">local</span> line, _, err = stream:read_line_finish(token)
+                cb_inner(err, stream, line)
+            <span class="keyword">end</span>)
+        <span class="keyword">end</span>,
+        <span class="keyword">function</span>(stream, line, cb_inner)
+            <span class="keyword">if</span> <span class="global">type</span>(line) == <span class="string">"function"</span> <span class="keyword">then</span>
+                cb_inner = line
+                line = <span class="keyword">nil</span>
+            <span class="keyword">end</span>
+
+            stream:close_async(priority, <span class="keyword">nil</span>, <span class="keyword">function</span>(_, token)
+                <span class="keyword">local</span> _, err = stream:close_finish(token)
+                cb_inner(err, line)
+            <span class="keyword">end</span>)
+        <span class="keyword">end</span>,
+    }, cb)
+<span class="keyword">end</span>
+
+
+<span class="comment">--- Asynchronously iterate over the file line by line.
+</span><span class="comment">--
+</span><span class="comment">-- This function opens a read stream and starts reading the file line-wise,
+</span><span class="comment">-- asynchronously. For every line read, the given `iteratee` is called with any
+</span><span class="comment">-- potential error, the line's content (without the trailing newline)
+</span><span class="comment">-- and a callback function. The callback must always be called to ensure the
+</span><span class="comment">-- file handle is cleaned up eventually. The expected signature for the callback
+</span><span class="comment">-- is `cb(err, stop)`. If `err ~= nil or stop ~= nil`, iteration stops
+</span><span class="comment">-- immediately and `final_callback` will be called.
+</span><span class="comment">--
+</span><span class="comment">-- @tparam function iteratee Function to call per line in the file. Signature:
+</span><span class="comment">--   `function(err, line, cb)`
+</span><span class="comment">-- @tparam function final_callback Function to call when iteration has stopped.
+</span><a id="284"></a><span class="comment">--   Signature: `function(err)`.
+</span><span class="keyword">function</span> handle:read_lines(iteratee, final_callback)
+    <span class="keyword">local</span> priority = GLib.PRIORITY_DEFAULT
+
+    async.waterfall({
+        <span class="keyword">function</span>(cb_inner)
+            self:read_stream(cb_inner)
+        <span class="keyword">end</span>,
+        <span class="keyword">function</span>(stream, cb_inner)
+            stream = Gio.DataInputStream.new(stream)
+
+            <span class="keyword">local</span> <span class="keyword">function</span> read_line(cb_line)
+                stream:read_line_async(priority, <span class="keyword">nil</span>, <span class="keyword">function</span>(_, token)
+                    <span class="keyword">local</span> line, _, err = stream:read_line_finish(token)
+
+                    iteratee(err, line, <span class="keyword">function</span>(err, stop)
+                        cb_line(err, stop <span class="keyword">or</span> <span class="keyword">false</span>, line)
+                    <span class="keyword">end</span>)
+                <span class="keyword">end</span>)
+            <span class="keyword">end</span>
+
+            <span class="keyword">local</span> <span class="keyword">function</span> check(stop, line, cb_check)
+                <span class="keyword">if</span> <span class="global">type</span>(line) == <span class="string">"function"</span> <span class="keyword">then</span>
+                    cb_check = line
+                    line = <span class="keyword">nil</span>
+                <span class="keyword">end</span>
+
+                <span class="keyword">local</span> continue = (<span class="keyword">not</span> stop) <span class="keyword">and</span> (line ~= <span class="keyword">nil</span>)
+                cb_check(<span class="keyword">nil</span>, continue)
+            <span class="keyword">end</span>
+
+            async.do_while(read_line, check, <span class="keyword">function</span>(err)
+                cb_inner(err, stream)
+            <span class="keyword">end</span>)
+        <span class="keyword">end</span>,
+        <span class="keyword">function</span>(stream, cb_inner)
+            stream:close_async(priority, <span class="keyword">nil</span>, <span class="keyword">function</span>(_, token)
+                <span class="keyword">local</span> _, err = stream:close_finish(token)
+                cb_inner(err)
+            <span class="keyword">end</span>)
+        <span class="keyword">end</span>,
+    }, final_callback)
+<span class="keyword">end</span>
+
+
+<span class="comment">--- Move the file.
+</span><span class="comment">--
+</span><span class="comment">-- Depends on https://gitlab.gnome.org/GNOME/glib/-/merge_requests/2469.
+</span><span class="comment">--
+</span><span class="comment">-- @tparam string destination New path to move to
+</span><span class="comment">-- @tparam function cb
+</span><a id="335"></a><span class="comment">-- @asynctreturn GLib.Error err
+</span><span class="keyword">function</span> handle:move(destination, cb)
+    <span class="keyword">local</span> f = self._private.f
+    <span class="keyword">local</span> priority = GLib.PRIORITY_DEFAULT
+
+    destination = File.new_for_path(destination)
+
+    f:move_async(destination, <span class="number">0</span>, priority, <span class="keyword">nil</span>, <span class="keyword">nil</span>, <span class="keyword">function</span>(_, token)
+        <span class="keyword">local</span> _, err = f:move_finish(token)
+        cb(err)
+    <span class="keyword">end</span>)
+<span class="keyword">end</span>
+
+
+<span class="comment">--- Delete the file.
+</span><span class="comment">--
+</span><span class="comment">-- This has the same semantics as POSIX `unlink()`, i.e. the link at the given
+</span><span class="comment">-- path is removed. If it was the last link to the file, the disk space occupied
+</span><span class="comment">-- by that file is freed as well.
+</span><span class="comment">--
+</span><span class="comment">-- Empty directories are deleted by this as well.
+</span><span class="comment">--
+</span><span class="comment">-- @tparam function cb
+</span><a id="358"></a><span class="comment">-- @asynctreturn GLib.Error err
+</span><span class="keyword">function</span> handle:delete(cb)
+    <span class="keyword">local</span> f = self._private.f
+    <span class="keyword">local</span> priority = GLib.PRIORITY_DEFAULT
+
+    f:delete_async(priority, <span class="keyword">nil</span>, <span class="keyword">function</span>(_, token)
+        <span class="keyword">local</span> _, err = f:delete_finish(token)
+        cb(err)
+    <span class="keyword">end</span>)
+<span class="keyword">end</span>
+
+
+<span class="comment">--- Move the file to trash.
+</span><span class="comment">--
+</span><span class="comment">-- Support for this depends on the platform and file system. If unsupported
+</span><span class="comment">-- an error of type `Gio.IOErrorEnum.NOT_SUPPORTED` will be returned.
+</span><span class="comment">--
+</span><span class="comment">-- @tparam function cb
+</span><a id="376"></a><span class="comment">-- @asynctreturn GLib.Error err
+</span><span class="keyword">function</span> handle:trash(cb)
+    <span class="keyword">local</span> f = self._private.f
+    <span class="keyword">local</span> priority = GLib.PRIORITY_DEFAULT
+
+    f:trash_async(priority, <span class="keyword">nil</span>, <span class="keyword">function</span>(_, token)
+        <span class="keyword">local</span> _, err = f:trash_finish(token)
+        cb(err)
+    <span class="keyword">end</span>)
+<span class="keyword">end</span>
+
+
+<span class="comment">--- Query file information.
+</span><span class="comment">--
+</span><span class="comment">-- This can be used to query for any file info attribute supported by GIO.
+</span><span class="comment">-- @todo Link to the documentation that lists these attributes
+</span><span class="comment">-- @todo If necessary, document the conversion from GIO's attributes to what LGI expects.
+</span><span class="comment">--
+</span><span class="comment">-- @tparam string attribute The GIO file info attribute to query for.
+</span><span class="comment">-- @tparam function cb
+</span><span class="comment">-- @asynctreturn GLib.Error err
+</span><a id="397"></a><span class="comment">-- @asynctreturn boolean `true` if the file exists on disk. exists
+</span><span class="keyword">function</span> handle:query_info(attribute, cb)
+    <span class="keyword">local</span> f = self._private.f
+    <span class="keyword">local</span> priority = GLib.PRIORITY_DEFAULT
+
+    f:query_info_async(attribute, <span class="number">0</span>, priority, <span class="keyword">nil</span>, <span class="keyword">function</span>(_, token)
+        <span class="keyword">local</span> info, err = f:query_info_finish(token)
+        cb(err, info)
+    <span class="keyword">end</span>)
+<span class="keyword">end</span>
+
+
+<span class="comment">--- Check if the file exists.
+</span><span class="comment">--
+</span><span class="comment">-- Keep in mind that checking for existence before reading or writing a file is
+</span><span class="comment">-- subject to race conditions.
+</span><span class="comment">-- An external process may still alter a file between those two operations.
+</span><span class="comment">--
+</span><span class="comment">-- Also note that, due to limitations in GLib, this method cannot distinguish
+</span><span class="comment">-- between a file that is actually absent and a file that the user has no access
+</span><span class="comment">-- to.
+</span><span class="comment">--
+</span><span class="comment">-- @tparam function cb
+</span><span class="comment">-- @asynctreturn GLib.Error err
+</span><a id="421"></a><span class="comment">-- @asynctreturn boolean `true` if the file exists on disk. exists
+</span><span class="keyword">function</span> handle:exists(cb)
+    self:query_info(<span class="string">"standard::type"</span>, <span class="keyword">function</span> (err)
+        <span class="keyword">if</span> err <span class="keyword">then</span>
+            <span class="comment">-- An error of "not found" is actually an expected outcome, so
+</span>            <span class="comment">-- we hide the error.
+</span>            <span class="keyword">if</span> err.code == Gio.IOErrorEnum[Gio.IOErrorEnum.NOT_FOUND] <span class="keyword">then</span>
+                cb(<span class="keyword">nil</span>, <span class="keyword">false</span>)
+            <span class="keyword">else</span>
+                cb(err)
+            <span class="keyword">end</span>
+        <span class="keyword">else</span>
+            cb(<span class="keyword">nil</span>, <span class="keyword">true</span>)
+        <span class="keyword">end</span>
+    <span class="keyword">end</span>)
+<span class="keyword">end</span>
+
+
+<span class="comment">--- Query the size of the file.
+</span><span class="comment">--
+</span><span class="comment">-- Note that due to limitations in GLib, this will return `0` for files
+</span><span class="comment">-- that the user has no access to.
+</span><span class="comment">--
+</span><span class="comment">-- @tparam function cb
+</span><span class="comment">-- @asynctreturn GLib.Error err
+</span><a id="446"></a><span class="comment">-- @asynctreturn number size
+</span><span class="keyword">function</span> handle:size(cb)
+    self:query_info(<span class="string">"standard::size"</span>, <span class="keyword">function</span> (err, info)
+        <span class="comment">-- For some reason, the bindings return a float for a byte size
+</span>        cb(err, info <span class="keyword">and</span> <span class="global">math</span>.floor(info:get_size()))
+    <span class="keyword">end</span>)
+<span class="keyword">end</span>
+
+
+<span class="comment">--- Query the type of the file.
+</span><span class="comment">--
+</span><span class="comment">-- Common scenarios would be to compare this against `Gio.FileType`:
+</span><span class="comment">--
+</span><span class="comment">--    f:type(function(err, type)
+</span><span class="comment">--        if err then cb(err) end
+</span><span class="comment">--        local is_dir = type == Gio.FileType.DIRECTORY
+</span><span class="comment">--        local is_link = type == Gio.FileType.SYMBOLIC_LINK
+</span><span class="comment">--        local is_file = type == Gio.FileType.REGULAR
+</span><span class="comment">--        -- get a string representation
+</span><span class="comment">--        print(Gio.FileType[type])
+</span><span class="comment">--    end)
+</span><span class="comment">--
+</span><span class="comment">-- Note that due to limitations in GLib, this will return `UNKNOWN` for files
+</span><span class="comment">-- that the user has not access to.
+</span><span class="comment">--
+</span><span class="comment">-- @tparam function cb
+</span><span class="comment">-- @asynctreturn GLib.Error err
+</span><a id="473"></a><span class="comment">-- @asynctreturn string type
+</span><span class="keyword">function</span> handle:<span class="global">type</span>(cb)
+    self:query_info(<span class="string">"standard::type"</span>, <span class="keyword">function</span> (err, info)
+        cb(err, info <span class="keyword">and</span> Gio.FileType[info:get_file_type()])
+    <span class="keyword">end</span>)
+<span class="keyword">end</span>
+
+
+<span class="comment">--- Get the file's path name.
+</span><span class="comment">--
+</span><span class="comment">-- The path is guaranteed to be absolute, by may contain unresolved symlinks.
+</span><span class="comment">-- However, a path may not exist, in which case `nil` will be returned.
+</span><span class="comment">--
+</span><a id="486"></a><span class="comment">-- @treturn string
+</span><span class="keyword">function</span> handle:get_path()
+    <span class="keyword">return</span> self._private.f:get_path()
+<span class="keyword">end</span>
+
+
+<span class="keyword">local</span> file = {}
+
+
+<span class="comment">--- Create a file handle for the given path
+</span><span class="comment">--
+</span><span class="comment">-- @tparam string path
+</span><a id="498"></a><span class="comment">-- @treturn handle
+</span><span class="keyword">function</span> file.new_for_path(path)
+    <span class="keyword">local</span> f = File.new_for_path(path)
+    <span class="keyword">local</span> ret = {
+        _private = {
+            f = f,
+            path = path,
+        }
+    }
+    <span class="keyword">return</span> <span class="global">setmetatable</span>(ret, { __index = handle })
+<span class="keyword">end</span>
+
+
+<span class="comment">--- Create a file handle for the given remote URI.
+</span><span class="comment">--
+</span><span class="comment">-- @tparam string uri
+</span><a id="514"></a><span class="comment">-- @treturn handle
+</span><span class="keyword">function</span> file.new_for_uri(uri)
+    <span class="keyword">local</span> f = File.new_for_uri(uri)
+    <span class="keyword">local</span> ret = {
+        _private = {
+            f = f,
+            path = uri,
+        }
+    }
+    <span class="keyword">return</span> <span class="global">setmetatable</span>(ret, { __index = handle })
+<span class="keyword">end</span>
+
+
+<span class="comment">--- Create a new file in a directory preferred for temporary storage.
+</span><span class="comment">--
+</span><span class="comment">-- If `template` is given, it must contain a sequence of six `X`s somewhere in the string, which
+</span><span class="comment">-- will replaced by a unique ID to ensure the file does not overwrite anything. It must not contain any
+</span><span class="comment">-- directory components.
+</span><span class="comment">-- Otherwise, a default value will be used.
+</span><span class="comment">--
+</span><span class="comment">-- The directory is determined by `g_get_tmp_dir`.
+</span><span class="comment">-- @todo: Either link to GIO docs properly or create a binding for that function.
+</span><span class="comment">--
+</span><span class="comment">-- The second return value is a `GIO.FileIOStream`, which contains both an input and output stream to the created
+</span><span class="comment">-- file. The caller is responsible for closing these streams.
+</span><span class="comment">--
+</span><span class="comment">-- The third return value will be an instance of `GLib.Error` if the attempt to create the file failed. If this
+</span><span class="comment">-- is not `nil`, attempts to access the other return values will result in undefined behavior.
+</span><span class="comment">--
+</span><span class="comment">-- See: [Gio.File.new_tmp](https://docs.gtk.org/gio/type_func.File.new_tmp.html)
+</span><span class="comment">--
+</span><span class="comment">-- @tparam[opt] string template
+</span><span class="comment">-- @treturn handle
+</span><span class="comment">-- @treturn GIO.FileIOStream
+</span><a id="548"></a><span class="comment">-- @treturn  GLib.Error
+</span><span class="keyword">function</span> file.new_tmp(template)
+    <span class="keyword">local</span> f, stream, err = File.new_tmp(template)
+    <span class="keyword">local</span> ret = {
+        _private = {
+            f = f,
+            template = template,
+        }
+    }
+    <span class="keyword">return</span> <span class="global">setmetatable</span>(ret, { __index = handle }), stream, err
+<span class="keyword">end</span>
+
+<span class="keyword">return</span> file
+
+<span class="comment">-- vim: filetype=lua:expandtab:shiftwidth=4:tabstop=8:softtabstop=4:textwidth=80</span></pre>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.6</a></i>
+<i style="float:right;">Last updated 2022-03-03 15:40:23 </i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>
