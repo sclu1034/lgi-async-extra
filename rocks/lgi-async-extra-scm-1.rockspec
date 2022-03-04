@@ -16,7 +16,8 @@ dependencies = {
 build = {
     type = "builtin",
     modules = {
-        ["lgi-async-extra.file"] = "lib/file.lua"
+        ["lgi-async-extra.file"] = "lib/file.lua",
+        ["lgi-async-extra.stream"] = "lib/stream.lua",
     },
     copy_directories = {
         "doc", "examples", "tests"
