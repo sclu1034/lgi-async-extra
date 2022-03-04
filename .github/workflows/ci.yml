@@ -37,10 +37,14 @@ jobs:
           luaVersion: ${{ matrix.luaVersion }}
       - uses: leafo/gh-actions-luarocks@v4.0.0
 
-      - name: Install Busted
+      - name: Install dependencies
+        shell: /bin/bash -o errexit -o pipefail -o xtrace {0}
         run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends gobject-introspection libgirepository1.0-dev
           luarocks install busted
           luarocks install lgi
+          luarocks install --server=https://luarocks.org/dev async.lua
 
       - name: Run tests
         run: busted --config-file=.busted.lua --helper=tests/_helper.lua --output=TAP tests
