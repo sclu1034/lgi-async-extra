@@ -171,6 +171,9 @@
 #  for item in items() do
     <dt>
     <a name = "$(item.name)"></a>
+#   if item.tags["async"] then
+    <em>async</em>
+#   end
     <strong>$(display_name(item))</strong>
 #   if ldoc.prettify_files and ldoc.is_file_prettified[item.module.file.filename] then
     <a style="float:right;" href="$(ldoc.source_ref(item))">line $(item.lineno)</a>
@@ -232,7 +235,11 @@
 
 #  if show_return and item.retgroups then
 #   local groups = item.retgroups
+#   if item.tags["async"] then
+    <h3>Callback returns:</h3>
+#   else
     <h3>Returns:</h3>
+#   end
 #   for i, group in ldoc.ipairs(groups) do
 #     local li,il = use_li(group)
     <ol>

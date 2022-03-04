@@ -12,3 +12,10 @@ prettify_files = 'show'
 backtick_references = false
 wrap = true
 no_space_before_args = true
+
+custom_tags = {
+    {
+        "async",
+        hidden = true,
+    }
+}
