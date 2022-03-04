@@ -1,6 +1,9 @@
 ---------------------------------------------------------------------------
 --- High level file handling library.
 --
+-- A file handle can be created through one of the constructor functions. File
+-- operations are performed on that handle.
+--
 -- The API is callback based, so the use of `gears.async` for composition is
 -- recommended. All callbacks receive an `err` value as first argument,
 -- which is non-`nil` when an error ocurred, and any non-error return values
@@ -48,42 +51,44 @@ local async = require("async")
 local lgi = require("lgi")
 local Gio = lgi.Gio
 local GLib = lgi.GLib
-local File = Gio.File
+local GFile = Gio.File
 
 
-local handle = {}
+local File = {}
 local file = {}
 
+--- Constructors
+-- @section constructors
 
---- Create a file handle for the given path
+--- Create a file handle for the given local path.
 --
 -- @tparam string path
--- @treturn handle
+-- @treturn File
 function file.new_for_path(path)
-    local f = File.new_for_path(path)
+    local f = GFile.new_for_path(path)
     local ret = {
         _private = {
             f = f,
             path = path,
         }
     }
-    return setmetatable(ret, { __index = handle })
+    return setmetatable(ret, { __index = File  })
 end
 
 
 --- Create a file handle for the given remote URI.
 --
 -- @tparam string uri
--- @treturn handle
+-- @treturn File
 function file.new_for_uri(uri)
-    local f = File.new_for_uri(uri)
+    local f = GFile.new_for_uri(uri)
     local ret = {
         _private = {
             f = f,
             path = uri,
         }
     }
-    return setmetatable(ret, { __index = handle })
+    return setmetatable(ret, { __index = File  })
 end
 
 
@@ -105,20 +110,21 @@ end
 -- See: [Gio.File.new_tmp](https://docs.gtk.org/gio/type_func.File.new_tmp.html)
 --
 -- @tparam[opt] string template
--- @treturn handle
+-- @treturn File
 -- @treturn GIO.FileIOStream
--- @treturn  GLib.Error
+-- @treturn ?GLib.Error
 function file.new_tmp(template)
-    local f, stream, err = File.new_tmp(template)
+    local f, stream, err = GFile.new_tmp(template)
     local ret = {
         _private = {
             f = f,
             template = template,
         }
     }
-    return setmetatable(ret, { __index = handle }), stream, err
+    return setmetatable(ret, { __index = File  }), stream, err
 end
 
+--- @type File
 
 --- Open a read stream.
 --
@@ -133,11 +139,11 @@ end
 --
 --    stream = Gio.DataInputStream.new(stream)
 --
--- @async true
+-- @async
 -- @tparam function cb
--- @treturn[async] GLib.Error err
--- @treturn[async] Gio.FileInputStream stream
-function handle:read_stream(cb)
+-- @treturn ?GLib.Error err
+-- @treturn ?Gio.FileInputStream stream
+function File:read_stream(cb)
     local f = self._private.f
 
     f:read_async(GLib.PRIORITY_DEFAULT, nil, function(_, token)
@@ -160,13 +166,14 @@ end
 --        cb(err)
 --    end)
 --
+-- @async
 -- @tparam[opt="replace"] string mode Either `"append"` or `"replace"`.
 --  `"replace"` will truncate the file before writing, `"append"` will keep
 --  any existing content and add the new data at the end.
 -- @tparam function cb
--- @treturn[async] GLib.Error err
--- @treturn[async] Gio.FileOutputStream stream
-function handle:write_stream(mode, cb)
+-- @treturn ?GLib.Error err
+-- @treturn Gio.FileOutputStream stream
+function File:write_stream(mode, cb)
     local f = self._private.f
     local priority = GLib.PRIORITY_DEFAULT
 
@@ -203,13 +210,14 @@ end
 
 --- Write the data to the opened file.
 --
+-- @async
 -- @tparam string data The data to write.
 -- @tparam[opt="replace"] string mode Either `"append"` or `"replace"`.
 --  `"replace"` will truncate the file before writing, `"append"` will keep
 --  any existing content and add the new data at the end.
 -- @tparam function cb
--- @treturn[async] GLib.Error err
-function handle:write(data, mode, cb)
+-- @treturn ?GLib.Error err
+function File:write(data, mode, cb)
     local priority = GLib.PRIORITY_DEFAULT
 
     if type(mode) == "function" then
@@ -244,12 +252,13 @@ end
 
 --- Read the entire file's content into memory.
 --
+-- @async
 -- @tparam function cb The callback to call when reading finished.
 --   Signature: `function(err, data)`
--- @treturn[async] GLib.Error err An instance of `GError` if there was an error,
+-- @treturn ?GLib.Error err An instance of `GError` if there was an error,
 --   `nil` otherwise.
--- @treturn[async] string data A string read from the file.
-function handle:read_all(cb)
+-- @treturn string data A string read from the file.
+function File:read_all(cb)
     local priority = GLib.PRIORITY_DEFAULT
 
     async.dag({
@@ -302,11 +311,12 @@ end
 --
 -- Inefficient when reading lines repeatedly from the same file.
 --
--- @treturn[async] GLib.Error err An instance of `GError` if there was an error,
+-- @async
+-- @treturn ?GLib.Error err An instance of `GError` if there was an error,
 --   `nil` otherwise.
--- @treturn[async] string line A string read from the file,
+-- @treturn ?string line A string read from the file,
 --   or `nil` if the end was reached.
-function handle:read_line(cb)
+function File:read_line(cb)
     local priority = GLib.PRIORITY_DEFAULT
 
     async.waterfall({
@@ -349,7 +359,7 @@ end
 --   `function(err, line, cb)`
 -- @tparam function final_callback Function to call when iteration has stopped.
 --   Signature: `function(err)`.
-function handle:read_lines(iteratee, final_callback)
+function File:read_lines(iteratee, final_callback)
     local priority = GLib.PRIORITY_DEFAULT
 
     async.waterfall({
@@ -397,14 +407,15 @@ end
 --
 -- Depends on https://gitlab.gnome.org/GNOME/glib/-/merge_requests/2469.
 --
+-- @async
 -- @tparam string destination New path to move to
 -- @tparam function cb
--- @treturn[async] GLib.Error err
-function handle:move(destination, cb)
+-- @treturn ?GLib.Error err
+function File:move(destination, cb)
     local f = self._private.f
     local priority = GLib.PRIORITY_DEFAULT
 
-    destination = File.new_for_path(destination)
+    destination = GFile.new_for_path(destination)
 
     f:move_async(destination, 0, priority, nil, nil, function(_, token)
         local _, err = f:move_finish(token)
@@ -421,9 +432,10 @@ end
 --
 -- Empty directories are deleted by this as well.
 --
+-- @async
 -- @tparam function cb
--- @treturn[async] GLib.Error err
-function handle:delete(cb)
+-- @treturn ?GLib.Error err
+function File:delete(cb)
     local f = self._private.f
     local priority = GLib.PRIORITY_DEFAULT
 
@@ -439,9 +451,10 @@ end
 -- Support for this depends on the platform and file system. If unsupported
 -- an error of type `Gio.IOErrorEnum.NOT_SUPPORTED` will be returned.
 --
+-- @async
 -- @tparam function cb
--- @treturn[async] GLib.Error err
-function handle:trash(cb)
+-- @treturn ?GLib.Error err
+function File:trash(cb)
     local f = self._private.f
     local priority = GLib.PRIORITY_DEFAULT
 
@@ -455,14 +468,22 @@ end
 --- Query file information.
 --
 -- This can be used to query for any file info attribute supported by GIO.
--- @todo Link to the documentation that lists these attributes
--- @todo If necessary, document the conversion from GIO's attributes to what LGI expects.
+-- The attribute parameter may either be plain string, such as `"standard::size"`, a wildcard `"standard::*"` or
+-- a list of both `"standard::*,owner::user"`.
 --
+-- GIO also offers constants for these attribute values, which can be found by querying the GIO docs for
+-- `G_FILE_ATTRIBUTE_*` constants:
+-- [https://docs.gtk.org/gio/index.html?q=G_FILE_ATTRIBUTE_](https://docs.gtk.org/gio/index.html?q=G_FILE_ATTRIBUTE_)
+--
+-- See: [`g_file_query_info()`](https://docs.gtk.org/gio/method.File.query_info.html)
+--
+-- @todo Document the conversion from GIO's attributes to what LGI expects.
+-- @async
 -- @tparam string attribute The GIO file info attribute to query for.
 -- @tparam function cb
--- @treturn[async] GLib.Error err
--- @treturn[async] boolean `true` if the file exists on disk. exists
-function handle:query_info(attribute, cb)
+-- @treturn ?GLib.Error err
+-- @treturn ?Gio.FileInfo
+function File:query_info(attribute, cb)
     local f = self._private.f
     local priority = GLib.PRIORITY_DEFAULT
 
@@ -483,10 +504,11 @@ end
 -- between a file that is actually absent and a file that the user has no access
 -- to.
 --
+-- @async
 -- @tparam function cb
--- @treturn[async] GLib.Error err
--- @treturn[async] boolean `true` if the file exists on disk. exists
-function handle:exists(cb)
+-- @treturn ?GLib.Error err
+-- @treturn boolean `true` if the file exists on disk
+function File:exists(cb)
     self:query_info("standard::type", function (err)
         if err then
             -- An error of "not found" is actually an expected outcome, so
@@ -494,7 +516,7 @@ function handle:exists(cb)
             if err.code == Gio.IOErrorEnum[Gio.IOErrorEnum.NOT_FOUND] then
                 cb(nil, false)
             else
-                cb(err)
+                cb(err, false)
             end
         else
             cb(nil, true)
@@ -508,10 +530,11 @@ end
 -- Note that due to limitations in GLib, this will return `0` for files
 -- that the user has no access to.
 --
+-- @async
 -- @tparam function cb
--- @treturn[async] GLib.Error err
--- @treturn[async] number size
-function handle:size(cb)
+-- @treturn ?GLib.Error err
+-- @treturn ?number size
+function File:size(cb)
     self:query_info("standard::size", function (err, info)
         -- For some reason, the bindings return a float for a byte size
         cb(err, info and math.floor(info:get_size()))
@@ -535,10 +558,11 @@ end
 -- Note that due to limitations in GLib, this will return `UNKNOWN` for files
 -- that the user has not access to.
 --
+-- @async
 -- @tparam function cb
--- @treturn[async] GLib.Error err
--- @treturn[async] string type
-function handle:type(cb)
+-- @treturn ?GLib.Error err
+-- @treturn ?string type
+function File:type(cb)
     self:query_info("standard::type", function (err, info)
         cb(err, info and Gio.FileType[info:get_file_type()])
     end)
@@ -550,8 +574,8 @@ end
 -- The path is guaranteed to be absolute, by may contain unresolved symlinks.
 -- However, a path may not exist, in which case `nil` will be returned.
 --
--- @treturn string
-function handle:get_path()
+-- @treturn ?string
+function File:get_path()
     return self._private.f:get_path()
 end
 
