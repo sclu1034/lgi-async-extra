@@ -1,54 +1,40 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<!DOCTYPE html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>lgi-async-extra</title>
     <link rel="stylesheet" href="../ldoc.css" type="text/css" />
 </head>
 <body>
 
-<div id="container">
 
-<div id="product">
-	<div id="product_logo"></div>
-	<div id="product_name"><big><b></b></big></div>
-	<div id="product_description"></div>
-</div> <!-- id="product" -->
-
-
-<div id="main">
-
-
-<!-- Menu -->
-
-<div id="navigation">
-<br/>
-<h1>lgi-async-extra</h1>
-
-
-<ul>
-  <li><a href="../index.html">Index</a></li>
-</ul>
-
-
-
-<h2>Source</h2>
-<ul class="nowrap">
-  <li><strong>file.lua</strong></li>
-  <li><a href="../source/stream.lua.html">stream.lua</a></li>
-</ul>
-<h2>Modules</h2>
-<ul class="nowrap">
-  <li><a href="../modules/file.html">file</a></li>
-  <li><a href="../modules/stream.html">stream</a></li>
-</ul>
-
-</div>
-
-<div id="content">
-
-    <h2>file.lua</h2>
+<aside id="sidebar" class="has-background-white-ter">
+    <h1 class="title">lgi-async-extra</h1>
+    <nav class="menu">
+        <ul class="menu-list">
+            <li><a class="" href="../index.html">Index</a></li>
+        </ul>
+        <p class="menu-label">Source</p>
+        <ul class="menu-list">
+            <li>
+                <a class="is-active">file.lua</a>
+                <ul>
+                </ul>
+            </li>
+            <li><a href="../source/stream.lua.html">stream.lua</a></li>
+        </ul>
+        <p class="menu-label">Modules</p>
+        <ul class="menu-list">
+            <li><a href="../modules/file.html">file</a></li>
+            <li><a href="../modules/stream.html">stream</a></li>
+        </ul>
+    </nav>
+</aside>
+<div id="content" class="content__wrapper">
+    <section class="section section__raw-content">
+        <div class="container content"><h2>file.lua</h2>
 <pre>
 <span class="comment">---------------------------------------------------------------------------
 </span><span class="comment">--- High level file handling library.
@@ -96,7 +82,7 @@
 </span><span class="comment">-- actually open a file handle right away. They just wrap the path
 </span><span class="comment">--
 </span><span class="comment">-- @module file
-</span><span class="comment">-- @license GPL-v3-or-later
+</span><span class="comment">-- @license GPL v3.0
 </span><span class="comment">---------------------------------------------------------------------------
 </span>
 <span class="keyword">local</span> async = <span class="global">require</span>(<span class="string">"async"</span>)
@@ -193,8 +179,8 @@
 </span><span class="comment">--
 </span><span class="comment">-- @async
 </span><span class="comment">-- @tparam function cb
-</span><span class="comment">-- @treturn ?GLib.Error err
-</span><a id="146"></a><span class="comment">-- @treturn ?Gio.FileInputStream stream
+</span><span class="comment">-- @treturn ?GLib.Error
+</span><a id="146"></a><span class="comment">-- @treturn ?Gio.FileInputStream
 </span><span class="keyword">function</span> File:read_stream(cb)
     <span class="keyword">local</span> f = self._private.f
 
@@ -223,8 +209,8 @@
 </span><span class="comment">--  `"replace"` will truncate the file before writing, `"append"` will keep
 </span><span class="comment">--  any existing content and add the new data at the end.
 </span><span class="comment">-- @tparam function cb
-</span><span class="comment">-- @treturn ?GLib.Error err
-</span><a id="176"></a><span class="comment">-- @treturn Gio.FileOutputStream stream
+</span><span class="comment">-- @treturn ?GLib.Error
+</span><a id="176"></a><span class="comment">-- @treturn Gio.FileOutputStream
 </span><span class="keyword">function</span> File:write_stream(mode, cb)
     <span class="keyword">local</span> f = self._private.f
     <span class="keyword">local</span> priority = GLib.PRIORITY_DEFAULT
@@ -268,7 +254,7 @@
 </span><span class="comment">--  `"replace"` will truncate the file before writing, `"append"` will keep
 </span><span class="comment">--  any existing content and add the new data at the end.
 </span><span class="comment">-- @tparam function cb
-</span><a id="220"></a><span class="comment">-- @treturn ?GLib.Error err
+</span><a id="220"></a><span class="comment">-- @treturn ?GLib.Error
 </span><span class="keyword">function</span> File:write(data, mode, cb)
     <span class="keyword">local</span> priority = GLib.PRIORITY_DEFAULT
 
@@ -307,9 +293,9 @@
 </span><span class="comment">-- @async
 </span><span class="comment">-- @tparam function cb The callback to call when reading finished.
 </span><span class="comment">--   Signature: `function(err, data)`
-</span><span class="comment">-- @treturn ?GLib.Error err An instance of `GError` if there was an error,
+</span><span class="comment">-- @treturn ?GLib.Error An instance of `GError` if there was an error,
 </span><span class="comment">--   `nil` otherwise.
-</span><a id="261"></a><span class="comment">-- @treturn string data A string read from the file.
+</span><a id="261"></a><span class="comment">-- @treturn string A string read from the file.
 </span><span class="keyword">function</span> File:read_all(cb)
     <span class="keyword">local</span> priority = GLib.PRIORITY_DEFAULT
 
@@ -364,9 +350,9 @@
 </span><span class="comment">-- Inefficient when reading lines repeatedly from the same file.
 </span><span class="comment">--
 </span><span class="comment">-- @async
-</span><span class="comment">-- @treturn ?GLib.Error err An instance of `GError` if there was an error,
+</span><span class="comment">-- @treturn ?GLib.Error An instance of `GError` if there was an error,
 </span><span class="comment">--   `nil` otherwise.
-</span><span class="comment">-- @treturn ?string line A string read from the file,
+</span><span class="comment">-- @treturn ?string A string read from the file,
 </span><a id="319"></a><span class="comment">--   or `nil` if the end was reached.
 </span><span class="keyword">function</span> File:read_line(cb)
     <span class="keyword">local</span> priority = GLib.PRIORITY_DEFAULT
@@ -457,12 +443,12 @@
 
 <span class="comment">--- Move the file.
 </span><span class="comment">--
-</span><span class="comment">-- Depends on https://gitlab.gnome.org/GNOME/glib/-/merge_requests/2469.
+</span><span class="comment">-- Requires GLib version 2.71.2 or newer (2022-02-15).
 </span><span class="comment">--
 </span><span class="comment">-- @async
 </span><span class="comment">-- @tparam string destination New path to move to
 </span><span class="comment">-- @tparam function cb
-</span><a id="414"></a><span class="comment">-- @treturn ?GLib.Error err
+</span><a id="414"></a><span class="comment">-- @treturn ?GLib.Error
 </span><span class="keyword">function</span> File:move(destination, cb)
     <span class="keyword">local</span> f = self._private.f
     <span class="keyword">local</span> priority = GLib.PRIORITY_DEFAULT
@@ -486,7 +472,7 @@
 </span><span class="comment">--
 </span><span class="comment">-- @async
 </span><span class="comment">-- @tparam function cb
-</span><a id="438"></a><span class="comment">-- @treturn ?GLib.Error err
+</span><a id="438"></a><span class="comment">-- @treturn ?GLib.Error
 </span><span class="keyword">function</span> File:delete(cb)
     <span class="keyword">local</span> f = self._private.f
     <span class="keyword">local</span> priority = GLib.PRIORITY_DEFAULT
@@ -505,7 +491,7 @@
 </span><span class="comment">--
 </span><span class="comment">-- @async
 </span><span class="comment">-- @tparam function cb
-</span><a id="457"></a><span class="comment">-- @treturn ?GLib.Error err
+</span><a id="457"></a><span class="comment">-- @treturn ?GLib.Error
 </span><span class="keyword">function</span> File:trash(cb)
     <span class="keyword">local</span> f = self._private.f
     <span class="keyword">local</span> priority = GLib.PRIORITY_DEFAULT
@@ -533,7 +519,7 @@
 </span><span class="comment">-- @async
 </span><span class="comment">-- @tparam string attribute The GIO file info attribute to query for.
 </span><span class="comment">-- @tparam function cb
-</span><span class="comment">-- @treturn ?GLib.Error err
+</span><span class="comment">-- @treturn ?GLib.Error
 </span><a id="486"></a><span class="comment">-- @treturn ?Gio.FileInfo
 </span><span class="keyword">function</span> File:query_info(attribute, cb)
     <span class="keyword">local</span> f = self._private.f
@@ -558,7 +544,7 @@
 </span><span class="comment">--
 </span><span class="comment">-- @async
 </span><span class="comment">-- @tparam function cb
-</span><span class="comment">-- @treturn ?GLib.Error err
+</span><span class="comment">-- @treturn ?GLib.Error
 </span><a id="511"></a><span class="comment">-- @treturn boolean `true` if the file exists on disk
 </span><span class="keyword">function</span> File:exists(cb)
     self:query_info(<span class="string">"standard::type"</span>, <span class="keyword">function</span> (err)
@@ -584,8 +570,8 @@
 </span><span class="comment">--
 </span><span class="comment">-- @async
 </span><span class="comment">-- @tparam function cb
-</span><span class="comment">-- @treturn ?GLib.Error err
-</span><a id="537"></a><span class="comment">-- @treturn ?number size
+</span><span class="comment">-- @treturn ?GLib.Error
+</span><a id="537"></a><span class="comment">-- @treturn ?number
 </span><span class="keyword">function</span> File:size(cb)
     self:query_info(<span class="string">"standard::size"</span>, <span class="keyword">function</span> (err, info)
         <span class="comment">-- For some reason, the bindings return a float for a byte size
@@ -612,8 +598,8 @@
 </span><span class="comment">--
 </span><span class="comment">-- @async
 </span><span class="comment">-- @tparam function cb
-</span><span class="comment">-- @treturn ?GLib.Error err
-</span><a id="565"></a><span class="comment">-- @treturn ?string type
+</span><span class="comment">-- @treturn ?GLib.Error
+</span><a id="565"></a><span class="comment">-- @treturn ?string
 </span><span class="keyword">function</span> File:<span class="global">type</span>(cb)
     self:query_info(<span class="string">"standard::type"</span>, <span class="keyword">function</span> (err, info)
         cb(err, info <span class="keyword">and</span> Gio.FileType[info:get_file_type()])
@@ -632,14 +618,15 @@
 <span class="keyword">end</span>
 
 <span class="keyword">return</span> file</pre>
+</div>
+    </section>
+</div>
 
+<footer class="footer">
+    <div class="content has-text-centered">
+        Generated by <a href="https://github/com/stevendonovan/LDoc">LDoc 1.4.6</a>, designed with <a href="https://github.com/jgthms/bulma">Bulma</a>. Last updated at 2022-03-06 17:32:12.
+    </div>
+</footer>
 
-</div> <!-- id="content" -->
-</div> <!-- id="main" -->
-<div id="about">
-<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.6</a></i>
-<i style="float:right;">Last updated 2022-03-04 13:51:25 </i>
-</div> <!-- id="about" -->
-</div> <!-- id="container" -->
 </body>
 </html>

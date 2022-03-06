@@ -1,60 +1,46 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<!DOCTYPE html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>lgi-async-extra</title>
     <link rel="stylesheet" href="../ldoc.css" type="text/css" />
 </head>
 <body>
 
-<div id="container">
 
-<div id="product">
-	<div id="product_logo"></div>
-	<div id="product_name"><big><b></b></big></div>
-	<div id="product_description"></div>
-</div> <!-- id="product" -->
-
-
-<div id="main">
-
-
-<!-- Menu -->
-
-<div id="navigation">
-<br/>
-<h1>lgi-async-extra</h1>
-
-
-<ul>
-  <li><a href="../index.html">Index</a></li>
-</ul>
-
-
-
-<h2>Source</h2>
-<ul class="nowrap">
-  <li><a href="../source/file.lua.html">file.lua</a></li>
-  <li><strong>stream.lua</strong></li>
-</ul>
-<h2>Modules</h2>
-<ul class="nowrap">
-  <li><a href="../modules/file.html">file</a></li>
-  <li><a href="../modules/stream.html">stream</a></li>
-</ul>
-
-</div>
-
-<div id="content">
-
-    <h2>stream.lua</h2>
+<aside id="sidebar" class="has-background-white-ter">
+    <h1 class="title">lgi-async-extra</h1>
+    <nav class="menu">
+        <ul class="menu-list">
+            <li><a class="" href="../index.html">Index</a></li>
+        </ul>
+        <p class="menu-label">Source</p>
+        <ul class="menu-list">
+            <li><a href="../source/file.lua.html">file.lua</a></li>
+            <li>
+                <a class="is-active">stream.lua</a>
+                <ul>
+                </ul>
+            </li>
+        </ul>
+        <p class="menu-label">Modules</p>
+        <ul class="menu-list">
+            <li><a href="../modules/file.html">file</a></li>
+            <li><a href="../modules/stream.html">stream</a></li>
+        </ul>
+    </nav>
+</aside>
+<div id="content" class="content__wrapper">
+    <section class="section section__raw-content">
+        <div class="container content"><h2>stream.lua</h2>
 <pre>
 <span class="comment">---------------------------------------------------------------------------
 </span><span class="comment">--- Utilities to handle Gio streams.
 </span><span class="comment">--
 </span><span class="comment">-- @module stream
-</span><span class="comment">-- @license GPL-v3-or-later
+</span><span class="comment">-- @license GPL v3.0
 </span><span class="comment">---------------------------------------------------------------------------
 </span>
 <span class="keyword">local</span> lgi = <span class="global">require</span>(<span class="string">"lgi"</span>)
@@ -63,32 +49,59 @@
 <span class="keyword">local</span> stream = {}
 
 
-<span class="keyword">function</span> stream.new_dummy_input()
+<span class="comment">--- Creates a dummy input stream.
+</span><span class="comment">--
+</span><span class="comment">-- Gio currently supports asynchronous splicing only between IOStreams, which combine both an input and output stream.
+</span><span class="comment">-- To be able to splice from just an output stream to just an input stream, dummy streams can be used to provide
+</span><span class="comment">-- the "ignored" side of the pipe.
+</span><span class="comment">--
+</span><span class="comment">-- See: [`Gio.MemoryInputStream`](https://docs.gtk.org/gio/class.MemoryInputStream.html)
+</span><span class="comment">--
+</span><a id="23"></a><span class="comment">-- @treturn Gio.MemoryInputStream
+</span><span class="keyword">function</span> stream.new_dummy_input()
     <span class="keyword">return</span> Gio.MemoryInputStream.new()
 <span class="keyword">end</span>
 
 
-<a id="20"></a><span class="comment">--- Creates an output stream
+<span class="comment">--- Creates a dummy output stream.
+</span><span class="comment">--
+</span><span class="comment">-- Gio currently supports asynchronous splicing only between IOStreams, which combine both an input and output stream.
+</span><span class="comment">-- To be able to splice from just an output stream to just an input stream, dummy streams can be used to provide
+</span><span class="comment">-- the "ignored" side of the pipe.
+</span><span class="comment">--
+</span><span class="comment">-- See: [`Gio.MemoryOutputStream`](https://docs.gtk.org/gio/class.MemoryOutputStream.html)
+</span><span class="comment">--
+</span><a id="37"></a><span class="comment">-- @treturn Gio.MemoryOutputStream
 </span><span class="keyword">function</span> stream.new_dummy_output()
     <span class="keyword">return</span> Gio.MemoryOutputStream.new()
 <span class="keyword">end</span>
 
 
-<span class="keyword">function</span> stream.to_io_stream(input_stream, output_stream)
+<span class="comment">--- Combines an input and output stream into a single IOStream.
+</span><span class="comment">--
+</span><span class="comment">-- Either side may be omitted, in which case a dummy stream is used instead.
+</span><span class="comment">--
+</span><span class="comment">-- See: [`Gio.SimpleIOStream`](https://docs.gtk.org/gio/class.SimpleIOStream.html)
+</span><span class="comment">--
+</span><span class="comment">-- @tparam ?Gio.InputStream input_stream
+</span><span class="comment">-- @tparam ?Gio.OutputStream output_stream
+</span><a id="51"></a><span class="comment">-- @treturn Gio.SimpleIOStream
+</span><span class="keyword">function</span> stream.to_io_stream(input_stream, output_stream)
     input_stream = input_stream <span class="keyword">or</span> stream.new_dummy_input()
     output_stream = output_stream <span class="keyword">or</span> stream.new_dummy_output()
     <span class="keyword">return</span> Gio.SimpleIOStream.new(input_stream, output_stream)
 <span class="keyword">end</span>
 
 <span class="keyword">return</span> stream</pre>
+</div>
+    </section>
+</div>
 
+<footer class="footer">
+    <div class="content has-text-centered">
+        Generated by <a href="https://github/com/stevendonovan/LDoc">LDoc 1.4.6</a>, designed with <a href="https://github.com/jgthms/bulma">Bulma</a>. Last updated at 2022-03-06 17:32:12.
+    </div>
+</footer>
 
-</div> <!-- id="content" -->
-</div> <!-- id="main" -->
-<div id="about">
-<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.6</a></i>
-<i style="float:right;">Last updated 2022-03-04 13:51:25 </i>
-</div> <!-- id="about" -->
-</div> <!-- id="container" -->
 </body>
 </html>

@@ -1,107 +1,227 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<!DOCTYPE html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>lgi-async-extra</title>
     <link rel="stylesheet" href="../ldoc.css" type="text/css" />
 </head>
 <body>
 
-<div id="container">
 
-<div id="product">
-	<div id="product_logo"></div>
-	<div id="product_name"><big><b></b></big></div>
-	<div id="product_description"></div>
-</div> <!-- id="product" -->
+<aside id="sidebar" class="has-background-white-ter">
+    <h1 class="title">lgi-async-extra</h1>
+    <nav class="menu">
+        <ul class="menu-list">
+            <li><a class="" href="../index.html">Index</a></li>
+        </ul>
+        <p class="menu-label">Modules</p>
+        <ul class="menu-list">
+            <li><a href="../modules/file.html">file</a></li>
+            <li>
+                <a class="is-active">stream</a>
+                <ul>
+                    <li><a href="#toc">Table of contents</a></li>
+                    <li><a href="#Functions">Functions</a></li>
+                </ul>
+            </li>
+        </ul>
+        <p class="menu-label">Source</p>
+        <ul class="menu-list">
+            <li><a href="../source/file.lua.html">file.lua</a></li>
+            <li><a href="../source/stream.lua.html">stream.lua</a></li>
+        </ul>
+    </nav>
+</aside>
+<div id="content" class="content__wrapper">
+    <section class="section section__module-description">
+        <div class="container">
+            <h1 class="title is-1">Module <em>stream</em></h1>
+            <h3 class="subtitle is-3">Utilities to handle Gio streams.</h3>
+            <div class="content">
+                <p>
+</p>
+            </div>
+            <div class="field is-grouped is-grouped-multiline">
+                <div class="control">
+                    <div class="tags are-medium has-addons">
+                        <span class="is-dark tag">License</span>
+                        <span class="tag">GPL v3.0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="section section__module-summary">
+        <div class="container">
+            <h2 id="toc" class="title is-3">Table of contents</h2>
+            <h3 class="title is-4"><a href="#Functions">Functions</a></h3>
+            <table class="table is-fullwidth is-striped">
+                <tbody>
+                    <tr>
+                        <td class="name"><a href="#new_dummy_input">new_dummy_input()</a></td>
+                        <td class="summary">Creates a dummy input stream.</td>
+                    </tr>
+                    <tr>
+                        <td class="name"><a href="#new_dummy_output">new_dummy_output()</a></td>
+                        <td class="summary">Creates a dummy output stream.</td>
+                    </tr>
+                    <tr>
+                        <td class="name"><a href="#to_io_stream">to_io_stream(input_stream, output_stream)</a></td>
+                        <td class="summary">Combines an input and output stream into a single IOStream.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
 
+    <section class="section section--Functions">
+        <div class="container">
+            <h2 class="title is-2" id="Functions"><a href="#Functions">Functions</a></h2>
+            <div class="section__content">
+                <div id="new_dummy_input" class="box section__item">
+                    <div class="block section__item__title">
+                        <strong>new_dummy_input()</strong>
+                        <a class="source-ref" href="../source/stream.lua.html#23">line 23</a>
+                    </div>
 
-<div id="main">
+                    <div class="block content section__item__description">Creates a dummy input stream. </p>
 
+<p> Gio currently supports asynchronous splicing only between IOStreams, which combine both an input and output stream.
+ To be able to splice from just an output stream to just an input stream, dummy streams can be used to provide
+ the &ldquo;ignored&rdquo; side of the pipe.</p>
 
-<!-- Menu -->
+<p> See: <a href="https://docs.gtk.org/gio/class.MemoryInputStream.html"><code>Gio.MemoryInputStream</code></a></div>
 
-<div id="navigation">
-<br/>
-<h1>lgi-async-extra</h1>
+                    <div class="block content section__item__params">
+                        <h4 class="title is-6">Parameters:</h4>
+                        <ul>
 
+                        </ul>
+                    </div>
+                    <div class="block content section__item__returns">
+                        <h4 class="title is-6">Returns:</h4>
+                        <ul>
+                            <li class="return-value">
+                                <div class="field is-grouped is-grouped-multiline">
+                                    <div class="control">
+                                        <div class="tags has-addons">
+                                            <span class="tag is-dark">type</span>
+                                            <span class="tag return-value__type"><span class="type">Gio.MemoryInputStream</span></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div id="new_dummy_output" class="box section__item">
+                    <div class="block section__item__title">
+                        <strong>new_dummy_output()</strong>
+                        <a class="source-ref" href="../source/stream.lua.html#37">line 37</a>
+                    </div>
 
-<ul>
-  <li><a href="../index.html">Index</a></li>
-</ul>
+                    <div class="block content section__item__description">Creates a dummy output stream. </p>
 
-<h2>Contents</h2>
-<ul>
-<li><a href="#Functions">Functions</a></li>
-</ul>
+<p> Gio currently supports asynchronous splicing only between IOStreams, which combine both an input and output stream.
+ To be able to splice from just an output stream to just an input stream, dummy streams can be used to provide
+ the &ldquo;ignored&rdquo; side of the pipe.</p>
 
+<p> See: <a href="https://docs.gtk.org/gio/class.MemoryOutputStream.html"><code>Gio.MemoryOutputStream</code></a></div>
 
-<h2>Modules</h2>
-<ul class="nowrap">
-  <li><a href="../modules/file.html">file</a></li>
-  <li><strong>stream</strong></li>
-</ul>
-<h2>Source</h2>
-<ul class="nowrap">
-  <li><a href="../source/file.lua.html">file.lua</a></li>
-  <li><a href="../source/stream.lua.html">stream.lua</a></li>
-</ul>
+                    <div class="block content section__item__params">
+                        <h4 class="title is-6">Parameters:</h4>
+                        <ul>
 
+                        </ul>
+                    </div>
+                    <div class="block content section__item__returns">
+                        <h4 class="title is-6">Returns:</h4>
+                        <ul>
+                            <li class="return-value">
+                                <div class="field is-grouped is-grouped-multiline">
+                                    <div class="control">
+                                        <div class="tags has-addons">
+                                            <span class="tag is-dark">type</span>
+                                            <span class="tag return-value__type"><span class="type">Gio.MemoryOutputStream</span></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div id="to_io_stream" class="box section__item">
+                    <div class="block section__item__title">
+                        <strong>to_io_stream(input_stream, output_stream)</strong>
+                        <a class="source-ref" href="../source/stream.lua.html#51">line 51</a>
+                    </div>
+
+                    <div class="block content section__item__description">Combines an input and output stream into a single IOStream. </p>
+
+<p> Either side may be omitted, in which case a dummy stream is used instead.</p>
+
+<p> See: <a href="https://docs.gtk.org/gio/class.SimpleIOStream.html"><code>Gio.SimpleIOStream</code></a></div>
+
+                    <div class="block content section__item__params">
+                        <h4 class="title is-6">Parameters:</h4>
+                        <ul>
+                            <li class="parameter">
+                                <div>
+                                    <span class="parameter__name"><em>input_stream</em></span>
+                                </div>
+                                <div class="field is-grouped is-grouped-multiline parameter__tags">
+                                    <div class="control">
+                                        <div class="tags has-addons">
+                                            <span class="tag is-dark">type</span>
+                                            <span class="tag">optional <span class="type">Gio.InputStream</span></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="parameter">
+                                <div>
+                                    <span class="parameter__name"><em>output_stream</em></span>
+                                </div>
+                                <div class="field is-grouped is-grouped-multiline parameter__tags">
+                                    <div class="control">
+                                        <div class="tags has-addons">
+                                            <span class="tag is-dark">type</span>
+                                            <span class="tag">optional <span class="type">Gio.OutputStream</span></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+
+                        </ul>
+                    </div>
+                    <div class="block content section__item__returns">
+                        <h4 class="title is-6">Returns:</h4>
+                        <ul>
+                            <li class="return-value">
+                                <div class="field is-grouped is-grouped-multiline">
+                                    <div class="control">
+                                        <div class="tags has-addons">
+                                            <span class="tag is-dark">type</span>
+                                            <span class="tag return-value__type"><span class="type">Gio.SimpleIOStream</span></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 </div>
 
-<div id="content">
+<footer class="footer">
+    <div class="content has-text-centered">
+        Generated by <a href="https://github/com/stevendonovan/LDoc">LDoc 1.4.6</a>, designed with <a href="https://github.com/jgthms/bulma">Bulma</a>. Last updated at 2022-03-06 17:32:12.
+    </div>
+</footer>
 
-<h1>Module <code>stream</code></h1>
-<p>Utilities to handle Gio streams.</p>
-<p>
-</p>
-    <h3>Info:</h3>
-    <ul>
-        <li><strong>License</strong>: GPL-v3-or-later</li>
-    </ul>
-
-
-<h2><a href="#Functions">Functions</a></h2>
-<table class="function_list">
-	<tr>
-	<td class="name" ><a href="#new_dummy_output">new_dummy_output()</a></td>
-	<td class="summary">Creates an output stream</td>
-	</tr>
-</table>
-
-<br/>
-<br/>
-
-
-    <h2 class="section-header "><a name="Functions"></a>Functions</h2>
-
-    <dl class="function">
-    <dt>
-    <a name = "new_dummy_output"></a>
-    <strong>new_dummy_output()</strong>
-    <a style="float:right;" href="../source/stream.lua.html#20">line 20</a>
-    </dt>
-    <dd>
-    Creates an output stream
-
-    </ul>
-
-
-
-
-
-
-</dd>
-</dl>
-
-
-</div> <!-- id="content" -->
-</div> <!-- id="main" -->
-<div id="about">
-<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.6</a></i>
-<i style="float:right;">Last updated 2022-03-04 13:51:25 </i>
-</div> <!-- id="about" -->
-</div> <!-- id="container" -->
 </body>
 </html>
