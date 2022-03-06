@@ -112,7 +112,7 @@ end
 -- @tparam[opt] string template
 -- @treturn File
 -- @treturn GIO.FileIOStream
--- @treturn ?GLib.Error
+-- @treturn[opt] GLib.Error
 function file.new_tmp(template)
     local f, stream, err = GFile.new_tmp(template)
     local ret = {
@@ -141,8 +141,8 @@ end
 --
 -- @async
 -- @tparam function cb
--- @treturn ?GLib.Error
--- @treturn ?Gio.FileInputStream
+-- @treturn[opt] GLib.Error
+-- @treturn[opt] Gio.FileInputStream
 function File:read_stream(cb)
     local f = self._private.f
 
@@ -171,7 +171,7 @@ end
 --  `"replace"` will truncate the file before writing, `"append"` will keep
 --  any existing content and add the new data at the end.
 -- @tparam function cb
--- @treturn ?GLib.Error
+-- @treturn[opt] GLib.Error
 -- @treturn Gio.FileOutputStream
 function File:write_stream(mode, cb)
     local f = self._private.f
@@ -216,7 +216,7 @@ end
 --  `"replace"` will truncate the file before writing, `"append"` will keep
 --  any existing content and add the new data at the end.
 -- @tparam function cb
--- @treturn ?GLib.Error
+-- @treturn[opt] GLib.Error
 function File:write(data, mode, cb)
     local priority = GLib.PRIORITY_DEFAULT
 
@@ -255,7 +255,7 @@ end
 -- @async
 -- @tparam function cb The callback to call when reading finished.
 --   Signature: `function(err, data)`
--- @treturn ?GLib.Error An instance of `GError` if there was an error,
+-- @treturn[opt] GLib.Error An instance of `GError` if there was an error,
 --   `nil` otherwise.
 -- @treturn string A string read from the file.
 function File:read_all(cb)
@@ -312,9 +312,9 @@ end
 -- Inefficient when reading lines repeatedly from the same file.
 --
 -- @async
--- @treturn ?GLib.Error An instance of `GError` if there was an error,
+-- @treturn[opt] GLib.Error An instance of `GError` if there was an error,
 --   `nil` otherwise.
--- @treturn ?string A string read from the file,
+-- @treturn[opt] string A string read from the file,
 --   or `nil` if the end was reached.
 function File:read_line(cb)
     local priority = GLib.PRIORITY_DEFAULT
@@ -410,7 +410,7 @@ end
 -- @async
 -- @tparam string destination New path to move to
 -- @tparam function cb
--- @treturn ?GLib.Error
+-- @treturn[opt] GLib.Error
 function File:move(destination, cb)
     local f = self._private.f
     local priority = GLib.PRIORITY_DEFAULT
@@ -434,7 +434,7 @@ end
 --
 -- @async
 -- @tparam function cb
--- @treturn ?GLib.Error
+-- @treturn[opt] GLib.Error
 function File:delete(cb)
     local f = self._private.f
     local priority = GLib.PRIORITY_DEFAULT
@@ -453,7 +453,7 @@ end
 --
 -- @async
 -- @tparam function cb
--- @treturn ?GLib.Error
+-- @treturn[opt] GLib.Error
 function File:trash(cb)
     local f = self._private.f
     local priority = GLib.PRIORITY_DEFAULT
@@ -481,8 +481,8 @@ end
 -- @async
 -- @tparam string attribute The GIO file info attribute to query for.
 -- @tparam function cb
--- @treturn ?GLib.Error
--- @treturn ?Gio.FileInfo
+-- @treturn[opt] GLib.Error
+-- @treturn[opt] Gio.FileInfo
 function File:query_info(attribute, cb)
     local f = self._private.f
     local priority = GLib.PRIORITY_DEFAULT
@@ -506,7 +506,7 @@ end
 --
 -- @async
 -- @tparam function cb
--- @treturn ?GLib.Error
+-- @treturn[opt] GLib.Error
 -- @treturn boolean `true` if the file exists on disk
 function File:exists(cb)
     self:query_info("standard::type", function (err)
@@ -532,8 +532,8 @@ end
 --
 -- @async
 -- @tparam function cb
--- @treturn ?GLib.Error
--- @treturn ?number
+-- @treturn[opt] GLib.Error
+-- @treturn[opt] number
 function File:size(cb)
     self:query_info("standard::size", function (err, info)
         -- For some reason, the bindings return a float for a byte size
@@ -560,8 +560,8 @@ end
 --
 -- @async
 -- @tparam function cb
--- @treturn ?GLib.Error
--- @treturn ?string
+-- @treturn[opt] GLib.Error
+-- @treturn[opt] string
 function File:type(cb)
     self:query_info("standard::type", function (err, info)
         cb(err, info and Gio.FileType[info:get_file_type()])
@@ -574,7 +574,7 @@ end
 -- The path is guaranteed to be absolute, by may contain unresolved symlinks.
 -- However, a path may not exist, in which case `nil` will be returned.
 --
--- @treturn ?string
+-- @treturn[opt] string
 function File:get_path()
     return self._private.f:get_path()
 end

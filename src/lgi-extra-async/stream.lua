@@ -45,8 +45,8 @@ end
 --
 -- See: [`Gio.SimpleIOStream`](https://docs.gtk.org/gio/class.SimpleIOStream.html)
 --
--- @tparam ?Gio.InputStream input_stream
--- @tparam ?Gio.OutputStream output_stream
+-- @tparam[opt] Gio.InputStream input_stream
+-- @tparam[opt] Gio.OutputStream output_stream
 -- @treturn Gio.SimpleIOStream
 function stream.to_io_stream(input_stream, output_stream)
     input_stream = input_stream or stream.new_dummy_input()
