@@ -327,8 +327,13 @@
                 <span class="keyword">end</span>
 
                 <span class="keyword">if</span> bytes:get_size() ~= size <span class="keyword">then</span>
-                    <span class="comment">-- @todo: return a `GLib.Error` here
-</span>                    <span class="keyword">return</span> cb_inner(<span class="string">"not enough bytes read"</span>)
+                    <span class="keyword">return</span> cb_inner(GLib.Error(
+                        Gio.IOErrorEnum,
+                        Gio.IOErrorEnum.FAILED,
+                        <span class="string">"Inconsistent number of bytes read. Expected %d, got %d"</span>,
+                        size,
+                        bytes:get_size()
+                    ))
                 <span class="keyword">end</span>
 
                 cb_inner(<span class="keyword">nil</span>, bytes:get_data())
@@ -359,7 +364,7 @@
 </span><span class="comment">-- @treturn[opt] GLib.Error An instance of `GError` if there was an error,
 </span><span class="comment">--   `nil` otherwise.
 </span><span class="comment">-- @treturn[opt] string A string read from the file,
-</span><a id="325"></a><span class="comment">--   or `nil` if the end was reached.
+</span><a id="330"></a><span class="comment">--   or `nil` if the end was reached.
 </span><span class="keyword">function</span> File:read_line(cb)
     <span class="keyword">local</span> priority = GLib.PRIORITY_DEFAULT
 
@@ -402,7 +407,7 @@
 </span><span class="comment">-- @tparam function iteratee Function to call per line in the file. Signature:
 </span><span class="comment">--   `function(err, line, cb)`
 </span><span class="comment">-- @tparam function final_callback Function to call when iteration has stopped.
-</span><a id="368"></a><span class="comment">--   Signature: `function(err)`.
+</span><a id="373"></a><span class="comment">--   Signature: `function(err)`.
 </span><span class="keyword">function</span> File:read_lines(iteratee, final_callback)
     <span class="keyword">local</span> priority = GLib.PRIORITY_DEFAULT
 
@@ -454,7 +459,7 @@
 </span><span class="comment">-- @async
 </span><span class="comment">-- @tparam string destination New path to move to
 </span><span class="comment">-- @tparam function cb
-</span><a id="420"></a><span class="comment">-- @treturn[opt] GLib.Error
+</span><a id="425"></a><span class="comment">-- @treturn[opt] GLib.Error
 </span><span class="keyword">function</span> File:move(destination, cb)
     <span class="keyword">local</span> f = self._private.f
     <span class="keyword">local</span> priority = GLib.PRIORITY_DEFAULT
@@ -478,7 +483,7 @@
 </span><span class="comment">--
 </span><span class="comment">-- @async
 </span><span class="comment">-- @tparam function cb
-</span><a id="444"></a><span class="comment">-- @treturn[opt] GLib.Error
+</span><a id="449"></a><span class="comment">-- @treturn[opt] GLib.Error
 </span><span class="keyword">function</span> File:delete(cb)
     <span class="keyword">local</span> f = self._private.f
     <span class="keyword">local</span> priority = GLib.PRIORITY_DEFAULT
@@ -497,7 +502,7 @@
 </span><span class="comment">--
 </span><span class="comment">-- @async
 </span><span class="comment">-- @tparam function cb
-</span><a id="463"></a><span class="comment">-- @treturn[opt] GLib.Error
+</span><a id="468"></a><span class="comment">-- @treturn[opt] GLib.Error
 </span><span class="keyword">function</span> File:trash(cb)
     <span class="keyword">local</span> f = self._private.f
     <span class="keyword">local</span> priority = GLib.PRIORITY_DEFAULT
@@ -526,7 +531,7 @@
 </span><span class="comment">-- @tparam string attribute The GIO file info attribute to query for.
 </span><span class="comment">-- @tparam function cb
 </span><span class="comment">-- @treturn[opt] GLib.Error
-</span><a id="492"></a><span class="comment">-- @treturn[opt] Gio.FileInfo
+</span><a id="497"></a><span class="comment">-- @treturn[opt] Gio.FileInfo
 </span><span class="keyword">function</span> File:query_info(attribute, cb)
     <span class="keyword">local</span> f = self._private.f
     <span class="keyword">local</span> priority = GLib.PRIORITY_DEFAULT
@@ -551,7 +556,7 @@
 </span><span class="comment">-- @async
 </span><span class="comment">-- @tparam function cb
 </span><span class="comment">-- @treturn[opt] GLib.Error
-</span><a id="517"></a><span class="comment">-- @treturn boolean `true` if the file exists on disk
+</span><a id="522"></a><span class="comment">-- @treturn boolean `true` if the file exists on disk
 </span><span class="keyword">function</span> File:exists(cb)
     self:query_info(<span class="string">"standard::type"</span>, <span class="keyword">function</span> (err)
         <span class="keyword">if</span> err <span class="keyword">then</span>
@@ -577,7 +582,7 @@
 </span><span class="comment">-- @async
 </span><span class="comment">-- @tparam function cb
 </span><span class="comment">-- @treturn[opt] GLib.Error
-</span><a id="543"></a><span class="comment">-- @treturn[opt] number
+</span><a id="548"></a><span class="comment">-- @treturn[opt] number
 </span><span class="keyword">function</span> File:size(cb)
     self:query_info(<span class="string">"standard::size"</span>, <span class="keyword">function</span> (err, info)
         <span class="comment">-- For some reason, the bindings return a float for a byte size
@@ -606,7 +611,7 @@
 </span><span class="comment">-- @async
 </span><span class="comment">-- @tparam function cb
 </span><span class="comment">-- @treturn[opt] GLib.Error
-</span><a id="572"></a><span class="comment">-- @treturn[opt] string
+</span><a id="577"></a><span class="comment">-- @treturn[opt] string
 </span><span class="keyword">function</span> File:<span class="global">type</span>(cb)
     self:query_info(<span class="string">"standard::type"</span>, <span class="keyword">function</span> (err, info)
         cb(err, info <span class="keyword">and</span> Gio.FileType[info:get_file_type()])
@@ -619,7 +624,7 @@
 </span><span class="comment">-- The path is guaranteed to be absolute, by may contain unresolved symlinks.
 </span><span class="comment">-- However, a path may not exist, in which case `nil` will be returned.
 </span><span class="comment">--
-</span><a id="585"></a><span class="comment">-- @treturn[opt] string
+</span><a id="590"></a><span class="comment">-- @treturn[opt] string
 </span><span class="keyword">function</span> File:get_path()
     <span class="keyword">return</span> self._private.f:get_path()
 <span class="keyword">end</span>
@@ -631,7 +636,7 @@
 
 <footer class="footer">
     <div class="content has-text-centered">
-        Generated by <a href="https://github/com/stevendonovan/LDoc">LDoc 1.4.6</a>, designed with <a href="https://github.com/jgthms/bulma">Bulma</a>. Last updated at 2022-03-06 20:00:01.
+        Generated by <a href="https://github/com/stevendonovan/LDoc">LDoc 1.4.6</a>, designed with <a href="https://github.com/jgthms/bulma">Bulma</a>. Last updated at 2022-03-06 21:37:45.
     </div>
 </footer>
 
