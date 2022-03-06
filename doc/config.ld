@@ -3,7 +3,6 @@ title = 'lgi-async-extra'
 description = 'An asynchronous high(er)-level API wrapper for lua-lgi'
 
 template = true
-style = true
 
 format = 'discount'
 
@@ -16,6 +15,14 @@ no_space_before_args = true
 custom_tags = {
     {
         "async",
+        hidden = true,
+    },
+    {
+        "repository",
+        hidden = true,
+    },
+    {
+        "package",
         hidden = true,
     }
 }
