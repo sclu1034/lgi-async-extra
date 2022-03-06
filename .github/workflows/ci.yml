@@ -11,7 +11,7 @@ env:
   DEBIAN: noninteractive
 
 jobs:
-  lint:
+  check:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2.4.0
@@ -21,8 +21,15 @@ jobs:
       - name: Install LuaCheck
         run: luarocks install luacheck
 
-      - name: Run linter
-        run: find lib/ -iname '*.lua' | xargs luacheck --formatter TAP
+      - name: Install task runner
+        run: |
+          mkdir ~/just && cd ~/just
+          wget https://github.com/casey/just/releases/download/1.0.1/just-1.0.1-x86_64-unknown-linux-musl.tar.gz
+          tar -xvf just-1.0.1-x86_64-unknown-linux-musl.tar.gz
+          sudo install ./just /usr/local/bin/just
+
+      - name: Run checks
+        run: just check --formatter TAP
 
   test:
     runs-on: ubuntu-20.04
@@ -45,14 +52,15 @@ jobs:
           luaVersion: ${{ matrix.lua_version }}
       - uses: leafo/gh-actions-luarocks@v4.0.0
 
-      - name: Install dependencies
-        shell: /bin/bash -o errexit -o pipefail -o xtrace {0}
+      - name: Install Busted
+        run: luarocks install busted
+
+      - name: Install task runner
         run: |
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends gobject-introspection libgirepository1.0-dev
-          luarocks install busted
-          luarocks install lgi
-          luarocks install --server=https://luarocks.org/dev async.lua
+          mkdir ~/just && cd ~/just
+          wget https://github.com/casey/just/releases/download/1.0.1/just-1.0.1-x86_64-unknown-linux-musl.tar.gz
+          tar -xvf just-1.0.1-x86_64-unknown-linux-musl.tar.gz
+          sudo install ./just /usr/local/bin/just
 
       - name: Run tests
-        run: busted --config-file=.busted.lua --helper=tests/_helper.lua --output=TAP tests
+        run: just test --output=TAP

@@ -44,7 +44,7 @@
 -- actually open a file handle right away. They just wrap the path
 --
 -- @module file
--- @license GPL-v3-or-later
+-- @license GPL v3.0
 ---------------------------------------------------------------------------
 
 local async = require("async")
@@ -141,8 +141,8 @@ end
 --
 -- @async
 -- @tparam function cb
--- @treturn ?GLib.Error err
--- @treturn ?Gio.FileInputStream stream
+-- @treturn ?GLib.Error
+-- @treturn ?Gio.FileInputStream
 function File:read_stream(cb)
     local f = self._private.f
 
@@ -171,8 +171,8 @@ end
 --  `"replace"` will truncate the file before writing, `"append"` will keep
 --  any existing content and add the new data at the end.
 -- @tparam function cb
--- @treturn ?GLib.Error err
--- @treturn Gio.FileOutputStream stream
+-- @treturn ?GLib.Error
+-- @treturn Gio.FileOutputStream
 function File:write_stream(mode, cb)
     local f = self._private.f
     local priority = GLib.PRIORITY_DEFAULT
@@ -216,7 +216,7 @@ end
 --  `"replace"` will truncate the file before writing, `"append"` will keep
 --  any existing content and add the new data at the end.
 -- @tparam function cb
--- @treturn ?GLib.Error err
+-- @treturn ?GLib.Error
 function File:write(data, mode, cb)
     local priority = GLib.PRIORITY_DEFAULT
 
@@ -255,9 +255,9 @@ end
 -- @async
 -- @tparam function cb The callback to call when reading finished.
 --   Signature: `function(err, data)`
--- @treturn ?GLib.Error err An instance of `GError` if there was an error,
+-- @treturn ?GLib.Error An instance of `GError` if there was an error,
 --   `nil` otherwise.
--- @treturn string data A string read from the file.
+-- @treturn string A string read from the file.
 function File:read_all(cb)
     local priority = GLib.PRIORITY_DEFAULT
 
@@ -312,9 +312,9 @@ end
 -- Inefficient when reading lines repeatedly from the same file.
 --
 -- @async
--- @treturn ?GLib.Error err An instance of `GError` if there was an error,
+-- @treturn ?GLib.Error An instance of `GError` if there was an error,
 --   `nil` otherwise.
--- @treturn ?string line A string read from the file,
+-- @treturn ?string A string read from the file,
 --   or `nil` if the end was reached.
 function File:read_line(cb)
     local priority = GLib.PRIORITY_DEFAULT
@@ -405,12 +405,12 @@ end
 
 --- Move the file.
 --
--- Depends on https://gitlab.gnome.org/GNOME/glib/-/merge_requests/2469.
+-- Requires GLib version 2.71.2 or newer (2022-02-15).
 --
 -- @async
 -- @tparam string destination New path to move to
 -- @tparam function cb
--- @treturn ?GLib.Error err
+-- @treturn ?GLib.Error
 function File:move(destination, cb)
     local f = self._private.f
     local priority = GLib.PRIORITY_DEFAULT
@@ -434,7 +434,7 @@ end
 --
 -- @async
 -- @tparam function cb
--- @treturn ?GLib.Error err
+-- @treturn ?GLib.Error
 function File:delete(cb)
     local f = self._private.f
     local priority = GLib.PRIORITY_DEFAULT
@@ -453,7 +453,7 @@ end
 --
 -- @async
 -- @tparam function cb
--- @treturn ?GLib.Error err
+-- @treturn ?GLib.Error
 function File:trash(cb)
     local f = self._private.f
     local priority = GLib.PRIORITY_DEFAULT
@@ -481,7 +481,7 @@ end
 -- @async
 -- @tparam string attribute The GIO file info attribute to query for.
 -- @tparam function cb
--- @treturn ?GLib.Error err
+-- @treturn ?GLib.Error
 -- @treturn ?Gio.FileInfo
 function File:query_info(attribute, cb)
     local f = self._private.f
@@ -506,7 +506,7 @@ end
 --
 -- @async
 -- @tparam function cb
--- @treturn ?GLib.Error err
+-- @treturn ?GLib.Error
 -- @treturn boolean `true` if the file exists on disk
 function File:exists(cb)
     self:query_info("standard::type", function (err)
@@ -532,8 +532,8 @@ end
 --
 -- @async
 -- @tparam function cb
--- @treturn ?GLib.Error err
--- @treturn ?number size
+-- @treturn ?GLib.Error
+-- @treturn ?number
 function File:size(cb)
     self:query_info("standard::size", function (err, info)
         -- For some reason, the bindings return a float for a byte size
@@ -560,8 +560,8 @@ end
 --
 -- @async
 -- @tparam function cb
--- @treturn ?GLib.Error err
--- @treturn ?string type
+-- @treturn ?GLib.Error
+-- @treturn ?string
 function File:type(cb)
     self:query_info("standard::type", function (err, info)
         cb(err, info and Gio.FileType[info:get_file_type()])
