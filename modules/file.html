@@ -607,11 +607,14 @@ end)
                 <div id="File:read_all" class="box section__item">
                     <div class="block section__item__title">
                         <strong>File:read_all(cb)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#263">line 263</a>
+                        <a class="source-ref" href="../source/file.lua.html#266">line 266</a>
                         <span class="tag">async</span>
                     </div>
 
-                    <div class="block content section__item__description">Read the entire file&rsquo;s content into memory.</div>
+                    <div class="block content section__item__description">Read the entire file&rsquo;s content into memory. </p>
+
+<p> Note that this currently only works for files with a known size. Virtual files cannot be read from successfully
+ and will either return an empty string or fail.</div>
 
                     <div class="block content section__item__params">
                         <h4 class="title is-6">Parameters:</h4>
@@ -670,7 +673,7 @@ end)
                 <div id="File:read_line" class="box section__item">
                     <div class="block section__item__title">
                         <strong>File:read_line(cb)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#322">line 322</a>
+                        <a class="source-ref" href="../source/file.lua.html#325">line 325</a>
                         <span class="tag">async</span>
                     </div>
 
@@ -728,7 +731,7 @@ end)
                 <div id="File:read_lines" class="box section__item">
                     <div class="block section__item__title">
                         <strong>File:read_lines(iteratee, final_callback)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#365">line 365</a>
+                        <a class="source-ref" href="../source/file.lua.html#368">line 368</a>
                     </div>
 
                     <div class="block content section__item__description">Asynchronously iterate over the file line by line. </p>
@@ -781,7 +784,7 @@ end)
                 <div id="File:move" class="box section__item">
                     <div class="block section__item__title">
                         <strong>File:move(destination, cb)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#417">line 417</a>
+                        <a class="source-ref" href="../source/file.lua.html#420">line 420</a>
                         <span class="tag">async</span>
                     </div>
 
@@ -841,7 +844,7 @@ end)
                 <div id="File:delete" class="box section__item">
                     <div class="block section__item__title">
                         <strong>File:delete(cb)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#441">line 441</a>
+                        <a class="source-ref" href="../source/file.lua.html#444">line 444</a>
                         <span class="tag">async</span>
                     </div>
 
@@ -891,7 +894,7 @@ end)
                 <div id="File:trash" class="box section__item">
                     <div class="block section__item__title">
                         <strong>File:trash(cb)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#460">line 460</a>
+                        <a class="source-ref" href="../source/file.lua.html#463">line 463</a>
                         <span class="tag">async</span>
                     </div>
 
@@ -938,7 +941,7 @@ end)
                 <div id="File:query_info" class="box section__item">
                     <div class="block section__item__title">
                         <strong>File:query_info(attribute, cb)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#489">line 489</a>
+                        <a class="source-ref" href="../source/file.lua.html#492">line 492</a>
                         <span class="tag">async</span>
                     </div>
 
@@ -1016,7 +1019,7 @@ end)
                 <div id="File:exists" class="box section__item">
                     <div class="block section__item__title">
                         <strong>File:exists(cb)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#514">line 514</a>
+                        <a class="source-ref" href="../source/file.lua.html#517">line 517</a>
                         <span class="tag">async</span>
                     </div>
 
@@ -1081,7 +1084,7 @@ end)
                 <div id="File:size" class="box section__item">
                     <div class="block section__item__title">
                         <strong>File:size(cb)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#540">line 540</a>
+                        <a class="source-ref" href="../source/file.lua.html#543">line 543</a>
                         <span class="tag">async</span>
                     </div>
 
@@ -1138,7 +1141,7 @@ end)
                 <div id="File:type" class="box section__item">
                     <div class="block section__item__title">
                         <strong>File:type(cb)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#569">line 569</a>
+                        <a class="source-ref" href="../source/file.lua.html#572">line 572</a>
                         <span class="tag">async</span>
                     </div>
 
@@ -1208,7 +1211,7 @@ end)
                 <div id="File:get_path" class="box section__item">
                     <div class="block section__item__title">
                         <strong>File:get_path()</strong>
-                        <a class="source-ref" href="../source/file.lua.html#582">line 582</a>
+                        <a class="source-ref" href="../source/file.lua.html#585">line 585</a>
                     </div>
 
                     <div class="block content section__item__description">Get the file&rsquo;s path name. </p>
@@ -1245,7 +1248,7 @@ end)
 
 <footer class="footer">
     <div class="content has-text-centered">
-        Generated by <a href="https://github/com/stevendonovan/LDoc">LDoc 1.4.6</a>, designed with <a href="https://github.com/jgthms/bulma">Bulma</a>. Last updated at 2022-03-06 19:47:57.
+        Generated by <a href="https://github/com/stevendonovan/LDoc">LDoc 1.4.6</a>, designed with <a href="https://github.com/jgthms/bulma">Bulma</a>. Last updated at 2022-03-06 20:00:01.
     </div>
 </footer>
 
