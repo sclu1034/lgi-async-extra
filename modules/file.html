@@ -44,34 +44,11 @@
                 <p><p> A file handle can be created through one of the constructor functions. File
  operations are performed on that handle.</p>
 
-<p> The API is callback based, so the use of <code>gears.async</code> for composition is
- recommended. All callbacks receive an <code>err</code> value as first argument,
- which is non-<code>nil</code> when an error ocurred, and any non-error return values
- after that.</p>
-
-<p> Example to write and read-back a file:</p>
-
-<pre>
-<span class="keyword">local</span> f = File.new_for_path(<span class="string">"/tmp/foo.txt"</span>)
-async.waterfall({
-    <span class="keyword">function</span>(cb)
-        f:write(<span class="string">"hello"</span>, cb)
-    <span class="keyword">end</span>,
-    <span class="keyword">function</span>(cb)
-        f:write(<span class="string">"world"</span>, <span class="string">"append"</span>, cb)
-    <span class="keyword">end</span>,
-    <span class="keyword">function</span>(cb)
-        f:read_all(cb)
-    <span class="keyword">end</span>,
-}, <span class="keyword">function</span>(err, data)
-    <span class="global">print</span>(err)
-    <span class="global">print</span>(data)
-<span class="keyword">end</span>)
-</pre>
-
-
-<p> Error values passed to callback functions will almost always be instances of
- <code>GLib.Error</code>:</p>
+<p> The API is callback based, so the use of <a href="https://github.com/sclu1034/async.lua">async.lua</a> for composition is
+ recommended. All callbacks receive an <code>err</code> value as first argument, and any non-error return values
+ after that.
+ The <code>err</code> value will be <code>nil</code> on success, or an error value otherwise. In almost all cases
+ it will be an instance of <code>GLib.Error</code>:</p>
 
 <pre>
 read_non_existent_file(<span class="keyword">function</span>(err, data)
@@ -81,6 +58,29 @@ read_non_existent_file(<span class="keyword">function</span>(err, data)
 </span>    <span class="comment">-- but a bit verbose, due to LGI's mapping.
 </span>    <span class="comment">-- See: https://github.com/pavouk/lgi/blob/master/docs/guide.md
 </span>    <span class="global">assert</span>(err.code == Gio.IOErrorEnum[Gio.IOErrorEnum.NOT_FOUND])
+<span class="keyword">end</span>)
+</pre>
+
+
+<p> Example to write and read-back a file:</p>
+
+<pre>
+<span class="keyword">local</span> f = File.new_for_path(<span class="string">"/tmp/foo.txt"</span>)
+async.waterfall({
+    <span class="keyword">function</span>(cb)
+        <span class="comment">-- By default, writing replaces any existing content
+</span>        f:write(<span class="string">"hello"</span>, cb)
+    <span class="keyword">end</span>,
+    <span class="keyword">function</span>(cb)
+        <span class="comment">-- But we can also append to the file
+</span>        f:write(<span class="string">"world"</span>, <span class="string">"append"</span>, cb)
+    <span class="keyword">end</span>,
+    <span class="keyword">function</span>(cb)
+        f:read_all(cb)
+    <span class="keyword">end</span>,
+}, <span class="keyword">function</span>(err, data)
+    <span class="global">print</span>(err)
+    <span class="global">print</span>(data)
 <span class="keyword">end</span>)
 </pre>
 
@@ -111,7 +111,7 @@ read_non_existent_file(<span class="keyword">function</span>(err, data)
                         <td class="summary">Create a file handle for the given remote URI.</td>
                     </tr>
                     <tr>
-                        <td class="name"><a href="#new_tmp">new_tmp([template])</a></td>
+                        <td class="name"><a href="#new_tmp">new_tmp([template=".XXXXXX"])</a></td>
                         <td class="summary">Create a new file in a directory preferred for temporary storage.</td>
                     </tr>
                 </tbody>
@@ -145,7 +145,7 @@ read_non_existent_file(<span class="keyword">function</span>(err, data)
                     </tr>
                     <tr>
                         <td class="name"><a href="#File:move">File:move(destination, cb)</a></td>
-                        <td class="summary">Move the file.</td>
+                        <td class="summary">Move the file to a new location.</td>
                     </tr>
                     <tr>
                         <td class="name"><a href="#File:delete">File:delete(cb)</a></td>
@@ -187,10 +187,13 @@ read_non_existent_file(<span class="keyword">function</span>(err, data)
                 <div id="new_for_path" class="box section__item">
                     <div class="block section__item__title">
                         <strong>new_for_path(path)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#67">line 67</a>
+                        <a class="source-ref" href="../source/file.lua.html#66">line 66</a>
                     </div>
 
-                    <div class="block content section__item__description">Create a file handle for the given local path.</div>
+                    <div class="block content section__item__description">Create a file handle for the given local path. </p>
+
+<p> This is a cheap operation, that only creates an in memory representation of the resource location.
+ No I/O will take place until a corresponding method is called on the returned <code>File</code> object.</div>
 
                     <div class="block content section__item__params">
                         <h4 class="title is-6">Parameters:</h4>
@@ -230,10 +233,13 @@ read_non_existent_file(<span class="keyword">function</span>(err, data)
                 <div id="new_for_uri" class="box section__item">
                     <div class="block section__item__title">
                         <strong>new_for_uri(uri)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#83">line 83</a>
+                        <a class="source-ref" href="../source/file.lua.html#85">line 85</a>
                     </div>
 
-                    <div class="block content section__item__description">Create a file handle for the given remote URI.</div>
+                    <div class="block content section__item__description">Create a file handle for the given remote URI. </p>
+
+<p> This is a cheap operation, that only creates an in memory representation of the resource location.
+ No I/O will take place until a corresponding method is called on the returned <code>File</code> object.</div>
 
                     <div class="block content section__item__params">
                         <h4 class="title is-6">Parameters:</h4>
@@ -272,16 +278,16 @@ read_non_existent_file(<span class="keyword">function</span>(err, data)
                 </div>
                 <div id="new_tmp" class="box section__item">
                     <div class="block section__item__title">
-                        <strong>new_tmp([template])</strong>
-                        <a class="source-ref" href="../source/file.lua.html#116">line 116</a>
+                        <strong>new_tmp([template=".XXXXXX"])</strong>
+                        <a class="source-ref" href="../source/file.lua.html#118">line 118</a>
                     </div>
 
                     <div class="block content section__item__description">Create a new file in a directory preferred for temporary storage. </p>
 
 <p> If <code>template</code> is given, it must contain a sequence of six <code>X</code>s somewhere in the string, which
- will replaced by a unique ID to ensure the file does not overwrite anything. It must not contain any
- directory components.
- Otherwise, a default value will be used.</p>
+ will replaced by a unique ID to ensure the new file does not overwrite existing ones. The template must not contain
+ any directory components.
+ If <code>template == nil</code>, a default value will be used.</p>
 
 <p> The directory is determined by <a href="https://docs.gtk.org/glib/func.get_tmp_dir.html">g_get_tmp_dir</a>.</p>
 
@@ -308,8 +314,9 @@ read_non_existent_file(<span class="keyword">function</span>(err, data)
                                         </div>
                                     </div>
                                     <div class="control">
-                                        <div class="tags">
-                                            <span class="tag">optional</span>
+                                        <div class="tags has-addons">
+                                            <span class="tag is-dark">default</span>
+                                            <span class="tag"><code>".XXXXXX"</code></span>
                                         </div>
                                     </div>
                                 </div>
@@ -363,7 +370,7 @@ read_non_existent_file(<span class="keyword">function</span>(err, data)
                 <div id="File:read_stream" class="box section__item">
                     <div class="block section__item__title">
                         <strong>File:read_stream(cb)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#146">line 146</a>
+                        <a class="source-ref" href="../source/file.lua.html#148">line 148</a>
                         <span class="tag">async</span>
                     </div>
 
@@ -431,7 +438,7 @@ end)
                 <div id="File:write_stream" class="box section__item">
                     <div class="block section__item__title">
                         <strong>File:write_stream([mode="replace"], cb)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#176">line 176</a>
+                        <a class="source-ref" href="../source/file.lua.html#178">line 178</a>
                         <span class="tag">async</span>
                     </div>
 
@@ -520,7 +527,7 @@ end)
                 <div id="File:write" class="box section__item">
                     <div class="block section__item__title">
                         <strong>File:write(data[, mode="replace"], cb)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#220">line 220</a>
+                        <a class="source-ref" href="../source/file.lua.html#222">line 222</a>
                         <span class="tag">async</span>
                     </div>
 
@@ -600,7 +607,7 @@ end)
                 <div id="File:read_all" class="box section__item">
                     <div class="block section__item__title">
                         <strong>File:read_all(cb)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#261">line 261</a>
+                        <a class="source-ref" href="../source/file.lua.html#263">line 263</a>
                         <span class="tag">async</span>
                     </div>
 
@@ -663,7 +670,7 @@ end)
                 <div id="File:read_line" class="box section__item">
                     <div class="block section__item__title">
                         <strong>File:read_line(cb)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#319">line 319</a>
+                        <a class="source-ref" href="../source/file.lua.html#322">line 322</a>
                         <span class="tag">async</span>
                     </div>
 
@@ -721,7 +728,7 @@ end)
                 <div id="File:read_lines" class="box section__item">
                     <div class="block section__item__title">
                         <strong>File:read_lines(iteratee, final_callback)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#362">line 362</a>
+                        <a class="source-ref" href="../source/file.lua.html#365">line 365</a>
                     </div>
 
                     <div class="block content section__item__description">Asynchronously iterate over the file line by line. </p>
@@ -731,7 +738,7 @@ end)
  potential error, the line&rsquo;s content (without the trailing newline)
  and a callback function. The callback must always be called to ensure the
  file handle is cleaned up eventually. The expected signature for the callback
- is <code>cb(err, stop)</code>. If <code>err ~= nil or stop ~= nil</code>, iteration stops
+ is <code>cb(err, stop)</code>. If <code>err ~= nil</code> or a value for <code>stop</code> is given, iteration stops
  immediately and <code>final_callback</code> will be called.</div>
 
                     <div class="block content section__item__params">
@@ -774,11 +781,11 @@ end)
                 <div id="File:move" class="box section__item">
                     <div class="block section__item__title">
                         <strong>File:move(destination, cb)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#414">line 414</a>
+                        <a class="source-ref" href="../source/file.lua.html#417">line 417</a>
                         <span class="tag">async</span>
                     </div>
 
-                    <div class="block content section__item__description">Move the file. </p>
+                    <div class="block content section__item__description">Move the file to a new location. </p>
 
 <p> Requires GLib version 2.71.2 or newer (2022-02-15).</div>
 
@@ -834,7 +841,7 @@ end)
                 <div id="File:delete" class="box section__item">
                     <div class="block section__item__title">
                         <strong>File:delete(cb)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#438">line 438</a>
+                        <a class="source-ref" href="../source/file.lua.html#441">line 441</a>
                         <span class="tag">async</span>
                     </div>
 
@@ -884,7 +891,7 @@ end)
                 <div id="File:trash" class="box section__item">
                     <div class="block section__item__title">
                         <strong>File:trash(cb)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#457">line 457</a>
+                        <a class="source-ref" href="../source/file.lua.html#460">line 460</a>
                         <span class="tag">async</span>
                     </div>
 
@@ -931,7 +938,7 @@ end)
                 <div id="File:query_info" class="box section__item">
                     <div class="block section__item__title">
                         <strong>File:query_info(attribute, cb)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#486">line 486</a>
+                        <a class="source-ref" href="../source/file.lua.html#489">line 489</a>
                         <span class="tag">async</span>
                     </div>
 
@@ -1009,7 +1016,7 @@ end)
                 <div id="File:exists" class="box section__item">
                     <div class="block section__item__title">
                         <strong>File:exists(cb)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#511">line 511</a>
+                        <a class="source-ref" href="../source/file.lua.html#514">line 514</a>
                         <span class="tag">async</span>
                     </div>
 
@@ -1074,7 +1081,7 @@ end)
                 <div id="File:size" class="box section__item">
                     <div class="block section__item__title">
                         <strong>File:size(cb)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#537">line 537</a>
+                        <a class="source-ref" href="../source/file.lua.html#540">line 540</a>
                         <span class="tag">async</span>
                     </div>
 
@@ -1131,26 +1138,16 @@ end)
                 <div id="File:type" class="box section__item">
                     <div class="block section__item__title">
                         <strong>File:type(cb)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#565">line 565</a>
+                        <a class="source-ref" href="../source/file.lua.html#569">line 569</a>
                         <span class="tag">async</span>
                     </div>
 
                     <div class="block content section__item__description">Query the type of the file. </p>
 
-<p> Common scenarios would be to compare this against <code>Gio.FileType</code>:</p>
+<p> Common scenarios would be to compare this against <code>Gio.FileType</code>.</p>
 
-<pre><code>f:type(function(err, type)
-    if err then cb(err) end
-    local is_dir = type == Gio.FileType.DIRECTORY
-    local is_link = type == Gio.FileType.SYMBOLIC_LINK
-    local is_file = type == Gio.FileType.REGULAR
-    -- get a string representation
-    print(Gio.FileType[type])
-end)
-</code></pre>
-
-<p> Note that due to limitations in GLib, this will return <code>UNKNOWN</code> for files
- that the user has not access to.</div>
+<p> Note that due to limitations in GLib, this will return <code>Gio.FileType.UNKNOWN</code> for files
+ that the user has no access to.</div>
 
                     <div class="block content section__item__params">
                         <h4 class="title is-6">Parameters:</h4>
@@ -1196,11 +1193,22 @@ end)
                             </li>
                         </ul>
                     </div>
+                    <div class="block content section__item__usage">
+                        <h4 class="title is-6">Usage:</h4>
+                            <pre class="code-block code-block--lua">f:<span class="global">type</span>(<span class="keyword">function</span>(err, <span class="global">type</span>)
+    <span class="keyword">if</span> err <span class="keyword">then</span> cb(err) <span class="keyword">end</span>
+    <span class="keyword">local</span> is_dir = <span class="global">type</span> == Gio.FileType.DIRECTORY
+    <span class="keyword">local</span> is_link = <span class="global">type</span> == Gio.FileType.SYMBOLIC_LINK
+    <span class="keyword">local</span> is_file = <span class="global">type</span> == Gio.FileType.REGULAR
+    <span class="comment">-- get a string representation
+</span>    <span class="global">print</span>(Gio.FileType[<span class="global">type</span>])
+<span class="keyword">end</span>)</pre>
+                    </div>
                 </div>
                 <div id="File:get_path" class="box section__item">
                     <div class="block section__item__title">
                         <strong>File:get_path()</strong>
-                        <a class="source-ref" href="../source/file.lua.html#578">line 578</a>
+                        <a class="source-ref" href="../source/file.lua.html#582">line 582</a>
                     </div>
 
                     <div class="block content section__item__description">Get the file&rsquo;s path name. </p>
@@ -1237,7 +1245,7 @@ end)
 
 <footer class="footer">
     <div class="content has-text-centered">
-        Generated by <a href="https://github/com/stevendonovan/LDoc">LDoc 1.4.6</a>, designed with <a href="https://github.com/jgthms/bulma">Bulma</a>. Last updated at 2022-03-06 17:57:30.
+        Generated by <a href="https://github/com/stevendonovan/LDoc">LDoc 1.4.6</a>, designed with <a href="https://github.com/jgthms/bulma">Bulma</a>. Last updated at 2022-03-06 18:15:37.
     </div>
 </footer>
 
