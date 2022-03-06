@@ -1,7 +1,7 @@
 package = "lgi-async-extra"
 version = "scm-1"
 source = {
-    url = "git://github.com/sclu1034/lgi-async-extra"
+    url = "git://github.com/sclu1034/lgi-async-extra.git"
 }
 description = {
     summary = "An asynchronous high(er)-level API wrapper for LGI",
