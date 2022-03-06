@@ -254,6 +254,9 @@ end
 
 --- Read the entire file's content into memory.
 --
+-- Note that this currently only works for files with a known size. Virtual files cannot be read from successfully
+-- and will either return an empty string or fail.
+--
 -- @async
 -- @tparam function cb The callback to call when reading finished.
 --   Signature: `function(err, data)`

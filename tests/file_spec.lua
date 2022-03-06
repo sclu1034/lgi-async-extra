@@ -138,5 +138,25 @@ describe('file', function()
         end)
     end))
 
+    it('reads virtual files', run(function(cb)
+        local f = File.new_for_path("/proc/meminfo")
+
+        local check_read_line = spy(function(data, cb)
+            wrap_asserts(cb, function()
+                assert.is_string(data)
+                assert.is_same("MemTotal", data:match("MemTotal"))
+            end)
+        end)
+
+        async.waterfall({
+            async.callback(f, f.read_line),
+            check_read_line,
+        }, function(err)
+            wrap_asserts(cb, err, function()
+                assert.spy(check_read_line).was_called()
+            end)
+        end)
+    end))
+
     -- TODO: Create test case for `f:move()`. Requires GLib 2.58
 end)
