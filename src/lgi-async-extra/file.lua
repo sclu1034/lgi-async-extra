@@ -4,31 +4,11 @@
 -- A file handle can be created through one of the constructor functions. File
 -- operations are performed on that handle.
 --
--- The API is callback based, so the use of `gears.async` for composition is
--- recommended. All callbacks receive an `err` value as first argument,
--- which is non-`nil` when an error ocurred, and any non-error return values
+-- The API is callback based, so the use of [async.lua](https://github.com/sclu1034/async.lua) for composition is
+-- recommended. All callbacks receive an `err` value as first argument, and any non-error return values
 -- after that.
---
--- Example to write and read-back a file:
---
---    local f = File.new_for_path("/tmp/foo.txt")
---    async.waterfall({
---        function(cb)
---            f:write("hello", cb)
---        end,
---        function(cb)
---            f:write("world", "append", cb)
---        end,
---        function(cb)
---            f:read_all(cb)
---        end,
---    }, function(err, data)
---        print(err)
---        print(data)
---    end)
---
--- Error values passed to callback functions will almost always be instances of
--- `GLib.Error`:
+-- The `err` value will be `nil` on success, or an error value otherwise. In almost all cases
+-- it will be an instance of `GLib.Error`:
 --
 --    read_non_existent_file(function(err, data)
 --        print(err) -- or `print(err.message)`
@@ -39,9 +19,25 @@
 --        assert(err.code == Gio.IOErrorEnum[Gio.IOErrorEnum.NOT_FOUND])
 --    end)
 --
--- @todo: Add documentation for cheap vs. expensive functions.
--- E.g. the handles created with `file.new_for_xxx` are cheap, as they don't
--- actually open a file handle right away. They just wrap the path
+-- Example to write and read-back a file:
+--
+--    local f = File.new_for_path("/tmp/foo.txt")
+--    async.waterfall({
+--        function(cb)
+--            -- By default, writing replaces any existing content
+--            f:write("hello", cb)
+--        end,
+--        function(cb)
+--            -- But we can also append to the file
+--            f:write("world", "append", cb)
+--        end,
+--        function(cb)
+--            f:read_all(cb)
+--        end,
+--    }, function(err, data)
+--        print(err)
+--        print(data)
+--    end)
 --
 -- @module file
 -- @license GPL v3.0
@@ -62,6 +58,9 @@ local file = {}
 
 --- Create a file handle for the given local path.
 --
+-- This is a cheap operation, that only creates an in memory representation of the resource location.
+-- No I/O will take place until a corresponding method is called on the returned `File` object.
+--
 -- @tparam string path
 -- @treturn File
 function file.new_for_path(path)
@@ -77,6 +76,9 @@ end
 
 
 --- Create a file handle for the given remote URI.
+--
+-- This is a cheap operation, that only creates an in memory representation of the resource location.
+-- No I/O will take place until a corresponding method is called on the returned `File` object.
 --
 -- @tparam string uri
 -- @treturn File
@@ -95,9 +97,9 @@ end
 --- Create a new file in a directory preferred for temporary storage.
 --
 -- If `template` is given, it must contain a sequence of six `X`s somewhere in the string, which
--- will replaced by a unique ID to ensure the file does not overwrite anything. It must not contain any
--- directory components.
--- Otherwise, a default value will be used.
+-- will replaced by a unique ID to ensure the new file does not overwrite existing ones. The template must not contain
+-- any directory components.
+-- If `template == nil`, a default value will be used.
 --
 -- The directory is determined by [g_get_tmp_dir](https://docs.gtk.org/glib/func.get_tmp_dir.html).
 --
@@ -109,7 +111,7 @@ end
 --
 -- See: [Gio.File.new_tmp](https://docs.gtk.org/gio/type_func.File.new_tmp.html)
 --
--- @tparam[opt] string template
+-- @tparam[opt=".XXXXXX"] string template
 -- @treturn File
 -- @treturn GIO.FileIOStream
 -- @treturn[opt] GLib.Error
@@ -284,6 +286,7 @@ function File:read_all(cb)
                 end
 
                 if bytes:get_size() ~= size then
+                    -- @todo: return a `GLib.Error` here
                     return cb_inner("not enough bytes read")
                 end
 
@@ -352,7 +355,7 @@ end
 -- potential error, the line's content (without the trailing newline)
 -- and a callback function. The callback must always be called to ensure the
 -- file handle is cleaned up eventually. The expected signature for the callback
--- is `cb(err, stop)`. If `err ~= nil or stop ~= nil`, iteration stops
+-- is `cb(err, stop)`. If `err ~= nil` or a value for `stop` is given, iteration stops
 -- immediately and `final_callback` will be called.
 --
 -- @tparam function iteratee Function to call per line in the file. Signature:
@@ -403,7 +406,7 @@ function File:read_lines(iteratee, final_callback)
 end
 
 
---- Move the file.
+--- Move the file to a new location.
 --
 -- Requires GLib version 2.71.2 or newer (2022-02-15).
 --
@@ -544,8 +547,12 @@ end
 
 --- Query the type of the file.
 --
--- Common scenarios would be to compare this against `Gio.FileType`:
+-- Common scenarios would be to compare this against `Gio.FileType`.
 --
+-- Note that due to limitations in GLib, this will return `Gio.FileType.UNKNOWN` for files
+-- that the user has no access to.
+--
+-- @usage
 --    f:type(function(err, type)
 --        if err then cb(err) end
 --        local is_dir = type == Gio.FileType.DIRECTORY
@@ -554,9 +561,6 @@ end
 --        -- get a string representation
 --        print(Gio.FileType[type])
 --    end)
---
--- Note that due to limitations in GLib, this will return `UNKNOWN` for files
--- that the user has not access to.
 --
 -- @async
 -- @tparam function cb
