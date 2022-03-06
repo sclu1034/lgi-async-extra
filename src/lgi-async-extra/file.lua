@@ -289,8 +289,13 @@ function File:read_all(cb)
                 end
 
                 if bytes:get_size() ~= size then
-                    -- @todo: return a `GLib.Error` here
-                    return cb_inner("not enough bytes read")
+                    return cb_inner(GLib.Error(
+                        Gio.IOErrorEnum,
+                        Gio.IOErrorEnum.FAILED,
+                        "Inconsistent number of bytes read. Expected %d, got %d",
+                        size,
+                        bytes:get_size()
+                    ))
                 end
 
                 cb_inner(nil, bytes:get_data())
