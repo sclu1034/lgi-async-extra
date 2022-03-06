@@ -20,6 +20,6 @@ build = {
         ["lgi-async-extra.stream"] = "src/lgi-async-extra/stream.lua",
     },
     copy_directories = {
-        "doc", "examples", "tests"
+        "doc", "tests"
     }
 }
