@@ -126,70 +126,72 @@
                     <div class="block content section__item__description">$(M(ldoc.descript(item), item))</div>
 
 #       if not ldoc.no_return_or_params then
+#         if item.params and #item.params > 0 then
                     <div class="block content section__item__params">
-#         local subnames = module.kinds:type_of(item).subnames
-#         if subnames then
+#           local subnames = module.kinds:type_of(item).subnames
+#           if subnames then
                         <h4 class="title is-6">$(subnames):</h4>
-#         end
+#           end
                         <ul>
-#         for parm in ldoc.modules.iter(item.params) do
-#           local param,sublist = item:subparam(parm)
-#           if sublist then
+#           for parm in ldoc.modules.iter(item.params) do
+#             local param,sublist = item:subparam(parm)
+#             if sublist then
                             <li><span class="tag parameter_type">$(sublist)</span>$(M(item.params.map[sublist], item))
                             <ul>
-#           end
-#           for p in ldoc.modules.iter(param) do
-#             local name = item:display_name_of(p)
-#             local type_name = ldoc.typename(item:type_of_param(p))
-#             local default = item:default_of_param(p)
+#             end
+#             for p in ldoc.modules.iter(param) do
+#               local name = item:display_name_of(p)
+#               local type_name = ldoc.typename(item:type_of_param(p))
+#               local default = item:default_of_param(p)
                             <li class="parameter">
                                 <div>
                                     <span class="parameter__name"><em>$(name)</em></span>
-#             local description = item.params.map[p]
-#             if description and description ~= "" then
+#               local description = item.params.map[p]
+#               if description and description ~= "" then
                                     <span class="parameter__description">:&nbsp;$(M(description, item))</span>
-#             end
+#               end
                                 </div>
                                 <div class="field is-grouped is-grouped-multiline parameter__tags">
-#             if type_name ~= '' then
+#               if type_name ~= '' then
                                     <div class="control">
                                         <div class="tags has-addons">
                                             <span class="tag is-dark">type</span>
                                             <span class="tag">$(type_name)</span>
                                         </div>
                                     </div>
-#             end
-#             if default == true then
+#               end
+#               if default == true then
                                     <div class="control">
                                         <div class="tags">
                                             <span class="tag">optional</span>
                                         </div>
                                     </div>
-#             elseif default then
+#               elseif default then
                                     <div class="control">
                                         <div class="tags has-addons">
                                             <span class="tag is-dark">default</span>
                                             <span class="tag"><code>$(default)</code></span>
                                         </div>
                                     </div>
-#             end
-#             if item:readonly(p) then
+#               end
+#               if item:readonly(p) then
                                     <div class="control">
                                         <div class="tags">
                                             <span class="tag">readonly</span>
                                         </div>
                                     </div>
-#             end
+#               end
                                 </div>
                             </li>
-#           end
-#           if sublist then
+#             end
+#             if sublist then
                             </ul>
+#             end
 #           end
-#         end
 
                         </ul>
                     </div>
+#         end
 #         if item.retgroups then
 #           -- I only need a single return group for now
 #           local group = item.retgroups[1]
