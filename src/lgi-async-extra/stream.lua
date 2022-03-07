@@ -17,7 +17,7 @@ local stream = {}
 -- To be able to splice from just an output stream to just an input stream, dummy streams can be used to provide
 -- the "ignored" side of the pipe.
 --
--- See: [`Gio.MemoryInputStream`](https://docs.gtk.org/gio/class.MemoryInputStream.html)
+-- See [docs.gtk.org](https://docs.gtk.org/gio/class.MemoryInputStream.html) for additional details.
 --
 -- @treturn Gio.MemoryInputStream
 function stream.new_dummy_input()
@@ -31,7 +31,7 @@ end
 -- To be able to splice from just an output stream to just an input stream, dummy streams can be used to provide
 -- the "ignored" side of the pipe.
 --
--- See: [`Gio.MemoryOutputStream`](https://docs.gtk.org/gio/class.MemoryOutputStream.html)
+-- See [docs.gtk.org](https://docs.gtk.org/gio/class.MemoryOutputStream.html) for additional details.
 --
 -- @treturn Gio.MemoryOutputStream
 function stream.new_dummy_output()
@@ -43,7 +43,7 @@ end
 --
 -- Either side may be omitted, in which case a dummy stream is used instead.
 --
--- See: [`Gio.SimpleIOStream`](https://docs.gtk.org/gio/class.SimpleIOStream.html)
+-- See [docs.gtk.org](https://docs.gtk.org/gio/class.SimpleIOStream.html) for additional details.
 --
 -- @tparam[opt] Gio.InputStream input_stream
 -- @tparam[opt] Gio.OutputStream output_stream

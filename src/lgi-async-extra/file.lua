@@ -103,13 +103,13 @@ end
 --
 -- The directory is determined by [g_get_tmp_dir](https://docs.gtk.org/glib/func.get_tmp_dir.html).
 --
--- The second return value is a `GIO.FileIOStream`, which contains both an input and output stream to the created
+-- The second return value is a `Gio.FileIOStream`, which contains both an input and output stream to the created
 -- file. The caller is responsible for closing these streams.
 --
 -- The third return value will be an instance of `GLib.Error` if the attempt to create the file failed. If this
 -- is not `nil`, attempts to access the other return values will result in undefined behavior.
 --
--- See: [Gio.File.new_tmp](https://docs.gtk.org/gio/type_func.File.new_tmp.html)
+-- See [docs.gtk.org](https://docs.gtk.org/gio/type_func.File.new_tmp.html) for additional details.
 --
 -- @tparam[opt=".XXXXXX"] string template
 -- @treturn File
@@ -128,6 +128,17 @@ end
 
 --- @type File
 
+
+--- Get the file's path name.
+--
+-- The path is guaranteed to be absolute, by may contain unresolved symlinks.
+-- However, a path may not exist, in which case `nil` will be returned.
+--
+-- @treturn[opt] string
+function File:get_path()
+    return self._private.f:get_path()
+end
+
 --- Open a read stream.
 --
 -- The consumer is responsible for properly closing the stream:
@@ -137,7 +148,7 @@ end
 --        cb(err)
 --    end)
 --
--- The [`GDataInputStream`](https://docs.gtk.org/gio/class.DataInputStream.html) adds additional reading utilities:
+-- A [GDataInputStream](https://docs.gtk.org/gio/class.DataInputStream.html) adds additional reading utilities:
 --
 --    stream = Gio.DataInputStream.new(stream)
 --
@@ -486,7 +497,7 @@ end
 -- `G_FILE_ATTRIBUTE_*` constants:
 -- [https://docs.gtk.org/gio/index.html?q=G_FILE_ATTRIBUTE_](https://docs.gtk.org/gio/index.html?q=G_FILE_ATTRIBUTE_)
 --
--- See: [`g_file_query_info()`](https://docs.gtk.org/gio/method.File.query_info.html)
+-- See [docs.gtk.org](https://docs.gtk.org/gio/method.File.query_info.html) for additional details.
 --
 -- @todo Document the conversion from GIO's attributes to what LGI expects.
 -- @async
@@ -573,22 +584,11 @@ end
 -- @async
 -- @tparam function cb
 -- @treturn[opt] GLib.Error
--- @treturn[opt] string
+-- @treturn[opt] Gio.FileType
 function File:type(cb)
     self:query_info("standard::type", function (err, info)
         cb(err, info and Gio.FileType[info:get_file_type()])
     end)
-end
-
-
---- Get the file's path name.
---
--- The path is guaranteed to be absolute, by may contain unresolved symlinks.
--- However, a path may not exist, in which case `nil` will be returned.
---
--- @treturn[opt] string
-function File:get_path()
-    return self._private.f:get_path()
 end
 
 return file
