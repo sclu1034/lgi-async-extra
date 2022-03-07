@@ -573,7 +573,7 @@ end
 --
 -- @usage
 --    f:type(function(err, type)
---        if err then cb(err) end
+--        if err then return cb(err) end
 --        local is_dir = type == Gio.FileType.DIRECTORY
 --        local is_link = type == Gio.FileType.SYMBOLIC_LINK
 --        local is_file = type == Gio.FileType.REGULAR
