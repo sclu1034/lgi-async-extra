@@ -2,7 +2,7 @@ local assert = require("luassert")
 local spy = require("luassert.spy")
 local async = require("async")
 
-local File = require("lgi-async-extra.file")
+local File = require("lgi_async_extra.file")
 
 describe('file', function()
     it('exists', run(function(cb)

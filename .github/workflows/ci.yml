@@ -21,15 +21,8 @@ jobs:
       - name: Install LuaCheck
         run: luarocks install luacheck
 
-      - name: Install task runner
-        run: |
-          mkdir ~/just && cd ~/just
-          wget https://github.com/casey/just/releases/download/1.0.1/just-1.0.1-x86_64-unknown-linux-musl.tar.gz
-          tar -xvf just-1.0.1-x86_64-unknown-linux-musl.tar.gz
-          sudo install ./just /usr/local/bin/just
-
       - name: Run checks
-        run: just check --formatter TAP
+        run: make check
 
   test:
     runs-on: ubuntu-20.04
@@ -61,12 +54,5 @@ jobs:
           luarocks install lgi
           luarocks install async.lua
 
-      - name: Install task runner
-        run: |
-          mkdir ~/just && cd ~/just
-          wget https://github.com/casey/just/releases/download/1.0.1/just-1.0.1-x86_64-unknown-linux-musl.tar.gz
-          tar -xvf just-1.0.1-x86_64-unknown-linux-musl.tar.gz
-          sudo install ./just /usr/local/bin/just
-
       - name: Run tests
-        run: just test --output=TAP
+        run: make test

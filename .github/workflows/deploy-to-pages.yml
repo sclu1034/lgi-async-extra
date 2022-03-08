@@ -24,18 +24,8 @@ jobs:
           luarocks install lua-discount
           npm install --global sass
 
-      - name: Install task runner
-        run: |
-          mkdir ~/just && cd ~/just
-          wget https://github.com/casey/just/releases/download/1.0.1/just-1.0.1-x86_64-unknown-linux-musl.tar.gz
-          tar -xvf just-1.0.1-x86_64-unknown-linux-musl.tar.gz
-          sudo install ./just /usr/local/bin/just
-
       - name: Generate documentation
-        run: |
-          just doc
-          # Tell GitHub that we don't use Jekyll
-          touch out/doc/.nojekyll
+        run: make doc
 
       - name: Deploy to gh-pages
         uses: JamesIves/github-pages-deploy-action@v4.2.5

@@ -14,10 +14,21 @@ dependencies = {
     "async.lua"
 }
 build = {
-    type = "builtin",
-    modules = {
-        ["lgi-async-extra.file"] = "src/lgi-async-extra/file.lua",
-        ["lgi-async-extra.stream"] = "src/lgi-async-extra/stream.lua",
+    type = "make",
+    build_variables = {
+        CFLAGS="$(CFLAGS)",
+        LIBFLAG="$(LIBFLAG)",
+        LUA_LIBDIR="$(LUA_LIBDIR)",
+        LUA_BINDIR="$(LUA_BINDIR)",
+        LUA_INCDIR="$(LUA_INCDIR)",
+        LUA="$(LUA)",
+    },
+    install_variables = {
+        PREFIX="$(PREFIX)",
+        INSTALL_BINDIR="$(BINDIR)",
+        INSTALL_LIBDIR="$(LIBDIR)",
+        INSTALL_LUADIR="$(LUADIR)",
+        INSTALL_CONFDIR="$(CONFDIR)",
     },
     copy_directories = {
         "spec"
