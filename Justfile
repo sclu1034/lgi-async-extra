@@ -7,7 +7,7 @@ doc:
     sass doc/ldoc.scss "{{outdir}}/doc/ldoc.css"
 
 test *ARGS:
-    busted --config-file=.busted.lua --helper=tests/_helper.lua {{ARGS}} tests
+    busted --config-file=.busted.lua {{ARGS}} spec
 
 check *ARGS:
     find src/ -iname '*.lua' | xargs luacheck {{ARGS}}

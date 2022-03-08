@@ -158,5 +158,5 @@ describe('file', function()
         end)
     end))
 
-    -- TODO: Create test case for `f:move()`. Requires GLib 2.58
+    -- TODO: Create test case for `f:move()`. Requires GLib 2.71.2
 end)
