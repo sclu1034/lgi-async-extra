@@ -9,7 +9,12 @@
 </head>
 <body>
 
-# local function M(txt,item) return ldoc.markup(txt,item,ldoc.plain) end
+# local function M(txt, item) return ldoc.markup(txt, item, ldoc.plain) end
+# -- LDoc doesn't expose this, even though it does expose `pairs`. *insert confused face*
+# local function next(tbl)
+#   local n, t = ldoc.pairs(tbl)
+#   return n(t)
+# end
 
 <aside id="sidebar" class="has-background-white-ter">
     <h1 class="title">$(ldoc.project)</h1>
