@@ -49,6 +49,8 @@ local Gio = lgi.Gio
 local GLib = lgi.GLib
 local GFile = Gio.File
 
+local stream_utils = require("lgi_async_extra.stream")
+
 
 local File = {}
 local file = {}
@@ -127,6 +129,32 @@ function file.new_tmp(template)
 end
 
 --- @type File
+
+--- Creates a final callback to pass results and clean up the file stream.
+--
+-- @tparam[opt] string index Index into the `async.dag` results table.
+-- @tparam function cb The callback to proxy
+-- @treturn function
+local function clean_up_stream(index, cb)
+    return function(err, results)
+        if not results.stream then
+            cb(err)
+        end
+
+        -- Make sure to always close the stream, even if the read operation failed.
+        local stream = table.unpack(results.stream)
+        stream_utils.close(stream, function(err_inner)
+            local result
+            if index and results[index] then
+                result = table.unpack(results[index])
+            end
+
+            -- Prioritize the outer error (from the read operation), as the inner error (closing the stream) may be
+            -- a result of that.
+            cb(err or err_inner, result)
+        end)
+    end
+end
 
 
 --- Get the file's path name.
@@ -238,28 +266,50 @@ function File:write(data, mode, cb)
         mode = nil
     end
 
-    async.waterfall({
-        function(cb_inner)
+    async.dag({
+        stream = function(_, cb_inner)
             self:write_stream(mode, cb_inner)
         end,
-        function(stream, cb_inner)
-            stream:write_all_async(
-                data,
-                priority,
-                nil,
-                function(_, token)
+        write = { "stream", function(results, cb_inner)
+            local stream = table.unpack(results.stream)
+
+            stream:write_all_async(data, priority, nil, function(_, token)
                 local _, _, err = stream:write_all_finish(token)
-                cb_inner(err, stream)
-            end
-            )
-        end,
-        function(stream, cb_inner)
-            stream:close_async(priority, nil, function(_, token)
-                local _, err = stream:close_finish(token)
                 cb_inner(err)
             end)
+        end },
+    }, clean_up_stream(nil, cb))
+end
+
+
+--- Read at most the specified number of bytes from the file.
+--
+-- If there is not enough data to read, the result may contain less than `size` bytes.
+--
+-- @since 0.2.0
+-- @async
+-- @tparam number size The number of bytes to read.
+-- @tparam function cb The callback to call when reading finished.
+--   Signature: `function(err, data)`
+-- @treturn[opt] GLib.Error An instance of `GError` if there was an error,
+--   `nil` otherwise.
+-- @treturn GLib.Bytes
+function File:read_bytes(size, cb)
+    local priority = GLib.PRIORITY_DEFAULT
+
+    async.dag({
+        stream = function(_, cb_inner)
+            self:read_stream(cb_inner)
         end,
-    }, cb)
+        bytes = { "stream", function(results, cb_inner)
+            local stream = table.unpack(results.stream)
+
+            stream:read_bytes_async(size, priority, nil, function(_, token)
+                local bytes, err = stream:read_bytes_finish(token)
+                cb_inner(err, bytes)
+            end)
+        end },
+    }, clean_up_stream("bytes", cb))
 end
 
 
@@ -275,57 +325,15 @@ end
 --   `nil` otherwise.
 -- @treturn string A string read from the file.
 function File:read_all(cb)
-    local priority = GLib.PRIORITY_DEFAULT
-
     async.dag({
-        size = function(_, cb_inner)
-            self:size(cb_inner)
-        end,
         stream = function(_, cb_inner)
             self:read_stream(cb_inner)
         end,
-        bytes = { "size", "stream", function(results, cb_inner)
-            local size = table.unpack(results.size)
+        bytes = { "stream", function(results, cb_inner)
             local stream = table.unpack(results.stream)
-
-            if size == 0 then
-                return cb_inner(nil, "")
-            end
-
-            stream:read_bytes_async(size, priority, nil, function(_, token)
-                local bytes, err = stream:read_bytes_finish(token)
-
-                if err then
-                    return cb_inner(err)
-                end
-
-                if bytes:get_size() ~= size then
-                    return cb_inner(GLib.Error(
-                        Gio.IOErrorEnum,
-                        Gio.IOErrorEnum.FAILED,
-                        "Inconsistent number of bytes read. Expected %d, got %d",
-                        size,
-                        bytes:get_size()
-                    ))
-                end
-
-                cb_inner(nil, bytes:get_data())
-            end)
+            stream_utils.read_all(stream, cb_inner)
         end },
-        close = { "stream", "bytes", function(results, cb_inner)
-            local stream = table.unpack(results.stream)
-            stream:close_async(priority, nil, function(_, token)
-                local _, err = stream:close_finish(token)
-                cb_inner(err)
-            end)
-        end }
-    }, function(err, results)
-        if err then
-            cb(err)
-        else
-            cb(nil, table.unpack(results.bytes))
-        end
-    end)
+    }, clean_up_stream("bytes", cb))
 end
 
 
@@ -334,6 +342,7 @@ end
 -- Inefficient when reading lines repeatedly from the same file.
 --
 -- @async
+-- @tparam function cb
 -- @treturn[opt] GLib.Error An instance of `GError` if there was an error,
 --   `nil` otherwise.
 -- @treturn[opt] string A string read from the file,
@@ -341,29 +350,20 @@ end
 function File:read_line(cb)
     local priority = GLib.PRIORITY_DEFAULT
 
-    async.waterfall({
-        function(cb_inner)
+    async.dag({
+        stream = function(_, cb_inner)
             self:read_stream(cb_inner)
         end,
-        function(stream, cb_inner)
+        line = { "stream", function(results, cb_inner)
+            local stream = table.unpack(results.stream)
+
             stream = Gio.DataInputStream.new(stream)
             stream:read_line_async(priority, nil, function(_, token)
                 local line, _, err = stream:read_line_finish(token)
-                cb_inner(err, stream, line)
-            end)
-        end,
-        function(stream, line, cb_inner)
-            if type(line) == "function" then
-                cb_inner = line
-                line = nil
-            end
-
-            stream:close_async(priority, nil, function(_, token)
-                local _, err = stream:close_finish(token)
                 cb_inner(err, line)
             end)
-        end,
-    }, cb)
+        end },
+    }, clean_up_stream("line", cb))
 end
 
 
@@ -375,20 +375,21 @@ end
 -- and a callback function. The callback must always be called to ensure the
 -- file handle is cleaned up eventually. The expected signature for the callback
 -- is `cb(err, stop)`. If `err ~= nil` or a value for `stop` is given, iteration stops
--- immediately and `final_callback` will be called.
+-- immediately and `cb` will be called.
 --
 -- @tparam function iteratee Function to call per line in the file. Signature:
 --   `function(err, line, cb)`
--- @tparam function final_callback Function to call when iteration has stopped.
+-- @tparam function cb Function to call when iteration has stopped.
 --   Signature: `function(err)`.
-function File:read_lines(iteratee, final_callback)
+function File:iterate_lines(iteratee, cb)
     local priority = GLib.PRIORITY_DEFAULT
 
-    async.waterfall({
-        function(cb_inner)
+    async.dag({
+        stream = function(_, cb_inner)
             self:read_stream(cb_inner)
         end,
-        function(stream, cb_inner)
+        lines = { "stream", function(results, cb_inner)
+            local stream = table.unpack(results.stream)
             stream = Gio.DataInputStream.new(stream)
 
             local function read_line(cb_line)
@@ -412,16 +413,10 @@ function File:read_lines(iteratee, final_callback)
             end
 
             async.do_while(read_line, check, function(err)
-                cb_inner(err, stream)
-            end)
-        end,
-        function(stream, cb_inner)
-            stream:close_async(priority, nil, function(_, token)
-                local _, err = stream:close_finish(token)
                 cb_inner(err)
             end)
-        end,
-    }, final_callback)
+        end },
+    }, clean_up_stream(nil, cb))
 end
 
 

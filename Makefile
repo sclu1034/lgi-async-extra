@@ -15,7 +15,7 @@ INSTALL_CONFDIR ?= $(PREFIX)/etc
 CC = gcc
 PKG_CONFIG ?= $(shell command -v pkg-config)
 
-PKGS = glib-2.0 lua$(LUA_VERSION)
+PKGS = glib-2.0 gobject-2.0 lua$(LUA_VERSION)
 
 CFLAGS ?= -fPIC
 LIBFLAG ?= -shared
