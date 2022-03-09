@@ -157,7 +157,7 @@
 #           for parm in ldoc.modules.iter(item.params) do
 #             local param,sublist = item:subparam(parm)
 #             if sublist then
-                            <li><span class="tag parameter_type">$(sublist)</span>$(M(item.params.map[sublist], item))
+                            <li><span class="tag parameter__type">$(sublist)</span>$(M(item.params.map[sublist], item))
                             <ul>
 #             end
 #             for p in ldoc.modules.iter(param) do
@@ -177,28 +177,28 @@
                                     <div class="control">
                                         <div class="tags has-addons">
                                             <span class="tag is-dark">type</span>
-                                            <span class="tag">$(type_name)</span>
+                                            <span class="tag parameter__type"><span>$(type_name)</span></span>
                                         </div>
                                     </div>
 #               end
 #               if default == true then
                                     <div class="control">
                                         <div class="tags">
-                                            <span class="tag">optional</span>
+                                            <span class="tag parameter__optional">optional</span>
                                         </div>
                                     </div>
 #               elseif default then
                                     <div class="control">
                                         <div class="tags has-addons">
                                             <span class="tag is-dark">default</span>
-                                            <span class="tag"><code>$(default)</code></span>
+                                            <span class="tag parameter__default"><code>$(default)</code></span>
                                         </div>
                                     </div>
 #               end
 #               if item:readonly(p) then
                                     <div class="control">
                                         <div class="tags">
-                                            <span class="tag">readonly</span>
+                                            <span class="tag parameter__readonly">readonly</span>
                                         </div>
                                     </div>
 #               end
@@ -242,13 +242,13 @@
                                     <div class="control">
                                         <div class="tags has-addons">
                                             <span class="tag is-dark">type</span>
-                                            <span class="tag return-value__type">$(rt)</span>
+                                            <span class="tag return-value__type"><span>$(rt)</span></span>
                                         </div>
                                     </div>
 #             if optional then
                                     <div class="control">
                                         <div class="tags">
-                                            <span class="tag">optional</span>
+                                            <span class="tag return-value__optional">optional</span>
                                         </div>
                                     </div>
 #             end

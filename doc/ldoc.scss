@@ -64,3 +64,10 @@
 .menu-list a:not(.is-active):hover {
     background-color: var(--lt-color-white);
 }
+
+.parameter__type,
+.return-value__type {
+    .type {
+        font-weight: bold;
+    }
+}
