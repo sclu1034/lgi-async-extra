@@ -141,13 +141,13 @@
 </span><span class="comment">--
 </span><span class="comment">-- The directory is determined by [g_get_tmp_dir](https://docs.gtk.org/glib/func.get_tmp_dir.html).
 </span><span class="comment">--
-</span><span class="comment">-- The second return value is a `GIO.FileIOStream`, which contains both an input and output stream to the created
+</span><span class="comment">-- The second return value is a `Gio.FileIOStream`, which contains both an input and output stream to the created
 </span><span class="comment">-- file. The caller is responsible for closing these streams.
 </span><span class="comment">--
 </span><span class="comment">-- The third return value will be an instance of `GLib.Error` if the attempt to create the file failed. If this
 </span><span class="comment">-- is not `nil`, attempts to access the other return values will result in undefined behavior.
 </span><span class="comment">--
-</span><span class="comment">-- See: [Gio.File.new_tmp](https://docs.gtk.org/gio/type_func.File.new_tmp.html)
+</span><span class="comment">-- See [docs.gtk.org](https://docs.gtk.org/gio/type_func.File.new_tmp.html) for additional details.
 </span><span class="comment">--
 </span><span class="comment">-- @tparam[opt=".XXXXXX"] string template
 </span><span class="comment">-- @treturn File
@@ -166,6 +166,17 @@
 
 <span class="comment">--- @type File
 </span>
+
+<span class="comment">--- Get the file's path name.
+</span><span class="comment">--
+</span><span class="comment">-- The path is guaranteed to be absolute, by may contain unresolved symlinks.
+</span><span class="comment">-- However, a path may not exist, in which case `nil` will be returned.
+</span><span class="comment">--
+</span><a id="138"></a><span class="comment">-- @treturn[opt] string
+</span><span class="keyword">function</span> File:get_path()
+    <span class="keyword">return</span> self._private.f:get_path()
+<span class="keyword">end</span>
+
 <span class="comment">--- Open a read stream.
 </span><span class="comment">--
 </span><span class="comment">-- The consumer is responsible for properly closing the stream:
@@ -175,14 +186,14 @@
 </span><span class="comment">--        cb(err)
 </span><span class="comment">--    end)
 </span><span class="comment">--
-</span><span class="comment">-- The [`GDataInputStream`](https://docs.gtk.org/gio/class.DataInputStream.html) adds additional reading utilities:
+</span><span class="comment">-- A [GDataInputStream](https://docs.gtk.org/gio/class.DataInputStream.html) adds additional reading utilities:
 </span><span class="comment">--
 </span><span class="comment">--    stream = Gio.DataInputStream.new(stream)
 </span><span class="comment">--
 </span><span class="comment">-- @async
 </span><span class="comment">-- @tparam function cb
 </span><span class="comment">-- @treturn[opt] GLib.Error
-</span><a id="148"></a><span class="comment">-- @treturn[opt] Gio.FileInputStream
+</span><a id="159"></a><span class="comment">-- @treturn[opt] Gio.FileInputStream
 </span><span class="keyword">function</span> File:read_stream(cb)
     <span class="keyword">local</span> f = self._private.f
 
@@ -212,7 +223,7 @@
 </span><span class="comment">--  any existing content and add the new data at the end.
 </span><span class="comment">-- @tparam function cb
 </span><span class="comment">-- @treturn[opt] GLib.Error
-</span><a id="178"></a><span class="comment">-- @treturn Gio.FileOutputStream
+</span><a id="189"></a><span class="comment">-- @treturn Gio.FileOutputStream
 </span><span class="keyword">function</span> File:write_stream(mode, cb)
     <span class="keyword">local</span> f = self._private.f
     <span class="keyword">local</span> priority = GLib.PRIORITY_DEFAULT
@@ -256,7 +267,7 @@
 </span><span class="comment">--  `"replace"` will truncate the file before writing, `"append"` will keep
 </span><span class="comment">--  any existing content and add the new data at the end.
 </span><span class="comment">-- @tparam function cb
-</span><a id="222"></a><span class="comment">-- @treturn[opt] GLib.Error
+</span><a id="233"></a><span class="comment">-- @treturn[opt] GLib.Error
 </span><span class="keyword">function</span> File:write(data, mode, cb)
     <span class="keyword">local</span> priority = GLib.PRIORITY_DEFAULT
 
@@ -300,7 +311,7 @@
 </span><span class="comment">--   Signature: `function(err, data)`
 </span><span class="comment">-- @treturn[opt] GLib.Error An instance of `GError` if there was an error,
 </span><span class="comment">--   `nil` otherwise.
-</span><a id="266"></a><span class="comment">-- @treturn string A string read from the file.
+</span><a id="277"></a><span class="comment">-- @treturn string A string read from the file.
 </span><span class="keyword">function</span> File:read_all(cb)
     <span class="keyword">local</span> priority = GLib.PRIORITY_DEFAULT
 
@@ -364,7 +375,7 @@
 </span><span class="comment">-- @treturn[opt] GLib.Error An instance of `GError` if there was an error,
 </span><span class="comment">--   `nil` otherwise.
 </span><span class="comment">-- @treturn[opt] string A string read from the file,
-</span><a id="330"></a><span class="comment">--   or `nil` if the end was reached.
+</span><a id="341"></a><span class="comment">--   or `nil` if the end was reached.
 </span><span class="keyword">function</span> File:read_line(cb)
     <span class="keyword">local</span> priority = GLib.PRIORITY_DEFAULT
 
@@ -407,7 +418,7 @@
 </span><span class="comment">-- @tparam function iteratee Function to call per line in the file. Signature:
 </span><span class="comment">--   `function(err, line, cb)`
 </span><span class="comment">-- @tparam function final_callback Function to call when iteration has stopped.
-</span><a id="373"></a><span class="comment">--   Signature: `function(err)`.
+</span><a id="384"></a><span class="comment">--   Signature: `function(err)`.
 </span><span class="keyword">function</span> File:read_lines(iteratee, final_callback)
     <span class="keyword">local</span> priority = GLib.PRIORITY_DEFAULT
 
@@ -459,7 +470,7 @@
 </span><span class="comment">-- @async
 </span><span class="comment">-- @tparam string destination New path to move to
 </span><span class="comment">-- @tparam function cb
-</span><a id="425"></a><span class="comment">-- @treturn[opt] GLib.Error
+</span><a id="436"></a><span class="comment">-- @treturn[opt] GLib.Error
 </span><span class="keyword">function</span> File:move(destination, cb)
     <span class="keyword">local</span> f = self._private.f
     <span class="keyword">local</span> priority = GLib.PRIORITY_DEFAULT
@@ -483,7 +494,7 @@
 </span><span class="comment">--
 </span><span class="comment">-- @async
 </span><span class="comment">-- @tparam function cb
-</span><a id="449"></a><span class="comment">-- @treturn[opt] GLib.Error
+</span><a id="460"></a><span class="comment">-- @treturn[opt] GLib.Error
 </span><span class="keyword">function</span> File:delete(cb)
     <span class="keyword">local</span> f = self._private.f
     <span class="keyword">local</span> priority = GLib.PRIORITY_DEFAULT
@@ -502,7 +513,7 @@
 </span><span class="comment">--
 </span><span class="comment">-- @async
 </span><span class="comment">-- @tparam function cb
-</span><a id="468"></a><span class="comment">-- @treturn[opt] GLib.Error
+</span><a id="479"></a><span class="comment">-- @treturn[opt] GLib.Error
 </span><span class="keyword">function</span> File:trash(cb)
     <span class="keyword">local</span> f = self._private.f
     <span class="keyword">local</span> priority = GLib.PRIORITY_DEFAULT
@@ -524,14 +535,14 @@
 </span><span class="comment">-- `G_FILE_ATTRIBUTE_*` constants:
 </span><span class="comment">-- [https://docs.gtk.org/gio/index.html?q=G_FILE_ATTRIBUTE_](https://docs.gtk.org/gio/index.html?q=G_FILE_ATTRIBUTE_)
 </span><span class="comment">--
-</span><span class="comment">-- See: [`g_file_query_info()`](https://docs.gtk.org/gio/method.File.query_info.html)
+</span><span class="comment">-- See [docs.gtk.org](https://docs.gtk.org/gio/method.File.query_info.html) for additional details.
 </span><span class="comment">--
 </span><span class="comment">-- @todo Document the conversion from GIO's attributes to what LGI expects.
 </span><span class="comment">-- @async
 </span><span class="comment">-- @tparam string attribute The GIO file info attribute to query for.
 </span><span class="comment">-- @tparam function cb
 </span><span class="comment">-- @treturn[opt] GLib.Error
-</span><a id="497"></a><span class="comment">-- @treturn[opt] Gio.FileInfo
+</span><a id="508"></a><span class="comment">-- @treturn[opt] Gio.FileInfo
 </span><span class="keyword">function</span> File:query_info(attribute, cb)
     <span class="keyword">local</span> f = self._private.f
     <span class="keyword">local</span> priority = GLib.PRIORITY_DEFAULT
@@ -556,7 +567,7 @@
 </span><span class="comment">-- @async
 </span><span class="comment">-- @tparam function cb
 </span><span class="comment">-- @treturn[opt] GLib.Error
-</span><a id="522"></a><span class="comment">-- @treturn boolean `true` if the file exists on disk
+</span><a id="533"></a><span class="comment">-- @treturn boolean `true` if the file exists on disk
 </span><span class="keyword">function</span> File:exists(cb)
     self:query_info(<span class="string">"standard::type"</span>, <span class="keyword">function</span> (err)
         <span class="keyword">if</span> err <span class="keyword">then</span>
@@ -582,7 +593,7 @@
 </span><span class="comment">-- @async
 </span><span class="comment">-- @tparam function cb
 </span><span class="comment">-- @treturn[opt] GLib.Error
-</span><a id="548"></a><span class="comment">-- @treturn[opt] number
+</span><a id="559"></a><span class="comment">-- @treturn[opt] number
 </span><span class="keyword">function</span> File:size(cb)
     self:query_info(<span class="string">"standard::size"</span>, <span class="keyword">function</span> (err, info)
         <span class="comment">-- For some reason, the bindings return a float for a byte size
@@ -600,7 +611,7 @@
 </span><span class="comment">--
 </span><span class="comment">-- @usage
 </span><span class="comment">--    f:type(function(err, type)
-</span><span class="comment">--        if err then cb(err) end
+</span><span class="comment">--        if err then return cb(err) end
 </span><span class="comment">--        local is_dir = type == Gio.FileType.DIRECTORY
 </span><span class="comment">--        local is_link = type == Gio.FileType.SYMBOLIC_LINK
 </span><span class="comment">--        local is_file = type == Gio.FileType.REGULAR
@@ -611,22 +622,11 @@
 </span><span class="comment">-- @async
 </span><span class="comment">-- @tparam function cb
 </span><span class="comment">-- @treturn[opt] GLib.Error
-</span><a id="577"></a><span class="comment">-- @treturn[opt] string
+</span><a id="588"></a><span class="comment">-- @treturn[opt] Gio.FileType
 </span><span class="keyword">function</span> File:<span class="global">type</span>(cb)
     self:query_info(<span class="string">"standard::type"</span>, <span class="keyword">function</span> (err, info)
         cb(err, info <span class="keyword">and</span> Gio.FileType[info:get_file_type()])
     <span class="keyword">end</span>)
-<span class="keyword">end</span>
-
-
-<span class="comment">--- Get the file's path name.
-</span><span class="comment">--
-</span><span class="comment">-- The path is guaranteed to be absolute, by may contain unresolved symlinks.
-</span><span class="comment">-- However, a path may not exist, in which case `nil` will be returned.
-</span><span class="comment">--
-</span><a id="590"></a><span class="comment">-- @treturn[opt] string
-</span><span class="keyword">function</span> File:get_path()
-    <span class="keyword">return</span> self._private.f:get_path()
 <span class="keyword">end</span>
 
 <span class="keyword">return</span> file</pre>
@@ -636,7 +636,7 @@
 
 <footer class="footer">
     <div class="content has-text-centered">
-        Generated by <a href="https://github/com/stevendonovan/LDoc">LDoc 1.4.6</a>, designed with <a href="https://github.com/jgthms/bulma">Bulma</a>. Last updated at 2022-03-06 21:37:45.
+        Generated by <a href="https://github/com/stevendonovan/LDoc">LDoc 1.4.6</a>, designed with <a href="https://github.com/jgthms/bulma">Bulma</a>. Last updated at 2022-03-09 21:13:56.
     </div>
 </footer>
 
