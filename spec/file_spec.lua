@@ -127,6 +127,20 @@ describe('file', function()
                 end,
             }, cb)
         end))
+
+        it('reads binary data', run(function(_, cb)
+            local f = File.new_for_path("/dev/random")
+            local BUFFER_SIZE = 100
+
+            f:read_bytes(BUFFER_SIZE, function(err, bytes)
+                wrap_asserts(cb, err, function()
+                    assert.is_nil(err)
+                    assert.is_userdata(bytes)
+                    assert.is_same(BUFFER_SIZE, #bytes)
+                    assert.is_string(bytes:get_data())
+                end)
+            end)
+        end))
     end)
 
     describe('read_string', function()

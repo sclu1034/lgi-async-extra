@@ -49,6 +49,8 @@ local Gio = lgi.Gio
 local GLib = lgi.GLib
 local GFile = Gio.File
 
+local stream_utils = require("lgi-async-extra.stream")
+
 
 local File = {}
 local file = {}
@@ -326,8 +328,10 @@ end
 
 --- Read the entire file's content into memory.
 --
--- Note that this currently only works for files with a known size. Virtual files cannot be read from successfully
--- and will either return an empty string or fail.
+-- This collects the content into a Lua @{string}, so text files an be used as-is.
+-- For binary content, use @{string.byte} to access the raw values or manually wrap the result of
+-- @{file:read_stream} in a [Gio.DataInputStream](https://docs.gtk.org/gio/class.DataInputStream.html) and
+-- read individual values based on their binary size.
 --
 -- @since 0.2.0
 -- @async
@@ -337,44 +341,13 @@ end
 --   `nil` otherwise.
 -- @treturn[opt] string A string read from the file.
 function File:read_string(cb)
-    local priority = GLib.PRIORITY_DEFAULT
-    local BUFFER_SIZE = 4096
-
     async.dag({
         stream = function(_, cb_inner)
             self:read_stream(cb_inner)
         end,
         string = { "stream", function(results, cb_inner)
             local stream = table.unpack(results.stream)
-            local str
-
-            local function read_chunk(cb_chunk)
-                stream:read_bytes_async(BUFFER_SIZE, priority, nil, function(_, token)
-                    local bytes, err = stream:read_bytes_finish(token)
-
-                    if err then
-                        return cb_chunk(err)
-                    end
-
-                    if bytes and #bytes > 0 then
-                        if not str then
-                            str = bytes:get_data()
-                        else
-                            str = str .. bytes:get_data()
-                        end
-                    end
-
-                    cb_chunk(nil, bytes)
-                end)
-            end
-
-            local function check(bytes, cb_check)
-                cb_check(nil, bytes ~= nil and #bytes == BUFFER_SIZE)
-            end
-
-            async.do_while(read_chunk, check, function(err)
-                cb_inner(err, str)
-            end)
+            stream_utils.read_string(stream, cb_inner)
         end },
     }, clean_up_stream("string", cb))
 end
