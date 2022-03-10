@@ -18,11 +18,6 @@ custom_tags = {
         hidden = true,
     },
     {
-        "repository",
-        hidden = true,
-    },
-    {
-        "package",
-        hidden = true,
+        "since",
     }
 }

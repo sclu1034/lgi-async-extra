@@ -4,7 +4,7 @@
 -- A file handle can be created through one of the constructor functions. File
 -- operations are performed on that handle.
 --
--- The API is callback based, so the use of [async.lua](https://github.com/sclu1034/async.lua) for composition is
+-- The API is callback-based, so the use of [async.lua](https://github.com/sclu1034/async.lua) for composition is
 -- recommended. All callbacks receive an `err` value as first argument, and any non-error return values
 -- after that.
 -- The `err` value will be `nil` on success, or an error value otherwise. In almost all cases
@@ -15,7 +15,7 @@
 --        assert(err.domain == Gio.IOErrorEnum)
 --        -- Checking the error code against a constant is the recommended way,
 --        -- but a bit verbose, due to LGI's mapping.
---        -- See: https://github.com/pavouk/lgi/blob/master/docs/guide.md
+--        -- See https://github.com/pavouk/lgi/blob/master/docs/guide.md for explanation on this mapping.
 --        assert(err.code == Gio.IOErrorEnum[Gio.IOErrorEnum.NOT_FOUND])
 --    end)
 --
@@ -32,7 +32,7 @@
 --            f:write("world", "append", cb)
 --        end,
 --        function(cb)
---            f:read_all(cb)
+--            f:read_string(cb)
 --        end,
 --    }, function(err, data)
 --        print(err)
@@ -127,7 +127,7 @@ function file.new_tmp(template)
 end
 
 
---- @type File
+--- @type file
 
 
 --- Creates a final callback to pass results and clean up the file stream.
@@ -385,8 +385,8 @@ end
 -- Like all other operations, this always reads from the beginning of the file. Calling this function
 -- repeatedly on the same file will always yield the first line.
 --
--- To iterate over all lines, use @{File:iterate_lines}. To read more than just one line, use @{File:read_bytes} or
--- @{File:read_string}.
+-- To iterate over all lines, use @{file:iterate_lines}. To read more than just one line, use @{file:read_bytes} or
+-- @{file:read_string}.
 --
 -- @async
 -- @tparam function cb
@@ -424,6 +424,7 @@ end
 -- is `cb(err, stop)`. If `err ~= nil` or a value for `stop` is given, iteration stops
 -- immediately and `cb` will be called.
 --
+-- @async
 -- @tparam function iteratee Function to call per line in the file. Signature:
 --   `function(err, line, cb)`
 -- @tparam function cb Function to call when iteration has stopped.
@@ -571,7 +572,7 @@ end
 -- @async
 -- @tparam function cb
 -- @treturn[opt] GLib.Error
--- @treturn boolean `true` if the file exists on disk
+-- @treturn boolean `true` if the file exists at its specified location.
 function File:exists(cb)
     self:query_info("standard::type", function (err)
         if err then

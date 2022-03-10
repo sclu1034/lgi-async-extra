@@ -8,7 +8,7 @@
 local lgi = require("lgi")
 local Gio = lgi.Gio
 
-local module = {}
+local stream = {}
 
 --- Creates a dummy input stream.
 --
@@ -19,7 +19,7 @@ local module = {}
 -- See [docs.gtk.org](https://docs.gtk.org/gio/class.MemoryInputStream.html) for additional details.
 --
 -- @treturn Gio.MemoryInputStream
-function module.new_dummy_input()
+function stream.new_dummy_input()
     return Gio.MemoryInputStream.new()
 end
 
@@ -33,7 +33,7 @@ end
 -- See [docs.gtk.org](https://docs.gtk.org/gio/class.MemoryOutputStream.html) for additional details.
 --
 -- @treturn Gio.MemoryOutputStream
-function module.new_dummy_output()
+function stream.new_dummy_output()
     return Gio.MemoryOutputStream.new()
 end
 
@@ -47,10 +47,10 @@ end
 -- @tparam[opt] Gio.InputStream input_stream
 -- @tparam[opt] Gio.OutputStream output_stream
 -- @treturn Gio.SimpleIOStream
-function module.to_io_stream(input_stream, output_stream)
-    input_stream = input_stream or module.new_dummy_input()
-    output_stream = output_stream or module.new_dummy_output()
+function stream.to_io_stream(input_stream, output_stream)
+    input_stream = input_stream or stream.new_dummy_input()
+    output_stream = output_stream or stream.new_dummy_output()
     return Gio.SimpleIOStream.new(input_stream, output_stream)
 end
 
-return module
+return stream

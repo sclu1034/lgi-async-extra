@@ -18,6 +18,8 @@
 @import 'scss/bulma/sass/layout/footer';
 @import 'scss/bulma/sass/layout/section';
 
+@import 'scss/bulma-tooltip/src/sass/index.sass';
+
 @import 'scss/syntax';
 
 :root {
@@ -51,8 +53,8 @@
     margin-left: 1em;
 }
 
-.section__item__title > .tag {
-    vertical-align: bottom;
+.section__item.section__item--has-tags .section__item__title {
+    margin-bottom: .25rem;
 }
 
 .parameter .parameter__tags {
