@@ -1,15 +1,18 @@
 local lgi = require("lgi")
 local GLib = lgi.GLib
 
+local File = require("lgi-async-extra.file")
+
+local DEFAULT_TIMEOUT = 2000
 
 -- Runs a test function inside a GLib loop, to drive asynchronous operations.
 -- Busted itself cannot currently do this.
 function run(timeout, fn)
     if type(timeout) == "function" then
         fn = timeout
-        timeout = 5000
+        timeout = DEFAULT_TIMEOUT
     else
-        timeout = timeout or 5000
+        timeout = timeout or DEFAULT_TIMEOUT
     end
 
     return function()
@@ -17,12 +20,12 @@ function run(timeout, fn)
         local err
 
         GLib.idle_add(GLib.PRIORITY_DEFAULT, function()
-            fn(function(e)
-                if e then
-                    err = e
-                end
-
-                loop:quit()
+            local f = File.new_tmp()
+            fn(f, function(e)
+                f:delete(function(err_inner)
+                    err = e or err_inner
+                    loop:quit()
+                end)
             end)
         end)
 
