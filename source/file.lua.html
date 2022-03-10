@@ -189,7 +189,7 @@
     <span class="keyword">return</span> <span class="keyword">function</span>(err, results)
         <span class="keyword">local</span> result
         <span class="keyword">if</span> result_index <span class="keyword">and</span> results[result_index] <span class="keyword">then</span>
-            result = <span class="global">table</span>.<span class="global">unpack</span>(results[result_index])
+            result = <span class="global">table</span>.unpack(results[result_index])
         <span class="keyword">end</span>
 
         <span class="keyword">if</span> <span class="keyword">not</span> results[stream_index] <span class="keyword">then</span>
@@ -197,7 +197,7 @@
         <span class="keyword">end</span>
 
         <span class="comment">-- Make sure to always close the stream, even if the read operation failed.
-</span>        <span class="keyword">local</span> stream = <span class="global">table</span>.<span class="global">unpack</span>(results[stream_index])
+</span>        <span class="keyword">local</span> stream = <span class="global">table</span>.unpack(results[stream_index])
         stream:close_async(GLib.PRIORITY_DEFAULT, <span class="keyword">nil</span>, <span class="keyword">function</span>(_, token)
             <span class="keyword">local</span> _, err_inner = stream:close_finish(token)
             <span class="comment">-- Prioritize the outer error (from the read operation), as the inner error (closing the stream) may be
@@ -322,7 +322,7 @@
             self:write_stream(mode, cb_inner)
         <span class="keyword">end</span>,
         write = { <span class="string">"stream"</span>, <span class="keyword">function</span>(results, cb_inner)
-            <span class="keyword">local</span> stream = <span class="global">table</span>.<span class="global">unpack</span>(results.stream)
+            <span class="keyword">local</span> stream = <span class="global">table</span>.unpack(results.stream)
 
             stream:write_all_async(data, priority, <span class="keyword">nil</span>, <span class="keyword">function</span>(_, token)
                 <span class="keyword">local</span> _, _, err = stream:write_all_finish(token)
@@ -353,7 +353,7 @@
             self:read_stream(cb_inner)
         <span class="keyword">end</span>,
         bytes = { <span class="string">"stream"</span>, <span class="keyword">function</span>(results, cb_inner)
-            <span class="keyword">local</span> stream = <span class="global">table</span>.<span class="global">unpack</span>(results.stream)
+            <span class="keyword">local</span> stream = <span class="global">table</span>.unpack(results.stream)
 
             stream:read_bytes_async(size, priority, <span class="keyword">nil</span>, <span class="keyword">function</span>(_, token)
                 <span class="keyword">local</span> bytes, err = stream:read_bytes_finish(token)
@@ -366,8 +366,8 @@
 
 <span class="comment">--- Read the entire file's content into memory.
 </span><span class="comment">--
-</span><span class="comment">-- This collects the content into a Lua <a href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a>, so text files an be used as-is.
-</span><span class="comment">-- For binary content, use <a href="https://www.lua.org/manual/5.1/manual.html#pdf-string.byte">string.byte</a> to access the raw values or manually wrap the result of
+</span><span class="comment">-- This collects the content into a Lua <a href="https://www.lua.org/manual/5.3/manual.html#6.4">string</a>, so text files an be used as-is.
+</span><span class="comment">-- For binary content, use <a href="https://www.lua.org/manual/5.3/manual.html#pdf-string.byte">string.byte</a> to access the raw values or manually wrap the result of
 </span><span class="comment">-- <a href="../modules/file.html#File:read_stream">file:read_stream</a> in a [Gio.DataInputStream](https://docs.gtk.org/gio/class.DataInputStream.html) and
 </span><span class="comment">-- read individual values based on their binary size.
 </span><span class="comment">--
@@ -384,7 +384,7 @@
             self:read_stream(cb_inner)
         <span class="keyword">end</span>,
         <span class="global">string</span> = { <span class="string">"stream"</span>, <span class="keyword">function</span>(results, cb_inner)
-            <span class="keyword">local</span> stream = <span class="global">table</span>.<span class="global">unpack</span>(results.stream)
+            <span class="keyword">local</span> stream = <span class="global">table</span>.unpack(results.stream)
             stream_utils.read_string(stream, cb_inner)
         <span class="keyword">end</span> },
     }, clean_up_stream(<span class="string">"string"</span>, cb))
@@ -413,7 +413,7 @@
             self:read_stream(cb_inner)
         <span class="keyword">end</span>,
         line = { <span class="string">"stream"</span>, <span class="keyword">function</span>(results, cb_inner)
-            <span class="keyword">local</span> stream = <span class="global">table</span>.<span class="global">unpack</span>(results.stream)
+            <span class="keyword">local</span> stream = <span class="global">table</span>.unpack(results.stream)
             stream = Gio.DataInputStream.new(stream)
 
             stream:read_line_async(priority, <span class="keyword">nil</span>, <span class="keyword">function</span>(_, token)
@@ -448,7 +448,7 @@
             self:read_stream(cb_inner)
         <span class="keyword">end</span>,
         lines = { <span class="string">"stream"</span>, <span class="keyword">function</span>(results, cb_inner)
-            <span class="keyword">local</span> stream = <span class="global">table</span>.<span class="global">unpack</span>(results.stream)
+            <span class="keyword">local</span> stream = <span class="global">table</span>.unpack(results.stream)
             stream = Gio.DataInputStream.new(stream)
 
             <span class="keyword">local</span> <span class="keyword">function</span> read_line(cb_line)
@@ -651,7 +651,7 @@
 
     <footer class="footer">
         <div class="content has-text-centered">
-            Generated by <a href="https://github/com/stevendonovan/LDoc">LDoc 1.4.6</a>, designed with <a href="https://github.com/jgthms/bulma">Bulma</a>. Last updated at 2022-03-10 18:27:39.
+            Generated by <a href="https://github/com/stevendonovan/LDoc">LDoc 1.4.6</a>, designed with <a href="https://github.com/jgthms/bulma">Bulma</a>. Last updated at 2022-03-10 22:33:16.
         </div>
     </footer>
 </div>
