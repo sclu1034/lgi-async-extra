@@ -43,11 +43,17 @@
 </span><span class="comment">-- @license GPL v3.0
 </span><span class="comment">---------------------------------------------------------------------------
 </span>
+<span class="keyword">local</span> async = <span class="global">require</span>(<span class="string">"async"</span>)
 <span class="keyword">local</span> lgi = <span class="global">require</span>(<span class="string">"lgi"</span>)
 <span class="keyword">local</span> Gio = lgi.Gio
+<span class="keyword">local</span> GLib = lgi.GLib
 
 <span class="keyword">local</span> <span class="global">module</span> = {}
 
+
+<span class="comment">--- Constructors
+</span><span class="comment">-- @section constructors
+</span>
 <span class="comment">--- Creates a dummy input stream.
 </span><span class="comment">--
 </span><span class="comment">-- Gio currently supports asynchronous splicing only between IOStreams, which combine both an input and output stream.
@@ -56,7 +62,7 @@
 </span><span class="comment">--
 </span><span class="comment">-- See [docs.gtk.org](https://docs.gtk.org/gio/class.MemoryInputStream.html) for additional details.
 </span><span class="comment">--
-</span><a id="22"></a><span class="comment">-- @treturn Gio.MemoryInputStream
+</span><a id="28"></a><span class="comment">-- @treturn Gio.MemoryInputStream
 </span><span class="keyword">function</span> <span class="global">module</span>.new_dummy_input()
     <span class="keyword">return</span> Gio.MemoryInputStream.new()
 <span class="keyword">end</span>
@@ -70,7 +76,7 @@
 </span><span class="comment">--
 </span><span class="comment">-- See [docs.gtk.org](https://docs.gtk.org/gio/class.MemoryOutputStream.html) for additional details.
 </span><span class="comment">--
-</span><a id="36"></a><span class="comment">-- @treturn Gio.MemoryOutputStream
+</span><a id="42"></a><span class="comment">-- @treturn Gio.MemoryOutputStream
 </span><span class="keyword">function</span> <span class="global">module</span>.new_dummy_output()
     <span class="keyword">return</span> Gio.MemoryOutputStream.new()
 <span class="keyword">end</span>
@@ -84,11 +90,58 @@
 </span><span class="comment">--
 </span><span class="comment">-- @tparam[opt] Gio.InputStream input_stream
 </span><span class="comment">-- @tparam[opt] Gio.OutputStream output_stream
-</span><a id="50"></a><span class="comment">-- @treturn Gio.SimpleIOStream
+</span><a id="56"></a><span class="comment">-- @treturn Gio.SimpleIOStream
 </span><span class="keyword">function</span> <span class="global">module</span>.to_io_stream(input_stream, output_stream)
     input_stream = input_stream <span class="keyword">or</span> <span class="global">module</span>.new_dummy_input()
     output_stream = output_stream <span class="keyword">or</span> <span class="global">module</span>.new_dummy_output()
     <span class="keyword">return</span> Gio.SimpleIOStream.new(input_stream, output_stream)
+<span class="keyword">end</span>
+
+
+<span class="comment">--- Utilities
+</span><span class="comment">-- @section utilities
+</span>
+
+<span class="comment">--- Reads the entire stream into memory.
+</span><span class="comment">--
+</span><span class="comment">-- @since 0.2.0
+</span><span class="comment">-- @async
+</span><span class="comment">-- @tparam Gio.InputStream stream The stream to read from.
+</span><span class="comment">-- @tparam function cb
+</span><span class="comment">-- @treturn[opt] GLib.Error
+</span><a id="75"></a><span class="comment">-- @treturn nil|string
+</span><span class="keyword">function</span> <span class="global">module</span>.read_string(stream, cb)
+    <span class="keyword">local</span> priority = GLib.PRIORITY_DEFAULT
+    <span class="keyword">local</span> BUFFER_SIZE = <span class="number">4096</span>
+    <span class="keyword">local</span> str
+
+    <span class="keyword">local</span> <span class="keyword">function</span> read_chunk(cb_chunk)
+        stream:read_bytes_async(BUFFER_SIZE, priority, <span class="keyword">nil</span>, <span class="keyword">function</span>(_, token)
+            <span class="keyword">local</span> bytes, err = stream:read_bytes_finish(token)
+
+            <span class="keyword">if</span> err <span class="keyword">then</span>
+                <span class="keyword">return</span> cb_chunk(err)
+            <span class="keyword">end</span>
+
+            <span class="keyword">if</span> bytes <span class="keyword">and</span> #bytes &gt; <span class="number">0</span> <span class="keyword">then</span>
+                <span class="keyword">if</span> <span class="keyword">not</span> str <span class="keyword">then</span>
+                    str = bytes:get_data()
+                <span class="keyword">else</span>
+                    str = str .. bytes:get_data()
+                <span class="keyword">end</span>
+            <span class="keyword">end</span>
+
+            cb_chunk(<span class="keyword">nil</span>, bytes)
+        <span class="keyword">end</span>)
+    <span class="keyword">end</span>
+
+    <span class="keyword">local</span> <span class="keyword">function</span> check(bytes, cb_check)
+        cb_check(<span class="keyword">nil</span>, bytes ~= <span class="keyword">nil</span> <span class="keyword">and</span> #bytes == BUFFER_SIZE)
+    <span class="keyword">end</span>
+
+    async.do_while(read_chunk, check, <span class="keyword">function</span>(err)
+        cb(err, str)
+    <span class="keyword">end</span>)
 <span class="keyword">end</span>
 
 <span class="keyword">return</span> <span class="global">module</span></pre>
@@ -98,7 +151,7 @@
 
 <footer class="footer">
     <div class="content has-text-centered">
-        Generated by <a href="https://github/com/stevendonovan/LDoc">LDoc 1.4.6</a>, designed with <a href="https://github.com/jgthms/bulma">Bulma</a>. Last updated at 2022-03-10 13:16:01.
+        Generated by <a href="https://github/com/stevendonovan/LDoc">LDoc 1.4.6</a>, designed with <a href="https://github.com/jgthms/bulma">Bulma</a>. Last updated at 2022-03-10 14:16:22.
     </div>
 </footer>
 

@@ -44,7 +44,7 @@
                 <p><p> A file handle can be created through one of the constructor functions. File
  operations are performed on that handle.</p>
 
-<p> The API is callback based, so the use of <a href="https://github.com/sclu1034/async.lua">async.lua</a> for composition is
+<p> The API is callback-based, so the use of <a href="https://github.com/sclu1034/async.lua">async.lua</a> for composition is
  recommended. All callbacks receive an <code>err</code> value as first argument, and any non-error return values
  after that.
  The <code>err</code> value will be <code>nil</code> on success, or an error value otherwise. In almost all cases
@@ -56,7 +56,7 @@ read_non_existent_file(<span class="keyword">function</span>(err, data)
 </span>    <span class="global">assert</span>(err.domain == Gio.IOErrorEnum)
     <span class="comment">-- Checking the error code against a constant is the recommended way,
 </span>    <span class="comment">-- but a bit verbose, due to LGI's mapping.
-</span>    <span class="comment">-- See: https://github.com/pavouk/lgi/blob/master/docs/guide.md
+</span>    <span class="comment">-- See https://github.com/pavouk/lgi/blob/master/docs/guide.md for explanation on this mapping.
 </span>    <span class="global">assert</span>(err.code == Gio.IOErrorEnum[Gio.IOErrorEnum.NOT_FOUND])
 <span class="keyword">end</span>)
 </pre>
@@ -76,7 +76,7 @@ async.waterfall({
 </span>        f:write(<span class="string">"world"</span>, <span class="string">"append"</span>, cb)
     <span class="keyword">end</span>,
     <span class="keyword">function</span>(cb)
-        f:read_all(cb)
+        f:read_string(cb)
     <span class="keyword">end</span>,
 }, <span class="keyword">function</span>(err, data)
     <span class="global">print</span>(err)
@@ -191,7 +191,7 @@ async.waterfall({
                 <div id="new_for_path" class="box section__item">
                     <div class="block section__item__title">
                         <strong>new_for_path(path)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#66">line 66</a>
+                        <a class="source-ref" href="../source/file.lua.html#68">line 68</a>
                     </div>
 
                     <div class="block content section__item__description">Create a file handle for the given local path. </p>
@@ -237,7 +237,7 @@ async.waterfall({
                 <div id="new_for_uri" class="box section__item">
                     <div class="block section__item__title">
                         <strong>new_for_uri(uri)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#85">line 85</a>
+                        <a class="source-ref" href="../source/file.lua.html#87">line 87</a>
                     </div>
 
                     <div class="block content section__item__description">Create a file handle for the given remote URI. </p>
@@ -283,7 +283,7 @@ async.waterfall({
                 <div id="new_tmp" class="box section__item">
                     <div class="block section__item__title">
                         <strong>new_tmp([template=".XXXXXX"])</strong>
-                        <a class="source-ref" href="../source/file.lua.html#118">line 118</a>
+                        <a class="source-ref" href="../source/file.lua.html#120">line 120</a>
                     </div>
 
                     <div class="block content section__item__description">Create a new file in a directory preferred for temporary storage. </p>
@@ -374,7 +374,7 @@ async.waterfall({
                 <div id="File:get_path" class="box section__item">
                     <div class="block section__item__title">
                         <strong>File:get_path()</strong>
-                        <a class="source-ref" href="../source/file.lua.html#177">line 177</a>
+                        <a class="source-ref" href="../source/file.lua.html#179">line 179</a>
                     </div>
 
                     <div class="block content section__item__description">Get the file&rsquo;s path name. </p>
@@ -401,7 +401,7 @@ async.waterfall({
                 <div id="File:read_stream" class="box section__item">
                     <div class="block section__item__title">
                         <strong>File:read_stream(cb)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#198">line 198</a>
+                        <a class="source-ref" href="../source/file.lua.html#200">line 200</a>
                         <span class="tag">async</span>
                     </div>
 
@@ -469,7 +469,7 @@ end)
                 <div id="File:write_stream" class="box section__item">
                     <div class="block section__item__title">
                         <strong>File:write_stream([mode="replace"], cb)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#228">line 228</a>
+                        <a class="source-ref" href="../source/file.lua.html#230">line 230</a>
                         <span class="tag">async</span>
                     </div>
 
@@ -558,7 +558,7 @@ end)
                 <div id="File:write" class="box section__item">
                     <div class="block section__item__title">
                         <strong>File:write(data[, mode="replace"], cb)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#272">line 272</a>
+                        <a class="source-ref" href="../source/file.lua.html#274">line 274</a>
                         <span class="tag">async</span>
                     </div>
 
@@ -638,7 +638,7 @@ end)
                 <div id="File:read_bytes" class="box section__item">
                     <div class="block section__item__title">
                         <strong>File:read_bytes(size, cb)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#308">line 308</a>
+                        <a class="source-ref" href="../source/file.lua.html#310">line 310</a>
                         <span class="tag">async</span>
                     </div>
 
@@ -714,14 +714,16 @@ end)
                 <div id="File:read_string" class="box section__item">
                     <div class="block section__item__title">
                         <strong>File:read_string(cb)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#339">line 339</a>
+                        <a class="source-ref" href="../source/file.lua.html#343">line 343</a>
                         <span class="tag">async</span>
                     </div>
 
                     <div class="block content section__item__description">Read the entire file&rsquo;s content into memory. </p>
 
-<p> Note that this currently only works for files with a known size. Virtual files cannot be read from successfully
- and will either return an empty string or fail.</div>
+<p> This collects the content into a Lua <a href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a>, so text files an be used as-is.
+ For binary content, use <a href="https://www.lua.org/manual/5.1/manual.html#pdf-string.byte">string.byte</a> to access the raw values or manually wrap the result of
+ <a href="../modules/file.html#File:read_stream">File:read_stream</a> in a <a href="https://docs.gtk.org/gio/class.DataInputStream.html">Gio.DataInputStream</a> and
+ read individual values based on their binary size.</div>
 
                     <div class="block content section__item__params">
                         <h4 class="title is-6">Parameters:</h4>
@@ -780,7 +782,7 @@ end)
                 <div id="File:read_line" class="box section__item">
                     <div class="block section__item__title">
                         <strong>File:read_line(cb)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#397">line 397</a>
+                        <a class="source-ref" href="../source/file.lua.html#370">line 370</a>
                         <span class="tag">async</span>
                     </div>
 
@@ -848,7 +850,7 @@ end)
                 <div id="File:iterate_lines" class="box section__item">
                     <div class="block section__item__title">
                         <strong>File:iterate_lines(iteratee, cb)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#431">line 431</a>
+                        <a class="source-ref" href="../source/file.lua.html#404">line 404</a>
                     </div>
 
                     <div class="block content section__item__description">Asynchronously iterate over the file line by line. </p>
@@ -901,7 +903,7 @@ end)
                 <div id="File:move" class="box section__item">
                     <div class="block section__item__title">
                         <strong>File:move(destination, cb)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#478">line 478</a>
+                        <a class="source-ref" href="../source/file.lua.html#451">line 451</a>
                         <span class="tag">async</span>
                     </div>
 
@@ -961,7 +963,7 @@ end)
                 <div id="File:delete" class="box section__item">
                     <div class="block section__item__title">
                         <strong>File:delete(cb)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#502">line 502</a>
+                        <a class="source-ref" href="../source/file.lua.html#475">line 475</a>
                         <span class="tag">async</span>
                     </div>
 
@@ -1011,7 +1013,7 @@ end)
                 <div id="File:trash" class="box section__item">
                     <div class="block section__item__title">
                         <strong>File:trash(cb)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#521">line 521</a>
+                        <a class="source-ref" href="../source/file.lua.html#494">line 494</a>
                         <span class="tag">async</span>
                     </div>
 
@@ -1058,7 +1060,7 @@ end)
                 <div id="File:query_info" class="box section__item">
                     <div class="block section__item__title">
                         <strong>File:query_info(attribute, cb)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#550">line 550</a>
+                        <a class="source-ref" href="../source/file.lua.html#523">line 523</a>
                         <span class="tag">async</span>
                     </div>
 
@@ -1136,7 +1138,7 @@ end)
                 <div id="File:exists" class="box section__item">
                     <div class="block section__item__title">
                         <strong>File:exists(cb)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#575">line 575</a>
+                        <a class="source-ref" href="../source/file.lua.html#548">line 548</a>
                         <span class="tag">async</span>
                     </div>
 
@@ -1184,7 +1186,7 @@ end)
                             </li>
                             <li class="return-value">
                                 <div class="return-value__description">
-                                    <span><code>true</code> if the file exists on disk</span>
+                                    <span><code>true</code> if the file exists at its specified location.</span>
                                 </div>
                                 <div class="field is-grouped is-grouped-multiline">
                                     <div class="control">
@@ -1201,7 +1203,7 @@ end)
                 <div id="File:size" class="box section__item">
                     <div class="block section__item__title">
                         <strong>File:size(cb)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#601">line 601</a>
+                        <a class="source-ref" href="../source/file.lua.html#574">line 574</a>
                         <span class="tag">async</span>
                     </div>
 
@@ -1258,7 +1260,7 @@ end)
                 <div id="File:type" class="box section__item">
                     <div class="block section__item__title">
                         <strong>File:type(cb)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#630">line 630</a>
+                        <a class="source-ref" href="../source/file.lua.html#603">line 603</a>
                         <span class="tag">async</span>
                     </div>
 
@@ -1332,7 +1334,7 @@ end)
 
 <footer class="footer">
     <div class="content has-text-centered">
-        Generated by <a href="https://github/com/stevendonovan/LDoc">LDoc 1.4.6</a>, designed with <a href="https://github.com/jgthms/bulma">Bulma</a>. Last updated at 2022-03-10 13:16:01.
+        Generated by <a href="https://github/com/stevendonovan/LDoc">LDoc 1.4.6</a>, designed with <a href="https://github.com/jgthms/bulma">Bulma</a>. Last updated at 2022-03-10 14:16:22.
     </div>
 </footer>
 

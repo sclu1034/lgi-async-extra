@@ -23,7 +23,8 @@
                 <a class="is-active">stream</a>
                 <ul>
                     <li><a href="#toc">Table of contents</a></li>
-                    <li><a href="#Functions">Functions</a></li>
+                    <li><a href="#Constructors">Constructors </a></li>
+                    <li><a href="#Utilities">Utilities </a></li>
                 </ul>
             </li>
         </ul>
@@ -56,7 +57,7 @@
     <section class="section section__module-summary">
         <div class="container">
             <h2 id="toc" class="title is-3">Table of contents</h2>
-            <h3 class="title is-4"><a href="#Functions">Functions</a></h3>
+            <h3 class="title is-4"><a href="#Constructors">Constructors </a></h3>
             <table class="table is-fullwidth is-striped">
                 <tbody>
                     <tr>
@@ -73,17 +74,26 @@
                     </tr>
                 </tbody>
             </table>
+            <h3 class="title is-4"><a href="#Utilities">Utilities </a></h3>
+            <table class="table is-fullwidth is-striped">
+                <tbody>
+                    <tr>
+                        <td class="name"><a href="#module.read_string">module.read_string(stream, cb)</a></td>
+                        <td class="summary">Reads the entire stream into memory.</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </section>
 
-    <section class="section section--Functions">
+    <section class="section section--Constructors ">
         <div class="container">
-            <h2 class="title is-2" id="Functions"><a href="#Functions">Functions</a></h2>
+            <h2 class="title is-2" id="Constructors"><a href="#Constructors">Constructors </a></h2>
             <div class="section__content">
                 <div id="module.new_dummy_input" class="box section__item">
                     <div class="block section__item__title">
                         <strong>module.new_dummy_input()</strong>
-                        <a class="source-ref" href="../source/stream.lua.html#22">line 22</a>
+                        <a class="source-ref" href="../source/stream.lua.html#28">line 28</a>
                     </div>
 
                     <div class="block content section__item__description">Creates a dummy input stream. </p>
@@ -113,7 +123,7 @@
                 <div id="module.new_dummy_output" class="box section__item">
                     <div class="block section__item__title">
                         <strong>module.new_dummy_output()</strong>
-                        <a class="source-ref" href="../source/stream.lua.html#36">line 36</a>
+                        <a class="source-ref" href="../source/stream.lua.html#42">line 42</a>
                     </div>
 
                     <div class="block content section__item__description">Creates a dummy output stream. </p>
@@ -143,7 +153,7 @@
                 <div id="module.to_io_stream" class="box section__item">
                     <div class="block section__item__title">
                         <strong>module.to_io_stream([input_stream[, output_stream]])</strong>
-                        <a class="source-ref" href="../source/stream.lua.html#50">line 50</a>
+                        <a class="source-ref" href="../source/stream.lua.html#56">line 56</a>
                     </div>
 
                     <div class="block content section__item__description">Combines an input and output stream into a single IOStream. </p>
@@ -213,11 +223,86 @@
             </div>
         </div>
     </section>
+    <section class="section section--Utilities ">
+        <div class="container">
+            <h2 class="title is-2" id="Utilities"><a href="#Utilities">Utilities </a></h2>
+            <div class="section__content">
+                <div id="module.read_string" class="box section__item">
+                    <div class="block section__item__title">
+                        <strong>module.read_string(stream, cb)</strong>
+                        <a class="source-ref" href="../source/stream.lua.html#75">line 75</a>
+                        <span class="tag">async</span>
+                    </div>
+
+                    <div class="block content section__item__description">Reads the entire stream into memory.</div>
+
+                    <div class="block content section__item__params">
+                        <h4 class="title is-6">Parameters:</h4>
+                        <ul>
+                            <li class="parameter">
+                                <div>
+                                    <span class="parameter__name"><em>stream</em></span>
+                                    <span class="parameter__description">:&nbsp; The stream to read from.</span>
+                                </div>
+                                <div class="field is-grouped is-grouped-multiline parameter__tags">
+                                    <div class="control">
+                                        <div class="tags has-addons">
+                                            <span class="tag is-dark">type</span>
+                                            <span class="tag"><span class="type">Gio.InputStream</span></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="parameter">
+                                <div>
+                                    <span class="parameter__name"><em>cb</em></span>
+                                </div>
+                                <div class="field is-grouped is-grouped-multiline parameter__tags">
+                                    <div class="control">
+                                        <div class="tags has-addons">
+                                            <span class="tag is-dark">type</span>
+                                            <span class="tag"><span class="type">function</span></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+
+                        </ul>
+                    </div>
+                    <div class="block content section__item__returns">
+                        <h4 class="title is-6">Callback parameters:</h4>
+                        <ul>
+                            <li class="return-value">
+                                <div class="field is-grouped is-grouped-multiline">
+                                    <div class="control">
+                                        <div class="tags has-addons">
+                                            <span class="tag is-dark">type</span>
+                                            <span class="tag return-value__type"><span class="type">GLib.Error</span></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="return-value">
+                                <div class="field is-grouped is-grouped-multiline">
+                                    <div class="control">
+                                        <div class="tags has-addons">
+                                            <span class="tag is-dark">type</span>
+                                            <span class="tag return-value__type"><span class="type">nil</span> or <a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 </div>
 
 <footer class="footer">
     <div class="content has-text-centered">
-        Generated by <a href="https://github/com/stevendonovan/LDoc">LDoc 1.4.6</a>, designed with <a href="https://github.com/jgthms/bulma">Bulma</a>. Last updated at 2022-03-10 13:16:01.
+        Generated by <a href="https://github/com/stevendonovan/LDoc">LDoc 1.4.6</a>, designed with <a href="https://github.com/jgthms/bulma">Bulma</a>. Last updated at 2022-03-10 14:16:22.
     </div>
 </footer>
 
