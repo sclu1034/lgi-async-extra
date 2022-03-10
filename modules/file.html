@@ -136,7 +136,11 @@ async.waterfall({
                         <td class="summary">Write the data to the opened file.</td>
                     </tr>
                     <tr>
-                        <td class="name"><a href="#File:read_all">File:read_all(cb)</a></td>
+                        <td class="name"><a href="#File:read_bytes">File:read_bytes(size, cb)</a></td>
+                        <td class="summary">Read at most the specified number of bytes from the file.</td>
+                    </tr>
+                    <tr>
+                        <td class="name"><a href="#File:read_string">File:read_string(cb)</a></td>
                         <td class="summary">Read the entire file&rsquo;s content into memory.</td>
                     </tr>
                     <tr>
@@ -144,7 +148,7 @@ async.waterfall({
                         <td class="summary">Read a line from the file.</td>
                     </tr>
                     <tr>
-                        <td class="name"><a href="#File:read_lines">File:read_lines(iteratee, final_callback)</a></td>
+                        <td class="name"><a href="#File:iterate_lines">File:iterate_lines(iteratee, cb)</a></td>
                         <td class="summary">Asynchronously iterate over the file line by line.</td>
                     </tr>
                     <tr>
@@ -370,7 +374,7 @@ async.waterfall({
                 <div id="File:get_path" class="box section__item">
                     <div class="block section__item__title">
                         <strong>File:get_path()</strong>
-                        <a class="source-ref" href="../source/file.lua.html#138">line 138</a>
+                        <a class="source-ref" href="../source/file.lua.html#177">line 177</a>
                     </div>
 
                     <div class="block content section__item__description">Get the file&rsquo;s path name. </p>
@@ -397,7 +401,7 @@ async.waterfall({
                 <div id="File:read_stream" class="box section__item">
                     <div class="block section__item__title">
                         <strong>File:read_stream(cb)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#159">line 159</a>
+                        <a class="source-ref" href="../source/file.lua.html#198">line 198</a>
                         <span class="tag">async</span>
                     </div>
 
@@ -465,7 +469,7 @@ end)
                 <div id="File:write_stream" class="box section__item">
                     <div class="block section__item__title">
                         <strong>File:write_stream([mode="replace"], cb)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#189">line 189</a>
+                        <a class="source-ref" href="../source/file.lua.html#228">line 228</a>
                         <span class="tag">async</span>
                     </div>
 
@@ -554,7 +558,7 @@ end)
                 <div id="File:write" class="box section__item">
                     <div class="block section__item__title">
                         <strong>File:write(data[, mode="replace"], cb)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#233">line 233</a>
+                        <a class="source-ref" href="../source/file.lua.html#272">line 272</a>
                         <span class="tag">async</span>
                     </div>
 
@@ -631,10 +635,86 @@ end)
                         </ul>
                     </div>
                 </div>
-                <div id="File:read_all" class="box section__item">
+                <div id="File:read_bytes" class="box section__item">
                     <div class="block section__item__title">
-                        <strong>File:read_all(cb)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#277">line 277</a>
+                        <strong>File:read_bytes(size, cb)</strong>
+                        <a class="source-ref" href="../source/file.lua.html#308">line 308</a>
+                        <span class="tag">async</span>
+                    </div>
+
+                    <div class="block content section__item__description">Read at most the specified number of bytes from the file. </p>
+
+<p> If there is not enough data to read, the result may contain less than <code>size</code> bytes of data.</div>
+
+                    <div class="block content section__item__params">
+                        <h4 class="title is-6">Parameters:</h4>
+                        <ul>
+                            <li class="parameter">
+                                <div>
+                                    <span class="parameter__name"><em>size</em></span>
+                                    <span class="parameter__description">:&nbsp; The number of bytes to read.</span>
+                                </div>
+                                <div class="field is-grouped is-grouped-multiline parameter__tags">
+                                    <div class="control">
+                                        <div class="tags has-addons">
+                                            <span class="tag is-dark">type</span>
+                                            <span class="tag"><span class="type">number</span></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="parameter">
+                                <div>
+                                    <span class="parameter__name"><em>cb</em></span>
+                                    <span class="parameter__description">:&nbsp; The callback to call when reading finished.
+   Signature: <code>function(err, data)</code></span>
+                                </div>
+                                <div class="field is-grouped is-grouped-multiline parameter__tags">
+                                    <div class="control">
+                                        <div class="tags has-addons">
+                                            <span class="tag is-dark">type</span>
+                                            <span class="tag"><span class="type">function</span></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+
+                        </ul>
+                    </div>
+                    <div class="block content section__item__returns">
+                        <h4 class="title is-6">Callback parameters:</h4>
+                        <ul>
+                            <li class="return-value">
+                                <div class="return-value__description">
+                                    <span>An instance of <code>GError</code> if there was an error,
+   <code>nil</code> otherwise.</span>
+                                </div>
+                                <div class="field is-grouped is-grouped-multiline">
+                                    <div class="control">
+                                        <div class="tags has-addons">
+                                            <span class="tag is-dark">type</span>
+                                            <span class="tag return-value__type"><span class="type">GLib.Error</span></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="return-value">
+                                <div class="field is-grouped is-grouped-multiline">
+                                    <div class="control">
+                                        <div class="tags has-addons">
+                                            <span class="tag is-dark">type</span>
+                                            <span class="tag return-value__type"><span class="type">GLib.Bytes</span></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div id="File:read_string" class="box section__item">
+                    <div class="block section__item__title">
+                        <strong>File:read_string(cb)</strong>
+                        <a class="source-ref" href="../source/file.lua.html#339">line 339</a>
                         <span class="tag">async</span>
                     </div>
 
@@ -700,13 +780,17 @@ end)
                 <div id="File:read_line" class="box section__item">
                     <div class="block section__item__title">
                         <strong>File:read_line(cb)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#341">line 341</a>
+                        <a class="source-ref" href="../source/file.lua.html#397">line 397</a>
                         <span class="tag">async</span>
                     </div>
 
                     <div class="block content section__item__description">Read a line from the file. </p>
 
-<p> Inefficient when reading lines repeatedly from the same file.</div>
+<p> Like all other operations, this always reads from the beginning of the file. Calling this function
+ repeatedly on the same file will always yield the first line.</p>
+
+<p> To iterate over all lines, use <a href="../modules/file.html#File:iterate_lines">File:iterate_lines</a>. To read more than just one line, use <a href="../modules/file.html#File:read_bytes">File:read_bytes</a> or
+ <a href="../modules/file.html#File:read_string">File:read_string</a>.</div>
 
                     <div class="block content section__item__params">
                         <h4 class="title is-6">Parameters:</h4>
@@ -716,6 +800,12 @@ end)
                                     <span class="parameter__name"><em>cb</em></span>
                                 </div>
                                 <div class="field is-grouped is-grouped-multiline parameter__tags">
+                                    <div class="control">
+                                        <div class="tags has-addons">
+                                            <span class="tag is-dark">type</span>
+                                            <span class="tag"><span class="type">function</span></span>
+                                        </div>
+                                    </div>
                                 </div>
                             </li>
 
@@ -755,10 +845,10 @@ end)
                         </ul>
                     </div>
                 </div>
-                <div id="File:read_lines" class="box section__item">
+                <div id="File:iterate_lines" class="box section__item">
                     <div class="block section__item__title">
-                        <strong>File:read_lines(iteratee, final_callback)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#384">line 384</a>
+                        <strong>File:iterate_lines(iteratee, cb)</strong>
+                        <a class="source-ref" href="../source/file.lua.html#431">line 431</a>
                     </div>
 
                     <div class="block content section__item__description">Asynchronously iterate over the file line by line. </p>
@@ -769,7 +859,7 @@ end)
  and a callback function. The callback must always be called to ensure the
  file handle is cleaned up eventually. The expected signature for the callback
  is <code>cb(err, stop)</code>. If <code>err ~= nil</code> or a value for <code>stop</code> is given, iteration stops
- immediately and <code>final_callback</code> will be called.</div>
+ immediately and <code>cb</code> will be called.</div>
 
                     <div class="block content section__item__params">
                         <h4 class="title is-6">Parameters:</h4>
@@ -791,7 +881,7 @@ end)
                             </li>
                             <li class="parameter">
                                 <div>
-                                    <span class="parameter__name"><em>final_callback</em></span>
+                                    <span class="parameter__name"><em>cb</em></span>
                                     <span class="parameter__description">:&nbsp; Function to call when iteration has stopped.
    Signature: <code>function(err)</code>.</span>
                                 </div>
@@ -811,7 +901,7 @@ end)
                 <div id="File:move" class="box section__item">
                     <div class="block section__item__title">
                         <strong>File:move(destination, cb)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#436">line 436</a>
+                        <a class="source-ref" href="../source/file.lua.html#478">line 478</a>
                         <span class="tag">async</span>
                     </div>
 
@@ -871,7 +961,7 @@ end)
                 <div id="File:delete" class="box section__item">
                     <div class="block section__item__title">
                         <strong>File:delete(cb)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#460">line 460</a>
+                        <a class="source-ref" href="../source/file.lua.html#502">line 502</a>
                         <span class="tag">async</span>
                     </div>
 
@@ -921,7 +1011,7 @@ end)
                 <div id="File:trash" class="box section__item">
                     <div class="block section__item__title">
                         <strong>File:trash(cb)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#479">line 479</a>
+                        <a class="source-ref" href="../source/file.lua.html#521">line 521</a>
                         <span class="tag">async</span>
                     </div>
 
@@ -968,7 +1058,7 @@ end)
                 <div id="File:query_info" class="box section__item">
                     <div class="block section__item__title">
                         <strong>File:query_info(attribute, cb)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#508">line 508</a>
+                        <a class="source-ref" href="../source/file.lua.html#550">line 550</a>
                         <span class="tag">async</span>
                     </div>
 
@@ -1046,7 +1136,7 @@ end)
                 <div id="File:exists" class="box section__item">
                     <div class="block section__item__title">
                         <strong>File:exists(cb)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#533">line 533</a>
+                        <a class="source-ref" href="../source/file.lua.html#575">line 575</a>
                         <span class="tag">async</span>
                     </div>
 
@@ -1111,7 +1201,7 @@ end)
                 <div id="File:size" class="box section__item">
                     <div class="block section__item__title">
                         <strong>File:size(cb)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#559">line 559</a>
+                        <a class="source-ref" href="../source/file.lua.html#601">line 601</a>
                         <span class="tag">async</span>
                     </div>
 
@@ -1168,7 +1258,7 @@ end)
                 <div id="File:type" class="box section__item">
                     <div class="block section__item__title">
                         <strong>File:type(cb)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#588">line 588</a>
+                        <a class="source-ref" href="../source/file.lua.html#630">line 630</a>
                         <span class="tag">async</span>
                     </div>
 
@@ -1242,7 +1332,7 @@ end)
 
 <footer class="footer">
     <div class="content has-text-centered">
-        Generated by <a href="https://github/com/stevendonovan/LDoc">LDoc 1.4.6</a>, designed with <a href="https://github.com/jgthms/bulma">Bulma</a>. Last updated at 2022-03-09 21:13:56.
+        Generated by <a href="https://github/com/stevendonovan/LDoc">LDoc 1.4.6</a>, designed with <a href="https://github.com/jgthms/bulma">Bulma</a>. Last updated at 2022-03-10 13:16:01.
     </div>
 </footer>
 
