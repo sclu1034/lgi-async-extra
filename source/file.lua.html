@@ -167,7 +167,7 @@
 <span class="keyword">end</span>
 
 
-<span class="comment">--- @type File
+<span class="comment">--- @type file
 </span>
 
 <span class="comment">--- Creates a final callback to pass results and clean up the file stream.
@@ -368,7 +368,7 @@
 </span><span class="comment">--
 </span><span class="comment">-- This collects the content into a Lua <a href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a>, so text files an be used as-is.
 </span><span class="comment">-- For binary content, use <a href="https://www.lua.org/manual/5.1/manual.html#pdf-string.byte">string.byte</a> to access the raw values or manually wrap the result of
-</span><span class="comment">-- ??? in a [Gio.DataInputStream](https://docs.gtk.org/gio/class.DataInputStream.html) and
+</span><span class="comment">-- <a href="../modules/file.html#File:read_stream">file:read_stream</a> in a [Gio.DataInputStream](https://docs.gtk.org/gio/class.DataInputStream.html) and
 </span><span class="comment">-- read individual values based on their binary size.
 </span><span class="comment">--
 </span><span class="comment">-- @since 0.2.0
@@ -396,8 +396,8 @@
 </span><span class="comment">-- Like all other operations, this always reads from the beginning of the file. Calling this function
 </span><span class="comment">-- repeatedly on the same file will always yield the first line.
 </span><span class="comment">--
-</span><span class="comment">-- To iterate over all lines, use ???. To read more than just one line, use ??? or
-</span><span class="comment">-- ???.
+</span><span class="comment">-- To iterate over all lines, use <a href="../modules/file.html#File:iterate_lines">file:iterate_lines</a>. To read more than just one line, use <a href="../modules/file.html#File:read_bytes">file:read_bytes</a> or
+</span><span class="comment">-- <a href="../modules/file.html#File:read_string">file:read_string</a>.
 </span><span class="comment">--
 </span><span class="comment">-- @async
 </span><span class="comment">-- @tparam function cb
@@ -435,10 +435,11 @@
 </span><span class="comment">-- is `cb(err, stop)`. If `err ~= nil` or a value for `stop` is given, iteration stops
 </span><span class="comment">-- immediately and `cb` will be called.
 </span><span class="comment">--
+</span><span class="comment">-- @async
 </span><span class="comment">-- @tparam function iteratee Function to call per line in the file. Signature:
 </span><span class="comment">--   `function(err, line, cb)`
 </span><span class="comment">-- @tparam function cb Function to call when iteration has stopped.
-</span><a id="404"></a><span class="comment">--   Signature: `function(err)`.
+</span><a id="405"></a><span class="comment">--   Signature: `function(err)`.
 </span><span class="keyword">function</span> File:iterate_lines(iteratee, cb)
     <span class="keyword">local</span> priority = GLib.PRIORITY_DEFAULT
 
@@ -485,7 +486,7 @@
 </span><span class="comment">-- @async
 </span><span class="comment">-- @tparam string destination New path to move to
 </span><span class="comment">-- @tparam function cb
-</span><a id="451"></a><span class="comment">-- @treturn[opt] GLib.Error
+</span><a id="452"></a><span class="comment">-- @treturn[opt] GLib.Error
 </span><span class="keyword">function</span> File:move(destination, cb)
     <span class="keyword">local</span> f = self._private.f
     <span class="keyword">local</span> priority = GLib.PRIORITY_DEFAULT
@@ -509,7 +510,7 @@
 </span><span class="comment">--
 </span><span class="comment">-- @async
 </span><span class="comment">-- @tparam function cb
-</span><a id="475"></a><span class="comment">-- @treturn[opt] GLib.Error
+</span><a id="476"></a><span class="comment">-- @treturn[opt] GLib.Error
 </span><span class="keyword">function</span> File:delete(cb)
     <span class="keyword">local</span> f = self._private.f
     <span class="keyword">local</span> priority = GLib.PRIORITY_DEFAULT
@@ -528,7 +529,7 @@
 </span><span class="comment">--
 </span><span class="comment">-- @async
 </span><span class="comment">-- @tparam function cb
-</span><a id="494"></a><span class="comment">-- @treturn[opt] GLib.Error
+</span><a id="495"></a><span class="comment">-- @treturn[opt] GLib.Error
 </span><span class="keyword">function</span> File:trash(cb)
     <span class="keyword">local</span> f = self._private.f
     <span class="keyword">local</span> priority = GLib.PRIORITY_DEFAULT
@@ -557,7 +558,7 @@
 </span><span class="comment">-- @tparam string attribute The GIO file info attribute to query for.
 </span><span class="comment">-- @tparam function cb
 </span><span class="comment">-- @treturn[opt] GLib.Error
-</span><a id="523"></a><span class="comment">-- @treturn[opt] Gio.FileInfo
+</span><a id="524"></a><span class="comment">-- @treturn[opt] Gio.FileInfo
 </span><span class="keyword">function</span> File:query_info(attribute, cb)
     <span class="keyword">local</span> f = self._private.f
     <span class="keyword">local</span> priority = GLib.PRIORITY_DEFAULT
@@ -582,7 +583,7 @@
 </span><span class="comment">-- @async
 </span><span class="comment">-- @tparam function cb
 </span><span class="comment">-- @treturn[opt] GLib.Error
-</span><a id="548"></a><span class="comment">-- @treturn boolean `true` if the file exists at its specified location.
+</span><a id="549"></a><span class="comment">-- @treturn boolean `true` if the file exists at its specified location.
 </span><span class="keyword">function</span> File:exists(cb)
     self:query_info(<span class="string">"standard::type"</span>, <span class="keyword">function</span> (err)
         <span class="keyword">if</span> err <span class="keyword">then</span>
@@ -608,7 +609,7 @@
 </span><span class="comment">-- @async
 </span><span class="comment">-- @tparam function cb
 </span><span class="comment">-- @treturn[opt] GLib.Error
-</span><a id="574"></a><span class="comment">-- @treturn[opt] number
+</span><a id="575"></a><span class="comment">-- @treturn[opt] number
 </span><span class="keyword">function</span> File:size(cb)
     self:query_info(<span class="string">"standard::size"</span>, <span class="keyword">function</span> (err, info)
         <span class="comment">-- For some reason, the bindings return a float for a byte size
@@ -637,7 +638,7 @@
 </span><span class="comment">-- @async
 </span><span class="comment">-- @tparam function cb
 </span><span class="comment">-- @treturn[opt] GLib.Error
-</span><a id="603"></a><span class="comment">-- @treturn[opt] Gio.FileType
+</span><a id="604"></a><span class="comment">-- @treturn[opt] Gio.FileType
 </span><span class="keyword">function</span> File:<span class="global">type</span>(cb)
     self:query_info(<span class="string">"standard::type"</span>, <span class="keyword">function</span> (err, info)
         cb(err, info <span class="keyword">and</span> Gio.FileType[info:get_file_type()])
@@ -647,13 +648,13 @@
 <span class="keyword">return</span> file</pre>
 </div>
     </section>
-</div>
 
-<footer class="footer">
-    <div class="content has-text-centered">
-        Generated by <a href="https://github/com/stevendonovan/LDoc">LDoc 1.4.6</a>, designed with <a href="https://github.com/jgthms/bulma">Bulma</a>. Last updated at 2022-03-10 14:16:22.
-    </div>
-</footer>
+    <footer class="footer">
+        <div class="content has-text-centered">
+            Generated by <a href="https://github/com/stevendonovan/LDoc">LDoc 1.4.6</a>, designed with <a href="https://github.com/jgthms/bulma">Bulma</a>. Last updated at 2022-03-10 15:40:12.
+        </div>
+    </footer>
+</div>
 
 </body>
 </html>

@@ -23,7 +23,7 @@
                 <ul>
                     <li><a href="#toc">Table of contents</a></li>
                     <li><a href="#Constructors">Constructors </a></li>
-                    <li><a href="#Class_File">Class File </a></li>
+                    <li><a href="#Class_file">Class file </a></li>
                 </ul>
             </li>
             <li><a href="../modules/stream.html">stream</a></li>
@@ -116,7 +116,7 @@ async.waterfall({
                     </tr>
                 </tbody>
             </table>
-            <h3 class="title is-4"><a href="#Class_File">Class File </a></h3>
+            <h3 class="title is-4"><a href="#Class_file">Class file </a></h3>
             <table class="table is-fullwidth is-striped">
                 <tbody>
                     <tr>
@@ -188,11 +188,12 @@ async.waterfall({
         <div class="container">
             <h2 class="title is-2" id="Constructors"><a href="#Constructors">Constructors </a></h2>
             <div class="section__content">
-                <div id="new_for_path" class="box section__item">
+                <div id="new_for_path" class="box section__item ">
                     <div class="block section__item__title">
                         <strong>new_for_path(path)</strong>
                         <a class="source-ref" href="../source/file.lua.html#68">line 68</a>
                     </div>
+
 
                     <div class="block content section__item__description">Create a file handle for the given local path. </p>
 
@@ -226,7 +227,7 @@ async.waterfall({
                                     <div class="control">
                                         <div class="tags has-addons">
                                             <span class="tag is-dark">type</span>
-                                            <span class="tag return-value__type"><a class="type" href="../modules/file.html#File">File</a></span>
+                                            <span class="tag return-value__type"><span class="type">File</span></span>
                                         </div>
                                     </div>
                                 </div>
@@ -234,11 +235,12 @@ async.waterfall({
                         </ul>
                     </div>
                 </div>
-                <div id="new_for_uri" class="box section__item">
+                <div id="new_for_uri" class="box section__item ">
                     <div class="block section__item__title">
                         <strong>new_for_uri(uri)</strong>
                         <a class="source-ref" href="../source/file.lua.html#87">line 87</a>
                     </div>
+
 
                     <div class="block content section__item__description">Create a file handle for the given remote URI. </p>
 
@@ -272,7 +274,7 @@ async.waterfall({
                                     <div class="control">
                                         <div class="tags has-addons">
                                             <span class="tag is-dark">type</span>
-                                            <span class="tag return-value__type"><a class="type" href="../modules/file.html#File">File</a></span>
+                                            <span class="tag return-value__type"><span class="type">File</span></span>
                                         </div>
                                     </div>
                                 </div>
@@ -280,11 +282,12 @@ async.waterfall({
                         </ul>
                     </div>
                 </div>
-                <div id="new_tmp" class="box section__item">
+                <div id="new_tmp" class="box section__item ">
                     <div class="block section__item__title">
                         <strong>new_tmp([template=".XXXXXX"])</strong>
                         <a class="source-ref" href="../source/file.lua.html#120">line 120</a>
                     </div>
+
 
                     <div class="block content section__item__description">Create a new file in a directory preferred for temporary storage. </p>
 
@@ -336,7 +339,7 @@ async.waterfall({
                                     <div class="control">
                                         <div class="tags has-addons">
                                             <span class="tag is-dark">type</span>
-                                            <span class="tag return-value__type"><a class="type" href="../modules/file.html#File">File</a></span>
+                                            <span class="tag return-value__type"><span class="type">File</span></span>
                                         </div>
                                     </div>
                                 </div>
@@ -367,15 +370,16 @@ async.waterfall({
             </div>
         </div>
     </section>
-    <section class="section section--Class File ">
+    <section class="section section--Class file ">
         <div class="container">
-            <h2 class="title is-2" id="Class_File"><a href="#Class_File">Class File </a></h2>
+            <h2 class="title is-2" id="Class_file"><a href="#Class_file">Class file </a></h2>
             <div class="section__content">
-                <div id="File:get_path" class="box section__item">
+                <div id="File:get_path" class="box section__item ">
                     <div class="block section__item__title">
                         <strong>File:get_path()</strong>
                         <a class="source-ref" href="../source/file.lua.html#179">line 179</a>
                     </div>
+
 
                     <div class="block content section__item__description">Get the file&rsquo;s path name. </p>
 
@@ -398,11 +402,18 @@ async.waterfall({
                         </ul>
                     </div>
                 </div>
-                <div id="File:read_stream" class="box section__item">
+                <div id="File:read_stream" class="box section__item section__item--has-tags">
                     <div class="block section__item__title">
                         <strong>File:read_stream(cb)</strong>
                         <a class="source-ref" href="../source/file.lua.html#200">line 200</a>
-                        <span class="tag">async</span>
+                    </div>
+
+                    <div class="field is-grouped is-grouped-multiline section__item__tags">
+                        <div class="control">
+                            <span class="tag" data-tooltip="Function returns before the operation has finished. The callback function is called with the return values">async</span>
+                        </div>
+                        <div class="control">
+                        </div>
                     </div>
 
                     <div class="block content section__item__description"><p>Open a read stream. </p>
@@ -466,11 +477,18 @@ end)
                         </ul>
                     </div>
                 </div>
-                <div id="File:write_stream" class="box section__item">
+                <div id="File:write_stream" class="box section__item section__item--has-tags">
                     <div class="block section__item__title">
                         <strong>File:write_stream([mode="replace"], cb)</strong>
                         <a class="source-ref" href="../source/file.lua.html#230">line 230</a>
-                        <span class="tag">async</span>
+                    </div>
+
+                    <div class="field is-grouped is-grouped-multiline section__item__tags">
+                        <div class="control">
+                            <span class="tag" data-tooltip="Function returns before the operation has finished. The callback function is called with the return values">async</span>
+                        </div>
+                        <div class="control">
+                        </div>
                     </div>
 
                     <div class="block content section__item__description"><p>Open a write stream. </p>
@@ -555,11 +573,18 @@ end)
                         </ul>
                     </div>
                 </div>
-                <div id="File:write" class="box section__item">
+                <div id="File:write" class="box section__item section__item--has-tags">
                     <div class="block section__item__title">
                         <strong>File:write(data[, mode="replace"], cb)</strong>
                         <a class="source-ref" href="../source/file.lua.html#274">line 274</a>
-                        <span class="tag">async</span>
+                    </div>
+
+                    <div class="field is-grouped is-grouped-multiline section__item__tags">
+                        <div class="control">
+                            <span class="tag" data-tooltip="Function returns before the operation has finished. The callback function is called with the return values">async</span>
+                        </div>
+                        <div class="control">
+                        </div>
                     </div>
 
                     <div class="block content section__item__description">Write the data to the opened file.</div>
@@ -635,11 +660,22 @@ end)
                         </ul>
                     </div>
                 </div>
-                <div id="File:read_bytes" class="box section__item">
+                <div id="File:read_bytes" class="box section__item section__item--has-tags">
                     <div class="block section__item__title">
                         <strong>File:read_bytes(size, cb)</strong>
                         <a class="source-ref" href="../source/file.lua.html#310">line 310</a>
-                        <span class="tag">async</span>
+                    </div>
+
+                    <div class="field is-grouped is-grouped-multiline section__item__tags">
+                        <div class="control">
+                            <span class="tag" data-tooltip="Function returns before the operation has finished. The callback function is called with the return values">async</span>
+                        </div>
+                        <div class="control">
+                            <div class="tags has-addons" data-tooltip="This item has been added as part of release version v0.2.0.">
+                                <span class="tag is-dark">since</span>
+                                <span class="tag"><a href="https://github.com/sclu1034/lgi-async-extra/releases/tag/0.2.0">v0.2.0</a></span>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="block content section__item__description">Read at most the specified number of bytes from the file. </p>
@@ -711,18 +747,29 @@ end)
                         </ul>
                     </div>
                 </div>
-                <div id="File:read_string" class="box section__item">
+                <div id="File:read_string" class="box section__item section__item--has-tags">
                     <div class="block section__item__title">
                         <strong>File:read_string(cb)</strong>
                         <a class="source-ref" href="../source/file.lua.html#343">line 343</a>
-                        <span class="tag">async</span>
+                    </div>
+
+                    <div class="field is-grouped is-grouped-multiline section__item__tags">
+                        <div class="control">
+                            <span class="tag" data-tooltip="Function returns before the operation has finished. The callback function is called with the return values">async</span>
+                        </div>
+                        <div class="control">
+                            <div class="tags has-addons" data-tooltip="This item has been added as part of release version v0.2.0.">
+                                <span class="tag is-dark">since</span>
+                                <span class="tag"><a href="https://github.com/sclu1034/lgi-async-extra/releases/tag/0.2.0">v0.2.0</a></span>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="block content section__item__description">Read the entire file&rsquo;s content into memory. </p>
 
 <p> This collects the content into a Lua <a href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a>, so text files an be used as-is.
  For binary content, use <a href="https://www.lua.org/manual/5.1/manual.html#pdf-string.byte">string.byte</a> to access the raw values or manually wrap the result of
- <a href="../modules/file.html#File:read_stream">File:read_stream</a> in a <a href="https://docs.gtk.org/gio/class.DataInputStream.html">Gio.DataInputStream</a> and
+ <a href="../modules/file.html#File:read_stream">file:read_stream</a> in a <a href="https://docs.gtk.org/gio/class.DataInputStream.html">Gio.DataInputStream</a> and
  read individual values based on their binary size.</div>
 
                     <div class="block content section__item__params">
@@ -779,11 +826,18 @@ end)
                         </ul>
                     </div>
                 </div>
-                <div id="File:read_line" class="box section__item">
+                <div id="File:read_line" class="box section__item section__item--has-tags">
                     <div class="block section__item__title">
                         <strong>File:read_line(cb)</strong>
                         <a class="source-ref" href="../source/file.lua.html#370">line 370</a>
-                        <span class="tag">async</span>
+                    </div>
+
+                    <div class="field is-grouped is-grouped-multiline section__item__tags">
+                        <div class="control">
+                            <span class="tag" data-tooltip="Function returns before the operation has finished. The callback function is called with the return values">async</span>
+                        </div>
+                        <div class="control">
+                        </div>
                     </div>
 
                     <div class="block content section__item__description">Read a line from the file. </p>
@@ -791,8 +845,8 @@ end)
 <p> Like all other operations, this always reads from the beginning of the file. Calling this function
  repeatedly on the same file will always yield the first line.</p>
 
-<p> To iterate over all lines, use <a href="../modules/file.html#File:iterate_lines">File:iterate_lines</a>. To read more than just one line, use <a href="../modules/file.html#File:read_bytes">File:read_bytes</a> or
- <a href="../modules/file.html#File:read_string">File:read_string</a>.</div>
+<p> To iterate over all lines, use <a href="../modules/file.html#File:iterate_lines">file:iterate_lines</a>. To read more than just one line, use <a href="../modules/file.html#File:read_bytes">file:read_bytes</a> or
+ <a href="../modules/file.html#File:read_string">file:read_string</a>.</div>
 
                     <div class="block content section__item__params">
                         <h4 class="title is-6">Parameters:</h4>
@@ -847,10 +901,18 @@ end)
                         </ul>
                     </div>
                 </div>
-                <div id="File:iterate_lines" class="box section__item">
+                <div id="File:iterate_lines" class="box section__item section__item--has-tags">
                     <div class="block section__item__title">
                         <strong>File:iterate_lines(iteratee, cb)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#404">line 404</a>
+                        <a class="source-ref" href="../source/file.lua.html#405">line 405</a>
+                    </div>
+
+                    <div class="field is-grouped is-grouped-multiline section__item__tags">
+                        <div class="control">
+                            <span class="tag" data-tooltip="Function returns before the operation has finished. The callback function is called with the return values">async</span>
+                        </div>
+                        <div class="control">
+                        </div>
                     </div>
 
                     <div class="block content section__item__description">Asynchronously iterate over the file line by line. </p>
@@ -900,11 +962,18 @@ end)
                         </ul>
                     </div>
                 </div>
-                <div id="File:move" class="box section__item">
+                <div id="File:move" class="box section__item section__item--has-tags">
                     <div class="block section__item__title">
                         <strong>File:move(destination, cb)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#451">line 451</a>
-                        <span class="tag">async</span>
+                        <a class="source-ref" href="../source/file.lua.html#452">line 452</a>
+                    </div>
+
+                    <div class="field is-grouped is-grouped-multiline section__item__tags">
+                        <div class="control">
+                            <span class="tag" data-tooltip="Function returns before the operation has finished. The callback function is called with the return values">async</span>
+                        </div>
+                        <div class="control">
+                        </div>
                     </div>
 
                     <div class="block content section__item__description">Move the file to a new location. </p>
@@ -960,11 +1029,18 @@ end)
                         </ul>
                     </div>
                 </div>
-                <div id="File:delete" class="box section__item">
+                <div id="File:delete" class="box section__item section__item--has-tags">
                     <div class="block section__item__title">
                         <strong>File:delete(cb)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#475">line 475</a>
-                        <span class="tag">async</span>
+                        <a class="source-ref" href="../source/file.lua.html#476">line 476</a>
+                    </div>
+
+                    <div class="field is-grouped is-grouped-multiline section__item__tags">
+                        <div class="control">
+                            <span class="tag" data-tooltip="Function returns before the operation has finished. The callback function is called with the return values">async</span>
+                        </div>
+                        <div class="control">
+                        </div>
                     </div>
 
                     <div class="block content section__item__description">Delete the file. </p>
@@ -1010,11 +1086,18 @@ end)
                         </ul>
                     </div>
                 </div>
-                <div id="File:trash" class="box section__item">
+                <div id="File:trash" class="box section__item section__item--has-tags">
                     <div class="block section__item__title">
                         <strong>File:trash(cb)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#494">line 494</a>
-                        <span class="tag">async</span>
+                        <a class="source-ref" href="../source/file.lua.html#495">line 495</a>
+                    </div>
+
+                    <div class="field is-grouped is-grouped-multiline section__item__tags">
+                        <div class="control">
+                            <span class="tag" data-tooltip="Function returns before the operation has finished. The callback function is called with the return values">async</span>
+                        </div>
+                        <div class="control">
+                        </div>
                     </div>
 
                     <div class="block content section__item__description">Move the file to trash. </p>
@@ -1057,11 +1140,18 @@ end)
                         </ul>
                     </div>
                 </div>
-                <div id="File:query_info" class="box section__item">
+                <div id="File:query_info" class="box section__item section__item--has-tags">
                     <div class="block section__item__title">
                         <strong>File:query_info(attribute, cb)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#523">line 523</a>
-                        <span class="tag">async</span>
+                        <a class="source-ref" href="../source/file.lua.html#524">line 524</a>
+                    </div>
+
+                    <div class="field is-grouped is-grouped-multiline section__item__tags">
+                        <div class="control">
+                            <span class="tag" data-tooltip="Function returns before the operation has finished. The callback function is called with the return values">async</span>
+                        </div>
+                        <div class="control">
+                        </div>
                     </div>
 
                     <div class="block content section__item__description">Query file information. </p>
@@ -1135,11 +1225,18 @@ end)
                         </ul>
                     </div>
                 </div>
-                <div id="File:exists" class="box section__item">
+                <div id="File:exists" class="box section__item section__item--has-tags">
                     <div class="block section__item__title">
                         <strong>File:exists(cb)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#548">line 548</a>
-                        <span class="tag">async</span>
+                        <a class="source-ref" href="../source/file.lua.html#549">line 549</a>
+                    </div>
+
+                    <div class="field is-grouped is-grouped-multiline section__item__tags">
+                        <div class="control">
+                            <span class="tag" data-tooltip="Function returns before the operation has finished. The callback function is called with the return values">async</span>
+                        </div>
+                        <div class="control">
+                        </div>
                     </div>
 
                     <div class="block content section__item__description">Check if the file exists. </p>
@@ -1200,11 +1297,18 @@ end)
                         </ul>
                     </div>
                 </div>
-                <div id="File:size" class="box section__item">
+                <div id="File:size" class="box section__item section__item--has-tags">
                     <div class="block section__item__title">
                         <strong>File:size(cb)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#574">line 574</a>
-                        <span class="tag">async</span>
+                        <a class="source-ref" href="../source/file.lua.html#575">line 575</a>
+                    </div>
+
+                    <div class="field is-grouped is-grouped-multiline section__item__tags">
+                        <div class="control">
+                            <span class="tag" data-tooltip="Function returns before the operation has finished. The callback function is called with the return values">async</span>
+                        </div>
+                        <div class="control">
+                        </div>
                     </div>
 
                     <div class="block content section__item__description">Query the size of the file. </p>
@@ -1257,11 +1361,18 @@ end)
                         </ul>
                     </div>
                 </div>
-                <div id="File:type" class="box section__item">
+                <div id="File:type" class="box section__item section__item--has-tags">
                     <div class="block section__item__title">
                         <strong>File:type(cb)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#603">line 603</a>
-                        <span class="tag">async</span>
+                        <a class="source-ref" href="../source/file.lua.html#604">line 604</a>
+                    </div>
+
+                    <div class="field is-grouped is-grouped-multiline section__item__tags">
+                        <div class="control">
+                            <span class="tag" data-tooltip="Function returns before the operation has finished. The callback function is called with the return values">async</span>
+                        </div>
+                        <div class="control">
+                        </div>
                     </div>
 
                     <div class="block content section__item__description">Query the type of the file. </p>
@@ -1330,13 +1441,13 @@ end)
             </div>
         </div>
     </section>
-</div>
 
-<footer class="footer">
-    <div class="content has-text-centered">
-        Generated by <a href="https://github/com/stevendonovan/LDoc">LDoc 1.4.6</a>, designed with <a href="https://github.com/jgthms/bulma">Bulma</a>. Last updated at 2022-03-10 14:16:22.
-    </div>
-</footer>
+    <footer class="footer">
+        <div class="content has-text-centered">
+            Generated by <a href="https://github/com/stevendonovan/LDoc">LDoc 1.4.6</a>, designed with <a href="https://github.com/jgthms/bulma">Bulma</a>. Last updated at 2022-03-10 15:40:12.
+        </div>
+    </footer>
+</div>
 
 </body>
 </html>
