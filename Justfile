@@ -1,4 +1,7 @@
 outdir := "out"
+# Use 5.3 when available, otherwise fall back to what's installed as default version.
+# This is primarily needed for Arch, where 5.4 is the default, which breaks LGI.
+lua := `command -v lua5.3 2>/dev/null || command -v lua`
 
 doc:
     @mkdir -p "{{outdir}}/doc" "{{outdir}}/src"
@@ -7,13 +10,13 @@ doc:
     sass doc/ldoc.scss "{{outdir}}/doc/ldoc.css"
 
 test *ARGS:
-    busted --config-file=.busted.lua {{ARGS}} spec
+    busted --config-file=.busted.lua --lua="{{lua}}" {{ARGS}} spec
 
 check *ARGS:
     find src/ -iname '*.lua' | xargs luacheck {{ARGS}}
 
 make version="scm-1":
-    luarocks --local make rocks/lgi-async-extra-{{version}}.rockspec
+    luarocks --lua-version "$({{lua}} -v 2>&1 | sed 's/Lua \(5\.[0-9]\).*/\1/')" --local make rocks/lgi-async-extra-{{version}}.rockspec
 
 clean:
     rm -r "{{outdir}}"
