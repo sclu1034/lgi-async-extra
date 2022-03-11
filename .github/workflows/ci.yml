@@ -85,7 +85,6 @@ jobs:
           # LGI doesn't fully support Lua 5.4, yet. GitHub Actions don't really have a way to nicely visualize
           # a build that's allowed to fail. They look like the entire pipeline failed.
           # - lua_version: '5.4'
-          - lua_version: 'luajit'
     steps:
       - uses: actions/checkout@v2.4.0
       - uses: leafo/gh-actions-lua@v8.0.0

@@ -16,6 +16,7 @@ check *ARGS:
     find src/ -iname '*.lua' | xargs luacheck {{ARGS}}
 
 make version="scm-1":
+    if {{lua}} -v | grep LuaJIT; then echo "Rocks for LuaJIT should be built with Lua 5.1 instead" >&2; exit 1; fi
     luarocks --lua-version "$({{lua}} -v 2>&1 | sed 's/Lua \(5\.[0-9]\).*/\1/')" --local make rocks/lgi-async-extra-{{version}}.rockspec
 
 clean:
