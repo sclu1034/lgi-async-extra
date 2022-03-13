@@ -20,12 +20,9 @@ function run(timeout, fn)
         local err
 
         GLib.idle_add(GLib.PRIORITY_DEFAULT, function()
-            local f = File.new_tmp()
-            fn(f, function(e)
-                f:delete(function(err_inner)
-                    err = e or err_inner
-                    loop:quit()
-                end)
+            fn(function(e)
+                err = e
+                loop:quit()
             end)
         end)
 

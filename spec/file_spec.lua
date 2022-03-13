@@ -4,9 +4,20 @@ local async = require("async")
 
 local File = require("lgi-async-extra.file")
 
+local function run_file(fn)
+    return run(function(cb)
+        local f = File.new_tmp()
+        fn(f, function(err)
+            f:delete(function(err_inner)
+                cb(err or err_inner)
+            end)
+        end)
+    end)
+end
+
 describe('file', function()
     describe('exists', function()
-        it('returns false for non-existant file', run(function (_, cb)
+        it('returns false for non-existent file', run(function(cb)
             local f = File.new_for_path("/this_should_not.exist")
 
             f:exists(function(err, exists)
@@ -17,7 +28,7 @@ describe('file', function()
             end)
         end))
 
-        it('handles file deletion', run(function(_, cb)
+        it('handles file deletion', run(function(cb)
             local f = File.new_tmp()
 
             local check_exists = spy(function(exists, cb)
@@ -49,7 +60,7 @@ describe('file', function()
         end))
     end)
 
-    it('writes and reads', run(function(f, cb)
+    it('writes and reads', run_file(function(f, cb)
         local str = "Hello, World!"
 
         local check_read_empty = spy(function(cb)
@@ -80,7 +91,7 @@ describe('file', function()
     end))
 
     describe('read_bytes', function()
-        it('returns empty bytes for empty file', run(function(f, cb)
+        it('returns empty bytes for empty file', run_file(function(f, cb)
             f:read_bytes(4096, function(err, bytes)
                 wrap_asserts(cb, err, function()
                     assert.is_nil(err)
@@ -90,7 +101,7 @@ describe('file', function()
             end)
         end))
 
-        it('reads the specified number of bytes, if possible', run(function(f, cb)
+        it('reads the specified number of bytes, if possible', run_file(function(f, cb)
             local data = "Hello, world!"
 
             async.waterfall({
@@ -108,7 +119,7 @@ describe('file', function()
             }, cb)
         end))
 
-        it('reads less if not enough data', run(function(f, cb)
+        it('reads less if not enough data', run_file(function(f, cb)
             local BUFFER_SIZE = 4096
             local data = "Hello, world!"
 
@@ -128,7 +139,7 @@ describe('file', function()
             }, cb)
         end))
 
-        it('reads binary data', run(function(_, cb)
+        it('reads binary data', run(function(cb)
             local f = File.new_for_path("/dev/random")
             local BUFFER_SIZE = 100
 
@@ -144,7 +155,7 @@ describe('file', function()
     end)
 
     describe('read_string', function()
-        it('returns nil for empty file', run(function(f, cb)
+        it('returns nil for empty file', run_file(function(f, cb)
             f:read_string(function(err, str)
                 wrap_asserts(cb, err, function()
                     assert.is_nil(err)
@@ -153,7 +164,7 @@ describe('file', function()
             end)
         end))
 
-        it('reads a short file, less than buffer size', run(function(f, cb)
+        it('reads a short file, less than buffer size', run_file(function(f, cb)
             local data = "Hello, world!"
 
             async.waterfall({
@@ -170,7 +181,7 @@ describe('file', function()
             }, cb)
         end))
 
-        it('reads a long file', run(function(f, cb)
+        it('reads a long file', run_file(function(f, cb)
             local data = {}
             for _ = 1, 1000 do
                 table.insert(data, "Hello, world!")
@@ -191,7 +202,7 @@ describe('file', function()
             }, cb)
         end))
 
-        it('reads virtual files', run(function(_, cb)
+        it('reads virtual files', run(function(cb)
             local f = File.new_for_path("/proc/meminfo")
 
             local check_read_string = spy(function(data, cb)
@@ -213,7 +224,7 @@ describe('file', function()
     end)
 
     describe('read_line', function()
-        it('returns nil for empty file', run(function(f, cb)
+        it('returns nil for empty file', run_file(function(f, cb)
             f:read_line(function(err, line)
                 wrap_asserts(cb, err, function()
                     assert.is_nil(err)
@@ -222,7 +233,7 @@ describe('file', function()
             end)
         end))
 
-        it('always reads the first line', run(function(f, cb)
+        it('always reads the first line', run_file(function(f, cb)
             local lines = { "Hello, World!", "Second Line" }
 
             local check_line = spy(function(data, cb)
@@ -245,7 +256,7 @@ describe('file', function()
             end)
         end))
 
-        it('reads virtual files', run(function(_, cb)
+        it('reads virtual files', run(function(cb)
             local f = File.new_for_path("/proc/meminfo")
 
             f:read_line(function(err, line)
@@ -258,7 +269,7 @@ describe('file', function()
     end)
 
     describe('iterate_lines', function()
-        it('iterates over lines', run(function(f, cb)
+        it('iterates over lines', run_file(function(f, cb)
             local lines = { "Hello, World!", "Second Line" }
             local count = 1
 
