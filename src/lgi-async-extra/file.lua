@@ -21,7 +21,10 @@
 --
 -- Example to write and read-back a file:
 --
---    local f = File.new_for_path("/tmp/foo.txt")
+--    local lgi = require("lgi")
+--    local File = require("lgi-async-extra.file")
+--    local path = "%s/foo.txt":format(lgi.GLib.get_tmp_dir())
+--    local f = File.new_for_path(path)
 --    async.waterfall({
 --        function(cb)
 --            -- By default, writing replaces any existing content
@@ -52,8 +55,15 @@ local GFile = Gio.File
 local stream_utils = require("lgi-async-extra.stream")
 
 
-local File = {}
+-- Class marker
+local FILE_CLASS_MARKER = setmetatable({}, { __newindex = function() end, __tostring = "File" })
+
+
+local File = {
+    class = FILE_CLASS_MARKER,
+}
 local file = {}
+
 
 --- Constructors
 -- @section constructors
@@ -126,6 +136,21 @@ function file.new_tmp(template)
         }
     }
     return setmetatable(ret, { __index = File  }), stream, err
+end
+
+
+--- Static functions
+-- @section static_functions
+
+--- Checks if a table is an instance of @{file}.
+--
+-- @usage local File = require("lgi-async-extra.file")
+-- local f = File.new_for_path("/tmp/foo.txt")
+-- assert(File.is_instance(f))
+-- @tparam table f The value to check.
+-- @treturn boolean
+function file.is_instance(f)
+    return type(f) == "table" and f.class == FILE_CLASS_MARKER
 end
 
 

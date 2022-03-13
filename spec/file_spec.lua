@@ -2,6 +2,7 @@ local assert = require("luassert")
 local spy = require("luassert.spy")
 local async = require("async")
 
+local lgi = require("lgi")
 local File = require("lgi-async-extra.file")
 
 local function run_file(fn)
@@ -16,6 +17,32 @@ local function run_file(fn)
 end
 
 describe('file', function()
+    describe('is_instance', function()
+        it('returns true for Files', function()
+            assert(File.is_instance(File.new_for_path("/tmp/foo.txt")))
+        end)
+
+        it('returns false for strings', function()
+            assert(not File.is_instance(""))
+            assert(not File.is_instance("/tmp/foo.txt"))
+        end)
+
+        it('returns false for tables', function()
+            assert(not File.is_instance({}))
+            assert(not File.is_instance({ foo = "bar", "baz" }))
+        end)
+
+        it('returns false for numbers', function()
+            assert(not File.is_instance(1))
+            assert(not File.is_instance(100))
+        end)
+
+        it('returns false for userdata', function()
+            assert(not File.is_instance(lgi.Gio.File.new_for_path("/tmp/foo.txt")))
+            assert(not File.is_instance(lgi.GLib.Bytes.new()))
+        end)
+    end)
+
     describe('exists', function()
         it('returns false for non-existent file', run(function(cb)
             local f = File.new_for_path("/this_should_not.exist")

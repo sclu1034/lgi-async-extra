@@ -1,0 +1,17 @@
+= Changelog
+:toc:
+:toclevels: 1
+:idprefix:
+:idseparator: -
+
+== [Unreleased]
+
+=== Added
+
+* `file.is_instance`: Static function to check if a value is a file handle
+
+== [v0.1.0] - 2022-03-06
+
+=== Added
+
+* initial release
