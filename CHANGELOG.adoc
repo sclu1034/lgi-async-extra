@@ -12,6 +12,10 @@
 * New module `filesystem`: Utilities for handling directories and other file system properties
 * `filesystem.make_directory`: Function to create a directory at a given path
 
+=== Changed
+
+* `file.move`: Now also allows file handlers and instances of `Gio.File` as destination parameter
+
 == [v0.1.0] - 2022-03-06
 
 === Added

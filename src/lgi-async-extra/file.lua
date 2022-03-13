@@ -471,16 +471,20 @@ end
 -- Requires GLib version 2.71.2 or newer (2022-02-15).
 --
 -- @async
--- @tparam string destination New path to move to
+-- @tparam string|file|Gio.File path New path to move to.
 -- @tparam function cb
 -- @treturn[opt] GLib.Error
-function File:move(destination, cb)
-    local f = self._private.f
+function File:move(path, cb)
     local priority = GLib.PRIORITY_DEFAULT
+    local f = self._private.f
+    local dest = path
+    if type(dest) == "string" then
+        f = GFile.new_for_path(dest)
+    elseif file.is_instance(dest) then
+        f = f._private.f
+    end
 
-    destination = GFile.new_for_path(destination)
-
-    f:move_async(destination, 0, priority, nil, nil, function(_, token)
+    f:move_async(dest, 0, priority, nil, nil, function(_, token)
         local _, err = f:move_finish(token)
         cb(err)
     end)
