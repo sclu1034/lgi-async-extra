@@ -9,6 +9,8 @@
 === Added
 
 * `file.is_instance`: Static function to check if a value is a file handle
+* New module `filesystem`: Utilities for handling directories and other file system properties
+* `filesystem.make_directory`: Function to create a directory at a given path
 
 == [v0.1.0] - 2022-03-06
 
