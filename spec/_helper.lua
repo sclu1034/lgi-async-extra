@@ -58,6 +58,7 @@ function wrap_asserts(cb, err, fn)
     if ok then
         cb(nil)
     else
-        cb(debug.traceback(err.message .. "\n", 2))
+        local msg = err.message or tostring(err)
+        cb(debug.traceback(msg .. "\n", 2))
     end
 end
