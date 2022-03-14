@@ -207,4 +207,80 @@ function filesystem.list_contents(dir, attributes, cb)
 end
 
 
+--- Recursively removes a directory and its contents.
+--
+-- @since 0.2.0
+-- @async
+-- @tparam string|File|Gio.File dir The directory to remove.
+-- @tparam function cb
+-- @tresult[opt] GLib.Error
+function filesystem.remove_directory(dir, cb)
+    local priority = GLib.PRIORITY_DEFAULT
+    local f = file_arg(dir)
+    local BUFFER_SIZE = 50
+
+    async.dag({
+        enumerator = function(_, cb)
+            f:enumerate_children_async("standard::type", Gio.FileQueryInfoFlags.NONE, priority, nil, function(_, token)
+                local enumerator, err = f:enumerate_children_finish(token)
+                cb(err, enumerator)
+            end)
+        end,
+        iterate = { "enumerator", function(results, cb)
+            local enumerator = table.unpack(results.enumerator)
+
+            local function iterate(cb_iterate)
+                enumerator:next_files_async(BUFFER_SIZE, priority, nil, function(_, token)
+                    local infos, err = enumerator:next_files_finish(token)
+
+                    if err or #infos == 0 then
+                        return cb(err, infos)
+                    end
+
+                    local tasks = {}
+
+                    for _, info in ipairs(infos) do
+                        local path = string.format("%s/%s", f:get_path(), info:get_name())
+                        local f = File.new_for_path(path)
+
+                        if Gio.FileType[info:get_file_type()] == Gio.FileType.DIRECTORY then
+                            table.insert(tasks, async.callback(f, filesystem.remove_directory))
+                        else
+                            table.insert(tasks, async.callback(f, f.delete))
+                        end
+                    end
+
+                    async.all(tasks, cb_iterate)
+                end)
+            end
+
+            local function check(infos, cb_check)
+                cb_check(nil, #infos > 0)
+            end
+
+            async.do_while(iterate, check, cb)
+        end },
+        delete = { "iterate", function(_, cb)
+            f:delete_async(priority, nil, function(_, token)
+                local _, err = f:delete_finish(token)
+                cb(err)
+            end)
+        end },
+    }, function(err, results)
+        local enumerator = table.unpack(results.enumerator)
+
+        enumerator:close_async(priority, nil, function(_, token)
+            local _, err_inner = enumerator:close_finish(token)
+
+            -- If the enumerator was already closed, we can ignore the error.
+            if err and err.code == Gio.IOErrorEnum[Gio.IOErrorEnum.CLOSED] then
+                err_inner = nil
+            end
+
+            cb(err or err_inner)
+        end)
+    end)
+end
+
+
 return filesystem

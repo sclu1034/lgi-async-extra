@@ -171,4 +171,83 @@ describe('filesystem', function()
             end)
         end))
     end)
+
+    describe('remove_directory', function()
+        it('removes directory with nested child entries', run(function(cb)
+            local dir = string.format("%s/lgi-async-extra_test_remove_directory_nested", GLib.get_tmp_dir())
+            os.execute(string.format('mkdir -p %s/inner', dir))
+            os.execute(string.format('bash -c "touch %s/{1,2,3} %s/inner/{1,2}"', dir, dir))
+
+            local f = File.new_for_path(dir)
+
+            local check_not_exists = spy(function(exists, cb)
+                wrap_asserts(cb, function()
+                    assert.is_function(cb)
+                    assert.is_false(exists)
+                end)
+            end)
+
+            async.waterfall({
+                async.callback(f, fs.remove_directory),
+                async.callback(f, f.exists),
+                check_not_exists,
+            }, function(err)
+                wrap_asserts(cb, err, function()
+                    assert.is_nil(err)
+                    assert.spy(check_not_exists).was_called()
+                end)
+            end)
+        end))
+
+        it('removes directory with flat child entries', run(function(cb)
+            local dir = string.format("%s/lgi-async-extra_test_remove_directory_children", GLib.get_tmp_dir())
+            os.execute(string.format('mkdir -p %s/inner', dir))
+            os.execute(string.format('bash -c "touch %s/{1,2,3}"', dir, dir))
+
+            local f = File.new_for_path(dir)
+
+            local check_not_exists = spy(function(exists, cb)
+                wrap_asserts(cb, function()
+                    assert.is_function(cb)
+                    assert.is_false(exists)
+                end)
+            end)
+
+            async.waterfall({
+                async.callback(f, fs.remove_directory),
+                async.callback(f, f.exists),
+                check_not_exists,
+            }, function(err)
+                wrap_asserts(cb, err, function()
+                    assert.is_nil(err)
+                    assert.spy(check_not_exists).was_called()
+                end)
+            end)
+        end))
+
+        it('removes empty directory', run(function(cb)
+            local dir = string.format("%s/lgi-async-extra_test_remove_directory_empty", GLib.get_tmp_dir())
+            os.execute(string.format('mkdir -p %s', dir))
+
+            local f = File.new_for_path(dir)
+
+            local check_not_exists = spy(function(exists, cb)
+                wrap_asserts(cb, function()
+                    assert.is_function(cb)
+                    assert.is_false(exists)
+                end)
+            end)
+
+            async.waterfall({
+                async.callback(f, fs.remove_directory),
+                async.callback(f, f.exists),
+                check_not_exists,
+            }, function(err)
+                wrap_asserts(cb, err, function()
+                    assert.is_nil(err)
+                    assert.spy(check_not_exists).was_called()
+                end)
+            end)
+        end))
+    end)
 end)
