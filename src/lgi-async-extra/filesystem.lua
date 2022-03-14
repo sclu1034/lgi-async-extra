@@ -129,4 +129,82 @@ function filesystem.iterate_contents(dir, iteratee, attributes, cb)
 end
 
 
+--- Lists the contents of a directory.
+--
+-- See @{file:query_info} and [g_file_query_info](https://docs.gtk.org/gio/method.File.query_info.html) for
+-- information on the `attributes` parameter.
+--
+-- @since 0.2.0
+-- @async
+-- @tparam string|File|Gio.File dir The directory to query contents for.
+-- @tparam string attributes The attributes to query.
+-- @tparam function cb
+-- @tresult[opt] GLib.Error
+-- @tresult table A list of `Gio.FileInfo`s
+function filesystem.list_contents(dir, attributes, cb)
+    if type(attributes) == "function" then
+        cb = attributes
+        attributes = "standard::type"
+    end
+
+    local priority = GLib.PRIORITY_DEFAULT
+    -- TODO: Benchmark for an efficient size
+    local BUFFER_SIZE = 50
+    local f = file_arg(dir)
+
+    async.dag({
+        enumerator = function(_, cb)
+            f:enumerate_children_async(attributes, Gio.FileQueryInfoFlags.NONE, priority, nil, function(_, token)
+                local enumerator, err = f:enumerate_children_finish(token)
+                cb(err, enumerator)
+            end)
+        end,
+        list = { "enumerator", function(results, cb)
+            local enumerator = table.unpack(results.enumerator)
+            local list = {}
+
+            -- `next_files_async` reports errors in a two-step system. In the event of an error,
+            -- the ongoing call will still succeed and report all files that had been queried
+            -- successfully. The function then expects to be called again, to return the error.
+
+            local function iterate(cb_iterate)
+                enumerator:next_files_async(BUFFER_SIZE, priority, nil, function(_, token)
+                    local infos, err = enumerator:next_files_finish(token)
+
+                    if infos and #infos > 0 then
+                        for _, info in ipairs(infos) do
+                            table.insert(list, info)
+                        end
+                    end
+
+                    cb_iterate(err, infos)
+                end)
+            end
+
+            local function check(infos, cb_check)
+                cb_check(nil, #infos > 0)
+            end
+
+            async.do_while(iterate, check, function(err)
+                cb(err, list)
+            end)
+        end },
+    }, function(err, results)
+        local enumerator = table.unpack(results.enumerator)
+        local list = results.list and table.unpack(results.list)
+
+        enumerator:close_async(priority, nil, function(_, token)
+            local _, err_inner = enumerator:close_finish(token)
+
+            -- If the enumerator was already closed, we can ignore the error.
+            if err and err.code == Gio.IOErrorEnum[Gio.IOErrorEnum.CLOSED] then
+                err_inner = nil
+            end
+
+            cb(err or err_inner, list)
+        end)
+    end)
+end
+
+
 return filesystem

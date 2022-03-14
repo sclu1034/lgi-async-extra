@@ -144,4 +144,31 @@ describe('filesystem', function()
             end)
         end))
     end)
+
+    describe('list_contents', function()
+        it('finds all child entries', run(function(cb)
+            local dir = string.format("%s/lgi-async-extra_test_list_contents", GLib.get_tmp_dir())
+            os.execute(string.format('mkdir %s', dir))
+            os.execute(string.format('bash -c "touch %s/{1,2,3}"', dir))
+
+            fs.list_contents(dir, function(err, list)
+                os.execute(string.format("rm -r %s", dir))
+                wrap_asserts(cb, err, function()
+                    local found = {}
+
+                    assert.is_table(list)
+                    assert.is_same(3, #list)
+
+                    for _, info in ipairs(list) do
+                        assert.is_not_nil(info)
+                        assert(Gio.FileInfo:is_type_of(info))
+                        found[info:get_name()] = true
+                        assert.is_same(Gio.FileType[Gio.FileType.REGULAR], info:get_file_type())
+                    end
+
+                    assert.is_same({ ["1"] = true, ["2"] = true, ["3"] = true }, found)
+                end)
+            end)
+        end))
+    end)
 end)
