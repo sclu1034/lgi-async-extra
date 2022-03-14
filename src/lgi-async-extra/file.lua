@@ -479,12 +479,12 @@ function File:move(path, cb)
     local f = self._private.f
     local dest = path
     if type(dest) == "string" then
-        f = GFile.new_for_path(dest)
+        dest = GFile.new_for_path(dest)
     elseif file.is_instance(dest) then
-        f = f._private.f
+        dest = dest._private.f
     end
 
-    f:move_async(dest, 0, priority, nil, nil, function(_, token)
+    f:move_async(dest, Gio.FileCopyFlags.NONE, priority, nil, nil, function(_, token)
         local _, err = f:move_finish(token)
         cb(err)
     end)
