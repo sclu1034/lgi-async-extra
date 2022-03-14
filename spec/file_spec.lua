@@ -3,6 +3,8 @@ local spy = require("luassert.spy")
 local async = require("async")
 
 local lgi = require("lgi")
+local GLib = lgi.GLib
+local Gio = lgi.Gio
 local File = require("lgi-async-extra.file")
 
 local function run_file(fn)
@@ -325,6 +327,24 @@ describe('file', function()
             }, function(err)
                 wrap_asserts(cb, err, function()
                     assert.spy(check_line).was_called(3)
+                end)
+            end)
+        end))
+    end)
+
+    describe('delete', function()
+        it('does not delete directory with content', run(function(cb)
+            local dir = string.format("%s/lgi-async-extra_tests_delete", GLib.get_tmp_dir())
+            os.execute(string.format('mkdir %s', dir))
+            os.execute(string.format('bash -c "touch %s/{1,2,3}"', dir))
+
+            local f = File.new_for_path(dir)
+            f:delete(function(err)
+                os.execute(string.format("rm -r %s", dir))
+                wrap_asserts(cb, function()
+                    assert.is_not_nil(err)
+                    assert.is_same(Gio.IOErrorEnum, err.domain)
+                    assert.is_same(Gio.IOErrorEnum.NOT_EMPTY, Gio.IOErrorEnum[err.code])
                 end)
             end)
         end))
