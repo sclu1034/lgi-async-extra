@@ -636,4 +636,25 @@ function File:type(cb)
     end)
 end
 
+
+--- Creates an empty file.
+--
+-- The file must not exist already.
+--
+-- Write operations, such as @{file.write} and @{file.write_stream} also create files
+-- when they don't yet, so those should be used when you intend to write to the new file immediately.
+--
+-- @since 0.2.0
+-- @async
+-- @tparam function cb
+-- @treturn[opt] GLib.Error
+function File:create(cb)
+    local f = self._private.f
+    f:create_async(Gio.FileCreateFlags.NONE, GLib.PRIORITY_DEFAULT, nil, function(_, token)
+        local _, err = f:create_finish(token)
+        cb(err)
+    end)
+end
+
+
 return file

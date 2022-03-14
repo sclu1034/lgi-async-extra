@@ -350,5 +350,47 @@ describe('file', function()
         end))
     end)
 
+    describe('create', function()
+        it('creates the file', run(function(cb)
+            local path = string.format("%s/lgi-async-extra_tests_create", GLib.get_tmp_dir())
+            local f = File.new_for_path(path)
+
+            local check_exists = spy(function(exists, cb)
+                wrap_asserts(cb, function()
+                    assert.is_true(exists)
+                    assert.is_function(cb)
+                end)
+            end)
+
+            async.waterfall({
+                async.callback(f, f.create),
+                async.callback(f, f.exists),
+                check_exists,
+            }, function(err)
+                os.execute(string.format("rm %s", path))
+                wrap_asserts(cb, err, function()
+                    assert.is_nil(err)
+                    assert.spy(check_exists).was_called()
+                end)
+            end)
+        end))
+
+        it('fails when the file exists', run(function(cb)
+            local path = string.format("%s/lgi-async-extra_tests_create", GLib.get_tmp_dir())
+            local f = File.new_for_path(path)
+
+            os.execute(string.format("touch %s", path))
+
+            f:create(function(err)
+                os.execute(string.format("rm %s", path))
+                wrap_asserts(cb, function()
+                    assert.is_not_nil(err)
+                    assert.is_same(Gio.IOErrorEnum, err.domain)
+                    assert.is_same(Gio.IOErrorEnum.EXISTS, Gio.IOErrorEnum[err.code])
+                end)
+            end)
+        end))
+    end)
+
     -- TODO: Create test case for `f:move()`. Requires GLib 2.71.2
 end)
