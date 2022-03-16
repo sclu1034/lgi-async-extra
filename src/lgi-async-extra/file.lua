@@ -144,6 +144,7 @@ end
 
 --- Checks if a table is an instance of @{file}.
 --
+-- @since 0.2.0
 -- @usage local File = require("lgi-async-extra.file")
 -- local f = File.new_for_path("/tmp/foo.txt")
 -- assert(File.is_instance(f))
@@ -200,6 +201,7 @@ end
 -- The path is guaranteed to be absolute, by may contain unresolved symlinks.
 -- However, a path may not exist, in which case `nil` will be returned.
 --
+-- @since 0.2.0
 -- @treturn[opt] string
 function File:get_path()
     return self._private.f:get_path()
@@ -422,6 +424,9 @@ end
 -- is `cb(err, stop)`. If `err ~= nil` or a value for `stop` is given, iteration stops
 -- immediately and `cb` will be called.
 --
+-- Changed 0.2.0: Renamed from `read_lines`.
+--
+-- @since 0.2.0
 -- @async
 -- @tparam function iteratee Function to call per line in the file. Signature:
 --   `function(err, line, cb)`
