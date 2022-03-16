@@ -52,6 +52,9 @@ end
 -- [Gio.FileInfo](https://docs.gtk.org/gio/class.FileInfo.html) as argument.
 -- It's callback argument only expects a single error parameter.
 --
+-- If `options.recursive == true`, iteration will recurse into subdirectories.
+-- `options.list_directories` can be used to have `iteratee` not be called on directory entries.
+--
 -- On error, either within the iteration or passed by `iteratee`, iteration is aborted and
 -- the final callback is called.
 --
@@ -63,16 +66,22 @@ end
 -- @tparam string|File|Gio.File dir The directory to query contents for.
 -- @tparam function iteratee The iterator function that will be called for each entry.
 -- The function will be called with a `Gio.FileInfo` and a callback: `function(info, cb)`.
--- @tparam string attributes The attributes to query.
+-- @tparam table options
+-- @tparam[opt="standard::type"] string options.attributes The attributes to query.
+-- @tparam[opt=false] boolean options.recursive Recurse into directories.
+-- @tparam[opt=true] boolean options.list_directories If `false`, directories will not trigger `iteratee`.
 -- @tparam function cb
 -- @treturn[opt] GLib.Error
-function filesystem.iterate_contents(dir, iteratee, attributes, cb)
-    if type(attributes) == "function" then
-        cb = attributes
-        attributes = "standard::type"
+function filesystem.iterate_contents(dir, iteratee, options, cb)
+    if type(options) == "function" then
+        cb = options
+        options = {}
     end
 
+    local attributes = options.attributes or "standard::type"
+
     local priority = GLib.PRIORITY_DEFAULT
+    local BUFFER_SIZE = 50
     local f = file_arg(dir)
 
     async.dag({
@@ -88,17 +97,33 @@ function filesystem.iterate_contents(dir, iteratee, attributes, cb)
             -- `next_files_async` reports errors in a two-step system. In the event of an error,
             -- the ongoing call will still succeed and report all files that had been queried
             -- successfully. The function then expects to be called again, to return the error.
-            -- TODO: Investigate the benefits of querying multiple files at once.
 
             local function iterate(cb_iterate)
-                enumerator:next_files_async(1, priority, nil, function(_, token)
+                enumerator:next_files_async(BUFFER_SIZE, priority, nil, function(_, token)
                     local infos, err = enumerator:next_files_finish(token)
 
                     if err or #infos == 0 then
                         return cb_iterate(err, infos)
                     end
 
-                    iteratee(infos[1], function(err)
+                    local tasks = {}
+
+                    for _, info in ipairs(infos) do
+                        local path = string.format("%s/%s", f:get_path(), info:get_name())
+                        local f = File.new_for_path(path)
+
+                        if Gio.FileType[info:get_file_type()] == Gio.FileType.DIRECTORY then
+                            if options.list_directories ~= false then
+                                table.insert(tasks, async.callback(nil, iteratee, info))
+                            end
+
+                            table.insert(tasks, async.callback(f, filesystem.iterate_contents, iteratee, options))
+                        else
+                            table.insert(tasks, async.callback(nil, iteratee, info))
+                        end
+                    end
+
+                    async.all(tasks, function(err)
                         cb_iterate(err, infos)
                     end)
                 end)

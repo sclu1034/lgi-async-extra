@@ -95,54 +95,35 @@ describe('filesystem', function()
     describe('iterate_contents', function()
         it('finds all child entries', run(function(cb)
             local dir = string.format("%s/lgi-async-extra_test_iterate_contents", GLib.get_tmp_dir())
-            local files = {
-                File.new_for_path(string.format("%s/1", dir)),
-                File.new_for_path(string.format("%s/2", dir)),
-                File.new_for_path(string.format("%s/3", dir)),
+            os.execute(string.format('mkdir -p %s/inner', dir))
+            os.execute(string.format('bash -c "touch %s/{1,2} %s/inner/{3,4}"', dir, dir))
+
+            local found = {}
+
+            local iteratee = spy(function(info, cb)
+                wrap_asserts(cb, function()
+                    assert.is_function(cb)
+                    assert.is_not_nil(info)
+                    assert(Gio.FileInfo:is_type_of(info))
+                    found[info:get_name()] = true
+                    assert.is_same(Gio.FileType[Gio.FileType.REGULAR], info:get_file_type())
+                end)
+            end)
+
+            local options = {
+                recursive = true,
+                list_directories = false,
             }
-
-            async.waterfall({
-                function(cb)
-                    fs.make_directory(dir, cb)
-                end,
-                function(cb)
-                    async.all({
-                        function(cb) files[1]:write("1", cb) end,
-                        function(cb) files[2]:write("2", cb) end,
-                        function(cb) files[3]:write("3", cb) end,
-                    }, cb)
-                end,
-                function(_, cb)
-                    local found = {}
-
-                    local iteratee = spy(function(info, cb)
-                        wrap_asserts(cb, function()
-                            assert.is_function(cb)
-                            assert.is_not_nil(info)
-                            assert(Gio.FileInfo:is_type_of(info))
-                            found[info:get_name()] = true
-                            assert.is_same(Gio.FileType[Gio.FileType.REGULAR], info:get_file_type())
-                        end)
-                    end)
-
-                    fs.iterate_contents(dir, iteratee, function(err)
-                        wrap_asserts(cb, err, function()
-                            assert.spy(iteratee).was_called(3)
-                            assert.is_same({ ["1"] = true, ["2"] = true, ["3"] = true }, found)
-                        end)
-                    end)
-                end,
-            }, function(err)
-                async.waterfall({
-                    function(cb) files[1]:delete(cb) end,
-                    function(cb) files[2]:delete(cb) end,
-                    function(cb) files[3]:delete(cb) end,
-                    function(cb) File.new_for_path(dir):delete(cb) end,
-                }, function(err_inner)
-                    cb(err or err_inner)
+            fs.iterate_contents(dir, iteratee, options, function(err)
+                os.execute(string.format("rm -r %s", dir))
+                wrap_asserts(cb, err, function()
+                    assert.is_same({ ["1"] = true, ["2"] = true, ["3"] = true, ["4"] = true }, found)
+                    assert.spy(iteratee).was_called(4)
                 end)
             end)
         end))
+
+        -- TODO: Add test cases for different values in `options`
     end)
 
     describe('list_contents', function()
