@@ -65,7 +65,7 @@ end
 -- The function will be called with a `Gio.FileInfo` and a callback: `function(info, cb)`.
 -- @tparam string attributes The attributes to query.
 -- @tparam function cb
--- @tresult[opt] GLib.Error
+-- @treturn[opt] GLib.Error
 function filesystem.iterate_contents(dir, iteratee, attributes, cb)
     if type(attributes) == "function" then
         cb = attributes
@@ -139,8 +139,8 @@ end
 -- @tparam string|File|Gio.File dir The directory to query contents for.
 -- @tparam string attributes The attributes to query.
 -- @tparam function cb
--- @tresult[opt] GLib.Error
--- @tresult table A list of `Gio.FileInfo`s
+-- @treturn[opt] GLib.Error
+-- @treturn table A list of `Gio.FileInfo`s
 function filesystem.list_contents(dir, attributes, cb)
     if type(attributes) == "function" then
         cb = attributes
@@ -213,7 +213,7 @@ end
 -- @async
 -- @tparam string|File|Gio.File dir The directory to remove.
 -- @tparam function cb
--- @tresult[opt] GLib.Error
+-- @treturn[opt] GLib.Error
 function filesystem.remove_directory(dir, cb)
     local priority = GLib.PRIORITY_DEFAULT
     local f = file_arg(dir)
