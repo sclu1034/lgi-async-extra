@@ -4798,4 +4798,9 @@ pre .url,
   background-color: var(--lt-color-white);
 }
 
+.parameter__type .type,
+.return-value__type .type {
+  font-weight: bold;
+}
+
 /*# sourceMappingURL=ldoc.css.map */

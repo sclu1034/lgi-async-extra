@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>lgi-async-extra</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+
+<aside id="sidebar" class="has-background-white-ter">
+    <h1 class="title">lgi-async-extra</h1>
+    <nav class="menu">
+        <ul class="menu-list">
+            <li><a class="" href="../index.html">Index</a></li>
+        </ul>
+        <p class="menu-label">Source</p>
+        <ul class="menu-list">
+            <li><a href="../source/file.lua.html">file.lua</a></li>
+            <li>
+                <a class="is-active">filesystem.lua</a>
+                <ul>
+                </ul>
+            </li>
+            <li><a href="../source/stream.lua.html">stream.lua</a></li>
+        </ul>
+        <p class="menu-label">Modules</p>
+        <ul class="menu-list">
+            <li><a href="../modules/file.html">file</a></li>
+            <li><a href="../modules/filesystem.html">filesystem</a></li>
+            <li><a href="../modules/stream.html">stream</a></li>
+        </ul>
+    </nav>
+</aside>
+<div id="content" class="content__wrapper">
+    <section class="section section__raw-content">
+        <div class="container content"><h2>filesystem.lua</h2>
+<pre>
+<span class="comment">---------------------------------------------------------------------------
+</span><span class="comment">--- File system and directory operation utilities.
+</span><span class="comment">--
+</span><span class="comment">-- @module filesystem
+</span><span class="comment">-- @license GPL v3.0
+</span><span class="comment">---------------------------------------------------------------------------
+</span>
+<span class="keyword">local</span> async = <span class="global">require</span>(<span class="string">"async"</span>)
+<span class="keyword">local</span> lgi = <span class="global">require</span>(<span class="string">"lgi"</span>)
+<span class="keyword">local</span> GLib = lgi.GLib
+<span class="keyword">local</span> Gio = lgi.Gio
+<span class="keyword">local</span> File = <span class="global">require</span>(<span class="string">"lgi-async-extra.file"</span>)
+
+
+<span class="keyword">local</span> filesystem = {}
+
+
+<span class="keyword">local</span> <span class="keyword">function</span> file_arg(arg)
+    <span class="keyword">if</span> <span class="global">type</span>(arg) == <span class="string">"string"</span> <span class="keyword">then</span>
+        <span class="keyword">return</span> Gio.File.new_for_path(arg)
+    <span class="keyword">elseif</span> File.is_instance(arg) <span class="keyword">then</span>
+        <span class="keyword">return</span> arg._private.f
+    <span class="keyword">else</span>
+        <span class="keyword">return</span> arg
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+
+<span class="comment">--- Creates a directory at the given path.
+</span><span class="comment">--
+</span><span class="comment">-- This only creates the child directory of the immediate parent of `path`. If the parent
+</span><span class="comment">-- directory doesn't exist, this operation will fail.
+</span><span class="comment">--
+</span><span class="comment">-- @since 0.2.0
+</span><span class="comment">-- @async
+</span><span class="comment">-- @tparam string|File|Gio.File path
+</span><span class="comment">-- @tparam function cb
+</span><a id="39"></a><span class="comment">-- @treturn[opt] GLib.Error
+</span><span class="keyword">function</span> filesystem.make_directory(path, cb)
+    <span class="keyword">local</span> f = file_arg(path)
+
+    f:make_directory_async(GLib.PRIORITY_DEFAULT, <span class="keyword">nil</span>, <span class="keyword">function</span>(_, token)
+        <span class="keyword">local</span> _, err = f:make_directory_finish(token)
+        cb(err)
+    <span class="keyword">end</span>)
+<span class="keyword">end</span>
+
+
+<span class="comment">--- Iterates the contents of a directory.
+</span><span class="comment">--
+</span><span class="comment">-- The `iteratee` callback is called once for every entry in the given directory, passing a
+</span><span class="comment">-- [Gio.FileInfo](https://docs.gtk.org/gio/class.FileInfo.html) as argument.
+</span><span class="comment">-- It's callback argument only expects a single error parameter.
+</span><span class="comment">--
+</span><span class="comment">-- If `options.recursive == true`, iteration will recurse into subdirectories.
+</span><span class="comment">-- `options.list_directories` can be used to have `iteratee` not be called on directory entries.
+</span><span class="comment">--
+</span><span class="comment">-- On error, either within the iteration or passed by `iteratee`, iteration is aborted and
+</span><span class="comment">-- the final callback is called.
+</span><span class="comment">--
+</span><span class="comment">-- See <a href="../modules/file.html#File:query_info">file:query_info</a> and [g_file_query_info](https://docs.gtk.org/gio/method.File.query_info.html) for
+</span><span class="comment">-- information on the `attributes` parameter.
+</span><span class="comment">--
+</span><span class="comment">-- @since 0.2.0
+</span><span class="comment">-- @async
+</span><span class="comment">-- @tparam string|File|Gio.File dir The directory to query contents for.
+</span><span class="comment">-- @tparam function iteratee The iterator function that will be called for each entry.
+</span><span class="comment">-- The function will be called with a `Gio.FileInfo` and a callback: `function(info, cb)`.
+</span><span class="comment">-- @tparam table options
+</span><span class="comment">-- @tparam[opt="standard::type"] string options.attributes The attributes to query.
+</span><span class="comment">-- @tparam[opt=false] boolean options.recursive Recurse into directories.
+</span><span class="comment">-- @tparam[opt=true] boolean options.list_directories If `false`, directories will not trigger `iteratee`.
+</span><span class="comment">-- @tparam function cb
+</span><a id="75"></a><span class="comment">-- @treturn[opt] GLib.Error
+</span><span class="keyword">function</span> filesystem.iterate_contents(dir, iteratee, options, cb)
+    <span class="keyword">if</span> <span class="global">type</span>(options) == <span class="string">"function"</span> <span class="keyword">then</span>
+        cb = options
+        options = {}
+    <span class="keyword">end</span>
+
+    <span class="keyword">local</span> attributes = options.attributes <span class="keyword">or</span> <span class="string">"standard::type"</span>
+
+    <span class="keyword">local</span> priority = GLib.PRIORITY_DEFAULT
+    <span class="keyword">local</span> BUFFER_SIZE = <span class="number">50</span>
+    <span class="keyword">local</span> f = file_arg(dir)
+
+    async.dag({
+        enumerator = <span class="keyword">function</span>(_, cb)
+            f:enumerate_children_async(attributes, Gio.FileQueryInfoFlags.NONE, priority, <span class="keyword">nil</span>, <span class="keyword">function</span>(_, token)
+                <span class="keyword">local</span> enumerator, err = f:enumerate_children_finish(token)
+                cb(err, enumerator)
+            <span class="keyword">end</span>)
+        <span class="keyword">end</span>,
+        iterate = { <span class="string">"enumerator"</span>, <span class="keyword">function</span>(results, cb)
+            <span class="keyword">local</span> enumerator = <span class="global">table</span>.unpack(results.enumerator)
+
+            <span class="comment">-- `next_files_async` reports errors in a two-step system. In the event of an error,
+</span>            <span class="comment">-- the ongoing call will still succeed and report all files that had been queried
+</span>            <span class="comment">-- successfully. The function then expects to be called again, to return the error.
+</span>
+            <span class="keyword">local</span> <span class="keyword">function</span> iterate(cb_iterate)
+                enumerator:next_files_async(BUFFER_SIZE, priority, <span class="keyword">nil</span>, <span class="keyword">function</span>(_, token)
+                    <span class="keyword">local</span> infos, err = enumerator:next_files_finish(token)
+
+                    <span class="keyword">if</span> err <span class="keyword">or</span> #infos == <span class="number">0</span> <span class="keyword">then</span>
+                        <span class="keyword">return</span> cb_iterate(err, infos)
+                    <span class="keyword">end</span>
+
+                    <span class="keyword">local</span> tasks = {}
+
+                    <span class="keyword">for</span> _, info <span class="keyword">in</span> <span class="global">ipairs</span>(infos) <span class="keyword">do</span>
+                        <span class="keyword">local</span> path = <span class="global">string</span>.format(<span class="string">"%s/%s"</span>, f:get_path(), info:get_name())
+                        <span class="keyword">local</span> f = File.new_for_path(path)
+
+                        <span class="keyword">if</span> Gio.FileType[info:get_file_type()] == Gio.FileType.DIRECTORY <span class="keyword">then</span>
+                            <span class="keyword">if</span> options.list_directories ~= <span class="keyword">false</span> <span class="keyword">then</span>
+                                <span class="global">table</span>.insert(tasks, async.callback(<span class="keyword">nil</span>, iteratee, info))
+                            <span class="keyword">end</span>
+
+                            <span class="global">table</span>.insert(tasks, async.callback(f, filesystem.iterate_contents, iteratee, options))
+                        <span class="keyword">else</span>
+                            <span class="global">table</span>.insert(tasks, async.callback(<span class="keyword">nil</span>, iteratee, info))
+                        <span class="keyword">end</span>
+                    <span class="keyword">end</span>
+
+                    async.all(tasks, <span class="keyword">function</span>(err)
+                        cb_iterate(err, infos)
+                    <span class="keyword">end</span>)
+                <span class="keyword">end</span>)
+            <span class="keyword">end</span>
+
+            <span class="keyword">local</span> <span class="keyword">function</span> check(infos, cb_check)
+                cb_check(<span class="keyword">nil</span>, #infos &gt; <span class="number">0</span>)
+            <span class="keyword">end</span>
+
+            async.do_while(iterate, check, <span class="keyword">function</span>(err)
+                cb(err)
+            <span class="keyword">end</span>)
+        <span class="keyword">end</span> },
+    }, <span class="keyword">function</span>(err, results)
+        <span class="keyword">local</span> enumerator = <span class="global">table</span>.unpack(results.enumerator)
+
+        enumerator:close_async(priority, <span class="keyword">nil</span>, <span class="keyword">function</span>(_, token)
+            <span class="keyword">local</span> _, err_inner = enumerator:close_finish(token)
+
+            <span class="comment">-- If the enumerator was already closed, we can ignore the error.
+</span>            <span class="keyword">if</span> err <span class="keyword">and</span> err.code == Gio.IOErrorEnum[Gio.IOErrorEnum.CLOSED] <span class="keyword">then</span>
+                err_inner = <span class="keyword">nil</span>
+            <span class="keyword">end</span>
+
+            cb(err <span class="keyword">or</span> err_inner)
+        <span class="keyword">end</span>)
+    <span class="keyword">end</span>)
+<span class="keyword">end</span>
+
+
+<span class="comment">--- Lists the contents of a directory.
+</span><span class="comment">--
+</span><span class="comment">-- See <a href="../modules/file.html#File:query_info">file:query_info</a> and [g_file_query_info](https://docs.gtk.org/gio/method.File.query_info.html) for
+</span><span class="comment">-- information on the `attributes` parameter.
+</span><span class="comment">--
+</span><span class="comment">-- @since 0.2.0
+</span><span class="comment">-- @async
+</span><span class="comment">-- @tparam string|File|Gio.File dir The directory to query contents for.
+</span><span class="comment">-- @tparam string attributes The attributes to query.
+</span><span class="comment">-- @tparam function cb
+</span><span class="comment">-- @treturn[opt] GLib.Error
+</span><a id="169"></a><span class="comment">-- @treturn table A list of `Gio.FileInfo`s
+</span><span class="keyword">function</span> filesystem.list_contents(dir, attributes, cb)
+    <span class="keyword">if</span> <span class="global">type</span>(attributes) == <span class="string">"function"</span> <span class="keyword">then</span>
+        cb = attributes
+        attributes = <span class="string">"standard::type"</span>
+    <span class="keyword">end</span>
+
+    <span class="keyword">local</span> priority = GLib.PRIORITY_DEFAULT
+    <span class="comment">-- TODO: Benchmark for an efficient size
+</span>    <span class="keyword">local</span> BUFFER_SIZE = <span class="number">50</span>
+    <span class="keyword">local</span> f = file_arg(dir)
+
+    async.dag({
+        enumerator = <span class="keyword">function</span>(_, cb)
+            f:enumerate_children_async(attributes, Gio.FileQueryInfoFlags.NONE, priority, <span class="keyword">nil</span>, <span class="keyword">function</span>(_, token)
+                <span class="keyword">local</span> enumerator, err = f:enumerate_children_finish(token)
+                cb(err, enumerator)
+            <span class="keyword">end</span>)
+        <span class="keyword">end</span>,
+        list = { <span class="string">"enumerator"</span>, <span class="keyword">function</span>(results, cb)
+            <span class="keyword">local</span> enumerator = <span class="global">table</span>.unpack(results.enumerator)
+            <span class="keyword">local</span> list = {}
+
+            <span class="comment">-- `next_files_async` reports errors in a two-step system. In the event of an error,
+</span>            <span class="comment">-- the ongoing call will still succeed and report all files that had been queried
+</span>            <span class="comment">-- successfully. The function then expects to be called again, to return the error.
+</span>
+            <span class="keyword">local</span> <span class="keyword">function</span> iterate(cb_iterate)
+                enumerator:next_files_async(BUFFER_SIZE, priority, <span class="keyword">nil</span>, <span class="keyword">function</span>(_, token)
+                    <span class="keyword">local</span> infos, err = enumerator:next_files_finish(token)
+
+                    <span class="keyword">if</span> infos <span class="keyword">and</span> #infos &gt; <span class="number">0</span> <span class="keyword">then</span>
+                        <span class="keyword">for</span> _, info <span class="keyword">in</span> <span class="global">ipairs</span>(infos) <span class="keyword">do</span>
+                            <span class="global">table</span>.insert(list, info)
+                        <span class="keyword">end</span>
+                    <span class="keyword">end</span>
+
+                    cb_iterate(err, infos)
+                <span class="keyword">end</span>)
+            <span class="keyword">end</span>
+
+            <span class="keyword">local</span> <span class="keyword">function</span> check(infos, cb_check)
+                cb_check(<span class="keyword">nil</span>, #infos &gt; <span class="number">0</span>)
+            <span class="keyword">end</span>
+
+            async.do_while(iterate, check, <span class="keyword">function</span>(err)
+                cb(err, list)
+            <span class="keyword">end</span>)
+        <span class="keyword">end</span> },
+    }, <span class="keyword">function</span>(err, results)
+        <span class="keyword">local</span> enumerator = <span class="global">table</span>.unpack(results.enumerator)
+        <span class="keyword">local</span> list = results.list <span class="keyword">and</span> <span class="global">table</span>.unpack(results.list)
+
+        enumerator:close_async(priority, <span class="keyword">nil</span>, <span class="keyword">function</span>(_, token)
+            <span class="keyword">local</span> _, err_inner = enumerator:close_finish(token)
+
+            <span class="comment">-- If the enumerator was already closed, we can ignore the error.
+</span>            <span class="keyword">if</span> err <span class="keyword">and</span> err.code == Gio.IOErrorEnum[Gio.IOErrorEnum.CLOSED] <span class="keyword">then</span>
+                err_inner = <span class="keyword">nil</span>
+            <span class="keyword">end</span>
+
+            cb(err <span class="keyword">or</span> err_inner, list)
+        <span class="keyword">end</span>)
+    <span class="keyword">end</span>)
+<span class="keyword">end</span>
+
+
+<span class="comment">--- Recursively removes a directory and its contents.
+</span><span class="comment">--
+</span><span class="comment">-- @since 0.2.0
+</span><span class="comment">-- @async
+</span><span class="comment">-- @tparam string|File|Gio.File dir The directory to remove.
+</span><span class="comment">-- @tparam function cb
+</span><a id="242"></a><span class="comment">-- @treturn[opt] GLib.Error
+</span><span class="keyword">function</span> filesystem.remove_directory(dir, cb)
+    <span class="keyword">local</span> priority = GLib.PRIORITY_DEFAULT
+    <span class="keyword">local</span> f = file_arg(dir)
+    <span class="keyword">local</span> BUFFER_SIZE = <span class="number">50</span>
+
+    async.dag({
+        enumerator = <span class="keyword">function</span>(_, cb)
+            f:enumerate_children_async(<span class="string">"standard::type"</span>, Gio.FileQueryInfoFlags.NONE, priority, <span class="keyword">nil</span>, <span class="keyword">function</span>(_, token)
+                <span class="keyword">local</span> enumerator, err = f:enumerate_children_finish(token)
+                cb(err, enumerator)
+            <span class="keyword">end</span>)
+        <span class="keyword">end</span>,
+        iterate = { <span class="string">"enumerator"</span>, <span class="keyword">function</span>(results, cb)
+            <span class="keyword">local</span> enumerator = <span class="global">table</span>.unpack(results.enumerator)
+
+            <span class="keyword">local</span> <span class="keyword">function</span> iterate(cb_iterate)
+                enumerator:next_files_async(BUFFER_SIZE, priority, <span class="keyword">nil</span>, <span class="keyword">function</span>(_, token)
+                    <span class="keyword">local</span> infos, err = enumerator:next_files_finish(token)
+
+                    <span class="keyword">if</span> err <span class="keyword">or</span> #infos == <span class="number">0</span> <span class="keyword">then</span>
+                        <span class="keyword">return</span> cb(err, infos)
+                    <span class="keyword">end</span>
+
+                    <span class="keyword">local</span> tasks = {}
+
+                    <span class="keyword">for</span> _, info <span class="keyword">in</span> <span class="global">ipairs</span>(infos) <span class="keyword">do</span>
+                        <span class="keyword">local</span> path = <span class="global">string</span>.format(<span class="string">"%s/%s"</span>, f:get_path(), info:get_name())
+                        <span class="keyword">local</span> f = File.new_for_path(path)
+
+                        <span class="keyword">if</span> Gio.FileType[info:get_file_type()] == Gio.FileType.DIRECTORY <span class="keyword">then</span>
+                            <span class="global">table</span>.insert(tasks, async.callback(f, filesystem.remove_directory))
+                        <span class="keyword">else</span>
+                            <span class="global">table</span>.insert(tasks, async.callback(f, f.delete))
+                        <span class="keyword">end</span>
+                    <span class="keyword">end</span>
+
+                    async.all(tasks, cb_iterate)
+                <span class="keyword">end</span>)
+            <span class="keyword">end</span>
+
+            <span class="keyword">local</span> <span class="keyword">function</span> check(infos, cb_check)
+                cb_check(<span class="keyword">nil</span>, #infos &gt; <span class="number">0</span>)
+            <span class="keyword">end</span>
+
+            async.do_while(iterate, check, cb)
+        <span class="keyword">end</span> },
+        delete = { <span class="string">"iterate"</span>, <span class="keyword">function</span>(_, cb)
+            f:delete_async(priority, <span class="keyword">nil</span>, <span class="keyword">function</span>(_, token)
+                <span class="keyword">local</span> _, err = f:delete_finish(token)
+                cb(err)
+            <span class="keyword">end</span>)
+        <span class="keyword">end</span> },
+    }, <span class="keyword">function</span>(err, results)
+        <span class="keyword">local</span> enumerator = <span class="global">table</span>.unpack(results.enumerator)
+
+        enumerator:close_async(priority, <span class="keyword">nil</span>, <span class="keyword">function</span>(_, token)
+            <span class="keyword">local</span> _, err_inner = enumerator:close_finish(token)
+
+            <span class="comment">-- If the enumerator was already closed, we can ignore the error.
+</span>            <span class="keyword">if</span> err <span class="keyword">and</span> err.code == Gio.IOErrorEnum[Gio.IOErrorEnum.CLOSED] <span class="keyword">then</span>
+                err_inner = <span class="keyword">nil</span>
+            <span class="keyword">end</span>
+
+            cb(err <span class="keyword">or</span> err_inner)
+        <span class="keyword">end</span>)
+    <span class="keyword">end</span>)
+<span class="keyword">end</span>
+
+
+<span class="keyword">return</span> filesystem</pre>
+</div>
+    </section>
+
+    <footer class="footer">
+        <div class="content has-text-centered">
+            Generated by <a href="https://github/com/stevendonovan/LDoc">LDoc 1.4.6</a>, designed with <a href="https://github.com/jgthms/bulma">Bulma</a>. Last updated at 2022-03-16 19:34:58.
+        </div>
+    </footer>
+</div>
+
+</body>
+</html>

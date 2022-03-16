@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>lgi-async-extra</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+
+<aside id="sidebar" class="has-background-white-ter">
+    <h1 class="title">lgi-async-extra</h1>
+    <nav class="menu">
+        <ul class="menu-list">
+            <li><a class="" href="../index.html">Index</a></li>
+        </ul>
+        <p class="menu-label">Modules</p>
+        <ul class="menu-list">
+            <li><a href="../modules/file.html">file</a></li>
+            <li>
+                <a class="is-active">filesystem</a>
+                <ul>
+                    <li><a href="#toc">Table of contents</a></li>
+                    <li><a href="#Functions">Functions</a></li>
+                </ul>
+            </li>
+            <li><a href="../modules/stream.html">stream</a></li>
+        </ul>
+        <p class="menu-label">Source</p>
+        <ul class="menu-list">
+            <li><a href="../source/file.lua.html">file.lua</a></li>
+            <li><a href="../source/filesystem.lua.html">filesystem.lua</a></li>
+            <li><a href="../source/stream.lua.html">stream.lua</a></li>
+        </ul>
+    </nav>
+</aside>
+<div id="content" class="content__wrapper">
+    <section class="section section__module-description">
+        <div class="container">
+            <h1 class="title is-1">Module <em>filesystem</em></h1>
+            <h3 class="subtitle is-3">File system and directory operation utilities.</h3>
+            <div class="content">
+                <p>
+</p>
+            </div>
+            <div class="field is-grouped is-grouped-multiline">
+                <div class="control">
+                    <div class="tags are-medium has-addons">
+                        <span class="is-dark tag">License</span>
+                        <span class="tag">GPL v3.0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="section section__module-summary">
+        <div class="container">
+            <h2 id="toc" class="title is-3">Table of contents</h2>
+            <h3 class="title is-4"><a href="#Functions">Functions</a></h3>
+            <table class="table is-fullwidth is-striped">
+                <tbody>
+                    <tr>
+                        <td class="name"><a href="#make_directory">make_directory(path, cb)</a></td>
+                        <td class="summary">Creates a directory at the given path.</td>
+                    </tr>
+                    <tr>
+                        <td class="name"><a href="#iterate_contents">iterate_contents(dir, iteratee, options[, cb="standard::type"])</a></td>
+                        <td class="summary">Iterates the contents of a directory.</td>
+                    </tr>
+                    <tr>
+                        <td class="name"><a href="#list_contents">list_contents(dir, attributes, cb)</a></td>
+                        <td class="summary">Lists the contents of a directory.</td>
+                    </tr>
+                    <tr>
+                        <td class="name"><a href="#remove_directory">remove_directory(dir, cb)</a></td>
+                        <td class="summary">Recursively removes a directory and its contents.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="section section--Functions">
+        <div class="container">
+            <h2 class="title is-2" id="Functions"><a href="#Functions">Functions</a></h2>
+            <div class="section__content">
+                <div id="make_directory" class="box section__item section__item--has-tags">
+                    <div class="block section__item__title">
+                        <strong>make_directory(path, cb)</strong>
+                        <a class="source-ref" href="../source/filesystem.lua.html#39">line 39</a>
+                    </div>
+
+                    <div class="field is-grouped is-grouped-multiline section__item__tags">
+                        <div class="control">
+                            <span class="tag" data-tooltip="Function returns before the operation has finished. The callback function is called with the return values">async</span>
+                        </div>
+                        <div class="control">
+                            <div class="tags has-addons" data-tooltip="This item has been added as part of release version v0.2.0.">
+                                <span class="tag is-dark">since</span>
+                                <span class="tag"><a href="https://github.com/sclu1034/lgi-async-extra/releases/tag/0.2.0">v0.2.0</a></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="block content section__item__description">Creates a directory at the given path. </p>
+
+<p> This only creates the child directory of the immediate parent of <code>path</code>. If the parent
+ directory doesn&rsquo;t exist, this operation will fail.</div>
+
+                    <div class="block content section__item__params">
+                        <h4 class="title is-6">Parameters:</h4>
+                        <ul>
+                            <li class="parameter">
+                                <div>
+                                    <span class="parameter__name"><em>path</em></span>
+                                </div>
+                                <div class="field is-grouped is-grouped-multiline parameter__tags">
+                                    <div class="control">
+                                        <div class="tags has-addons">
+                                            <span class="tag is-dark">type</span>
+                                            <span class="tag parameter__type"><span><a class="type" href="https://www.lua.org/manual/5.3/manual.html#6.4">string</a>, <span class="type">File</span> or <span class="type">Gio.File</span></span></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="parameter">
+                                <div>
+                                    <span class="parameter__name"><em>cb</em></span>
+                                </div>
+                                <div class="field is-grouped is-grouped-multiline parameter__tags">
+                                    <div class="control">
+                                        <div class="tags has-addons">
+                                            <span class="tag is-dark">type</span>
+                                            <span class="tag parameter__type"><span><span class="type">function</span></span></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+
+                        </ul>
+                    </div>
+                    <div class="block content section__item__returns">
+                        <h4 class="title is-6">Callback parameters:</h4>
+                        <ul>
+                            <li class="return-value">
+                                <div class="field is-grouped is-grouped-multiline">
+                                    <div class="control">
+                                        <div class="tags has-addons">
+                                            <span class="tag is-dark">type</span>
+                                            <span class="tag return-value__type"><span><span class="type">GLib.Error</span></span></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div id="iterate_contents" class="box section__item section__item--has-tags">
+                    <div class="block section__item__title">
+                        <strong>iterate_contents(dir, iteratee, options[, cb="standard::type"])</strong>
+                        <a class="source-ref" href="../source/filesystem.lua.html#75">line 75</a>
+                    </div>
+
+                    <div class="field is-grouped is-grouped-multiline section__item__tags">
+                        <div class="control">
+                            <span class="tag" data-tooltip="Function returns before the operation has finished. The callback function is called with the return values">async</span>
+                        </div>
+                        <div class="control">
+                            <div class="tags has-addons" data-tooltip="This item has been added as part of release version v0.2.0.">
+                                <span class="tag is-dark">since</span>
+                                <span class="tag"><a href="https://github.com/sclu1034/lgi-async-extra/releases/tag/0.2.0">v0.2.0</a></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="block content section__item__description">Iterates the contents of a directory. </p>
+
+<p> The <code>iteratee</code> callback is called once for every entry in the given directory, passing a
+ <a href="https://docs.gtk.org/gio/class.FileInfo.html">Gio.FileInfo</a> as argument.
+ It&rsquo;s callback argument only expects a single error parameter.</p>
+
+<p> If <code>options.recursive == true</code>, iteration will recurse into subdirectories.
+ <code>options.list_directories</code> can be used to have <code>iteratee</code> not be called on directory entries.</p>
+
+<p> On error, either within the iteration or passed by <code>iteratee</code>, iteration is aborted and
+ the final callback is called.</p>
+
+<p> See <a href="../modules/file.html#File:query_info">file:query_info</a> and <a href="https://docs.gtk.org/gio/method.File.query_info.html">g_file_query_info</a> for
+ information on the <code>attributes</code> parameter.</div>
+
+                    <div class="block content section__item__params">
+                        <h4 class="title is-6">Parameters:</h4>
+                        <ul>
+                            <li class="parameter">
+                                <div>
+                                    <span class="parameter__name"><em>dir</em></span>
+                                    <span class="parameter__description">:&nbsp; The directory to query contents for.</span>
+                                </div>
+                                <div class="field is-grouped is-grouped-multiline parameter__tags">
+                                    <div class="control">
+                                        <div class="tags has-addons">
+                                            <span class="tag is-dark">type</span>
+                                            <span class="tag parameter__type"><span><a class="type" href="https://www.lua.org/manual/5.3/manual.html#6.4">string</a>, <span class="type">File</span> or <span class="type">Gio.File</span></span></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="parameter">
+                                <div>
+                                    <span class="parameter__name"><em>iteratee</em></span>
+                                    <span class="parameter__description">:&nbsp; The iterator function that will be called for each entry.
+ The function will be called with a <code>Gio.FileInfo</code> and a callback: <code>function(info, cb)</code>.</span>
+                                </div>
+                                <div class="field is-grouped is-grouped-multiline parameter__tags">
+                                    <div class="control">
+                                        <div class="tags has-addons">
+                                            <span class="tag is-dark">type</span>
+                                            <span class="tag parameter__type"><span><span class="type">function</span></span></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            <li><span class="tag parameter__type">options</span>
+
+                            <ul>
+                            <li class="parameter">
+                                <div>
+                                    <span class="parameter__name"><em>attributes</em></span>
+                                    <span class="parameter__description">:&nbsp; The attributes to query.</span>
+                                </div>
+                                <div class="field is-grouped is-grouped-multiline parameter__tags">
+                                    <div class="control">
+                                        <div class="tags has-addons">
+                                            <span class="tag is-dark">type</span>
+                                            <span class="tag parameter__type"><span><a class="type" href="https://www.lua.org/manual/5.3/manual.html#6.4">string</a></span></span>
+                                        </div>
+                                    </div>
+                                    <div class="control">
+                                        <div class="tags has-addons">
+                                            <span class="tag is-dark">default</span>
+                                            <span class="tag parameter__default"><code>"standard::type"</code></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="parameter">
+                                <div>
+                                    <span class="parameter__name"><em>recursive</em></span>
+                                    <span class="parameter__description">:&nbsp; Recurse into directories.</span>
+                                </div>
+                                <div class="field is-grouped is-grouped-multiline parameter__tags">
+                                    <div class="control">
+                                        <div class="tags has-addons">
+                                            <span class="tag is-dark">type</span>
+                                            <span class="tag parameter__type"><span><span class="type">boolean</span></span></span>
+                                        </div>
+                                    </div>
+                                    <div class="control">
+                                        <div class="tags has-addons">
+                                            <span class="tag is-dark">default</span>
+                                            <span class="tag parameter__default"><code>false</code></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="parameter">
+                                <div>
+                                    <span class="parameter__name"><em>list_directories</em></span>
+                                    <span class="parameter__description">:&nbsp; If <code>false</code>, directories will not trigger <code>iteratee</code>.</span>
+                                </div>
+                                <div class="field is-grouped is-grouped-multiline parameter__tags">
+                                    <div class="control">
+                                        <div class="tags has-addons">
+                                            <span class="tag is-dark">type</span>
+                                            <span class="tag parameter__type"><span><span class="type">boolean</span></span></span>
+                                        </div>
+                                    </div>
+                                    <div class="control">
+                                        <div class="tags has-addons">
+                                            <span class="tag is-dark">default</span>
+                                            <span class="tag parameter__default"><code>true</code></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            </ul>
+                            <li class="parameter">
+                                <div>
+                                    <span class="parameter__name"><em>cb</em></span>
+                                </div>
+                                <div class="field is-grouped is-grouped-multiline parameter__tags">
+                                    <div class="control">
+                                        <div class="tags has-addons">
+                                            <span class="tag is-dark">type</span>
+                                            <span class="tag parameter__type"><span><span class="type">function</span></span></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+
+                        </ul>
+                    </div>
+                    <div class="block content section__item__returns">
+                        <h4 class="title is-6">Callback parameters:</h4>
+                        <ul>
+                            <li class="return-value">
+                                <div class="field is-grouped is-grouped-multiline">
+                                    <div class="control">
+                                        <div class="tags has-addons">
+                                            <span class="tag is-dark">type</span>
+                                            <span class="tag return-value__type"><span><span class="type">GLib.Error</span></span></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div id="list_contents" class="box section__item section__item--has-tags">
+                    <div class="block section__item__title">
+                        <strong>list_contents(dir, attributes, cb)</strong>
+                        <a class="source-ref" href="../source/filesystem.lua.html#169">line 169</a>
+                    </div>
+
+                    <div class="field is-grouped is-grouped-multiline section__item__tags">
+                        <div class="control">
+                            <span class="tag" data-tooltip="Function returns before the operation has finished. The callback function is called with the return values">async</span>
+                        </div>
+                        <div class="control">
+                            <div class="tags has-addons" data-tooltip="This item has been added as part of release version v0.2.0.">
+                                <span class="tag is-dark">since</span>
+                                <span class="tag"><a href="https://github.com/sclu1034/lgi-async-extra/releases/tag/0.2.0">v0.2.0</a></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="block content section__item__description">Lists the contents of a directory. </p>
+
+<p> See <a href="../modules/file.html#File:query_info">file:query_info</a> and <a href="https://docs.gtk.org/gio/method.File.query_info.html">g_file_query_info</a> for
+ information on the <code>attributes</code> parameter.</div>
+
+                    <div class="block content section__item__params">
+                        <h4 class="title is-6">Parameters:</h4>
+                        <ul>
+                            <li class="parameter">
+                                <div>
+                                    <span class="parameter__name"><em>dir</em></span>
+                                    <span class="parameter__description">:&nbsp; The directory to query contents for.</span>
+                                </div>
+                                <div class="field is-grouped is-grouped-multiline parameter__tags">
+                                    <div class="control">
+                                        <div class="tags has-addons">
+                                            <span class="tag is-dark">type</span>
+                                            <span class="tag parameter__type"><span><a class="type" href="https://www.lua.org/manual/5.3/manual.html#6.4">string</a>, <span class="type">File</span> or <span class="type">Gio.File</span></span></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="parameter">
+                                <div>
+                                    <span class="parameter__name"><em>attributes</em></span>
+                                    <span class="parameter__description">:&nbsp; The attributes to query.</span>
+                                </div>
+                                <div class="field is-grouped is-grouped-multiline parameter__tags">
+                                    <div class="control">
+                                        <div class="tags has-addons">
+                                            <span class="tag is-dark">type</span>
+                                            <span class="tag parameter__type"><span><a class="type" href="https://www.lua.org/manual/5.3/manual.html#6.4">string</a></span></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="parameter">
+                                <div>
+                                    <span class="parameter__name"><em>cb</em></span>
+                                </div>
+                                <div class="field is-grouped is-grouped-multiline parameter__tags">
+                                    <div class="control">
+                                        <div class="tags has-addons">
+                                            <span class="tag is-dark">type</span>
+                                            <span class="tag parameter__type"><span><span class="type">function</span></span></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+
+                        </ul>
+                    </div>
+                    <div class="block content section__item__returns">
+                        <h4 class="title is-6">Callback parameters:</h4>
+                        <ul>
+                            <li class="return-value">
+                                <div class="field is-grouped is-grouped-multiline">
+                                    <div class="control">
+                                        <div class="tags has-addons">
+                                            <span class="tag is-dark">type</span>
+                                            <span class="tag return-value__type"><span><span class="type">GLib.Error</span></span></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="return-value">
+                                <div class="return-value__description">
+                                    <span>A list of <code>Gio.FileInfo</code>s</span>
+                                </div>
+                                <div class="field is-grouped is-grouped-multiline">
+                                    <div class="control">
+                                        <div class="tags has-addons">
+                                            <span class="tag is-dark">type</span>
+                                            <span class="tag return-value__type"><span><a class="type" href="https://www.lua.org/manual/5.3/manual.html#6.6">table</a></span></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div id="remove_directory" class="box section__item section__item--has-tags">
+                    <div class="block section__item__title">
+                        <strong>remove_directory(dir, cb)</strong>
+                        <a class="source-ref" href="../source/filesystem.lua.html#242">line 242</a>
+                    </div>
+
+                    <div class="field is-grouped is-grouped-multiline section__item__tags">
+                        <div class="control">
+                            <span class="tag" data-tooltip="Function returns before the operation has finished. The callback function is called with the return values">async</span>
+                        </div>
+                        <div class="control">
+                            <div class="tags has-addons" data-tooltip="This item has been added as part of release version v0.2.0.">
+                                <span class="tag is-dark">since</span>
+                                <span class="tag"><a href="https://github.com/sclu1034/lgi-async-extra/releases/tag/0.2.0">v0.2.0</a></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="block content section__item__description">Recursively removes a directory and its contents.</div>
+
+                    <div class="block content section__item__params">
+                        <h4 class="title is-6">Parameters:</h4>
+                        <ul>
+                            <li class="parameter">
+                                <div>
+                                    <span class="parameter__name"><em>dir</em></span>
+                                    <span class="parameter__description">:&nbsp; The directory to remove.</span>
+                                </div>
+                                <div class="field is-grouped is-grouped-multiline parameter__tags">
+                                    <div class="control">
+                                        <div class="tags has-addons">
+                                            <span class="tag is-dark">type</span>
+                                            <span class="tag parameter__type"><span><a class="type" href="https://www.lua.org/manual/5.3/manual.html#6.4">string</a>, <span class="type">File</span> or <span class="type">Gio.File</span></span></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="parameter">
+                                <div>
+                                    <span class="parameter__name"><em>cb</em></span>
+                                </div>
+                                <div class="field is-grouped is-grouped-multiline parameter__tags">
+                                    <div class="control">
+                                        <div class="tags has-addons">
+                                            <span class="tag is-dark">type</span>
+                                            <span class="tag parameter__type"><span><span class="type">function</span></span></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+
+                        </ul>
+                    </div>
+                    <div class="block content section__item__returns">
+                        <h4 class="title is-6">Callback parameters:</h4>
+                        <ul>
+                            <li class="return-value">
+                                <div class="field is-grouped is-grouped-multiline">
+                                    <div class="control">
+                                        <div class="tags has-addons">
+                                            <span class="tag is-dark">type</span>
+                                            <span class="tag return-value__type"><span><span class="type">GLib.Error</span></span></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="content has-text-centered">
+            Generated by <a href="https://github/com/stevendonovan/LDoc">LDoc 1.4.6</a>, designed with <a href="https://github.com/jgthms/bulma">Bulma</a>. Last updated at 2022-03-16 19:34:58.
+        </div>
+    </footer>
+</div>
+
+</body>
+</html>

@@ -23,14 +23,17 @@
                 <ul>
                     <li><a href="#toc">Table of contents</a></li>
                     <li><a href="#Constructors">Constructors </a></li>
+                    <li><a href="#Static_functions">Static functions </a></li>
                     <li><a href="#Class_file">Class file </a></li>
                 </ul>
             </li>
+            <li><a href="../modules/filesystem.html">filesystem</a></li>
             <li><a href="../modules/stream.html">stream</a></li>
         </ul>
         <p class="menu-label">Source</p>
         <ul class="menu-list">
             <li><a href="../source/file.lua.html">file.lua</a></li>
+            <li><a href="../source/filesystem.lua.html">filesystem.lua</a></li>
             <li><a href="../source/stream.lua.html">stream.lua</a></li>
         </ul>
     </nav>
@@ -65,7 +68,10 @@ read_non_existent_file(<span class="keyword">function</span>(err, data)
 <p> Example to write and read-back a file:</p>
 
 <pre>
-<span class="keyword">local</span> f = File.new_for_path(<span class="string">"/tmp/foo.txt"</span>)
+<span class="keyword">local</span> lgi = <span class="global">require</span>(<span class="string">"lgi"</span>)
+<span class="keyword">local</span> File = <span class="global">require</span>(<span class="string">"lgi-async-extra.file"</span>)
+<span class="keyword">local</span> path = <span class="string">"%s/foo.txt"</span>:format(lgi.GLib.get_tmp_dir())
+<span class="keyword">local</span> f = File.new_for_path(path)
 async.waterfall({
     <span class="keyword">function</span>(cb)
         <span class="comment">-- By default, writing replaces any existing content
@@ -116,6 +122,15 @@ async.waterfall({
                     </tr>
                 </tbody>
             </table>
+            <h3 class="title is-4"><a href="#Static_functions">Static functions </a></h3>
+            <table class="table is-fullwidth is-striped">
+                <tbody>
+                    <tr>
+                        <td class="name"><a href="#is_instance">is_instance(f)</a></td>
+                        <td class="summary">Checks if a table is an instance of <a href="../modules/file.html#">file</a>.</td>
+                    </tr>
+                </tbody>
+            </table>
             <h3 class="title is-4"><a href="#Class_file">Class file </a></h3>
             <table class="table is-fullwidth is-striped">
                 <tbody>
@@ -152,7 +167,7 @@ async.waterfall({
                         <td class="summary">Asynchronously iterate over the file line by line.</td>
                     </tr>
                     <tr>
-                        <td class="name"><a href="#File:move">File:move(destination, cb)</a></td>
+                        <td class="name"><a href="#File:move">File:move(path, cb)</a></td>
                         <td class="summary">Move the file to a new location.</td>
                     </tr>
                     <tr>
@@ -179,6 +194,10 @@ async.waterfall({
                         <td class="name"><a href="#File:type">File:type(cb)</a></td>
                         <td class="summary">Query the type of the file.</td>
                     </tr>
+                    <tr>
+                        <td class="name"><a href="#File:create">File:create(cb)</a></td>
+                        <td class="summary">Creates an empty file.</td>
+                    </tr>
                 </tbody>
             </table>
         </div>
@@ -191,7 +210,7 @@ async.waterfall({
                 <div id="new_for_path" class="box section__item ">
                     <div class="block section__item__title">
                         <strong>new_for_path(path)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#68">line 68</a>
+                        <a class="source-ref" href="../source/file.lua.html#78">line 78</a>
                     </div>
 
 
@@ -211,7 +230,7 @@ async.waterfall({
                                     <div class="control">
                                         <div class="tags has-addons">
                                             <span class="tag is-dark">type</span>
-                                            <span class="tag"><a class="type" href="https://www.lua.org/manual/5.3/manual.html#6.4">string</a></span>
+                                            <span class="tag parameter__type"><span><a class="type" href="https://www.lua.org/manual/5.3/manual.html#6.4">string</a></span></span>
                                         </div>
                                     </div>
                                 </div>
@@ -227,7 +246,7 @@ async.waterfall({
                                     <div class="control">
                                         <div class="tags has-addons">
                                             <span class="tag is-dark">type</span>
-                                            <span class="tag return-value__type"><span class="type">File</span></span>
+                                            <span class="tag return-value__type"><span><span class="type">File</span></span></span>
                                         </div>
                                     </div>
                                 </div>
@@ -238,7 +257,7 @@ async.waterfall({
                 <div id="new_for_uri" class="box section__item ">
                     <div class="block section__item__title">
                         <strong>new_for_uri(uri)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#87">line 87</a>
+                        <a class="source-ref" href="../source/file.lua.html#97">line 97</a>
                     </div>
 
 
@@ -258,7 +277,7 @@ async.waterfall({
                                     <div class="control">
                                         <div class="tags has-addons">
                                             <span class="tag is-dark">type</span>
-                                            <span class="tag"><a class="type" href="https://www.lua.org/manual/5.3/manual.html#6.4">string</a></span>
+                                            <span class="tag parameter__type"><span><a class="type" href="https://www.lua.org/manual/5.3/manual.html#6.4">string</a></span></span>
                                         </div>
                                     </div>
                                 </div>
@@ -274,7 +293,7 @@ async.waterfall({
                                     <div class="control">
                                         <div class="tags has-addons">
                                             <span class="tag is-dark">type</span>
-                                            <span class="tag return-value__type"><span class="type">File</span></span>
+                                            <span class="tag return-value__type"><span><span class="type">File</span></span></span>
                                         </div>
                                     </div>
                                 </div>
@@ -285,7 +304,7 @@ async.waterfall({
                 <div id="new_tmp" class="box section__item ">
                     <div class="block section__item__title">
                         <strong>new_tmp([template=".XXXXXX"])</strong>
-                        <a class="source-ref" href="../source/file.lua.html#120">line 120</a>
+                        <a class="source-ref" href="../source/file.lua.html#130">line 130</a>
                     </div>
 
 
@@ -317,13 +336,13 @@ async.waterfall({
                                     <div class="control">
                                         <div class="tags has-addons">
                                             <span class="tag is-dark">type</span>
-                                            <span class="tag"><a class="type" href="https://www.lua.org/manual/5.3/manual.html#6.4">string</a></span>
+                                            <span class="tag parameter__type"><span><a class="type" href="https://www.lua.org/manual/5.3/manual.html#6.4">string</a></span></span>
                                         </div>
                                     </div>
                                     <div class="control">
                                         <div class="tags has-addons">
                                             <span class="tag is-dark">default</span>
-                                            <span class="tag"><code>".XXXXXX"</code></span>
+                                            <span class="tag parameter__default"><code>".XXXXXX"</code></span>
                                         </div>
                                     </div>
                                 </div>
@@ -339,7 +358,7 @@ async.waterfall({
                                     <div class="control">
                                         <div class="tags has-addons">
                                             <span class="tag is-dark">type</span>
-                                            <span class="tag return-value__type"><span class="type">File</span></span>
+                                            <span class="tag return-value__type"><span><span class="type">File</span></span></span>
                                         </div>
                                     </div>
                                 </div>
@@ -349,7 +368,7 @@ async.waterfall({
                                     <div class="control">
                                         <div class="tags has-addons">
                                             <span class="tag is-dark">type</span>
-                                            <span class="tag return-value__type"><span class="type">GIO.FileIOStream</span></span>
+                                            <span class="tag return-value__type"><span><span class="type">GIO.FileIOStream</span></span></span>
                                         </div>
                                     </div>
                                 </div>
@@ -359,12 +378,70 @@ async.waterfall({
                                     <div class="control">
                                         <div class="tags has-addons">
                                             <span class="tag is-dark">type</span>
-                                            <span class="tag return-value__type"><span class="type">GLib.Error</span></span>
+                                            <span class="tag return-value__type"><span><span class="type">GLib.Error</span></span></span>
                                         </div>
                                     </div>
                                 </div>
                             </li>
                         </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="section section--Static functions ">
+        <div class="container">
+            <h2 class="title is-2" id="Static_functions"><a href="#Static_functions">Static functions </a></h2>
+            <div class="section__content">
+                <div id="is_instance" class="box section__item ">
+                    <div class="block section__item__title">
+                        <strong>is_instance(f)</strong>
+                        <a class="source-ref" href="../source/file.lua.html#152">line 152</a>
+                    </div>
+
+
+                    <div class="block content section__item__description">Checks if a table is an instance of <a href="../modules/file.html#">file</a>.</div>
+
+                    <div class="block content section__item__params">
+                        <h4 class="title is-6">Parameters:</h4>
+                        <ul>
+                            <li class="parameter">
+                                <div>
+                                    <span class="parameter__name"><em>f</em></span>
+                                    <span class="parameter__description">:&nbsp; The value to check.</span>
+                                </div>
+                                <div class="field is-grouped is-grouped-multiline parameter__tags">
+                                    <div class="control">
+                                        <div class="tags has-addons">
+                                            <span class="tag is-dark">type</span>
+                                            <span class="tag parameter__type"><span><a class="type" href="https://www.lua.org/manual/5.3/manual.html#6.6">table</a></span></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+
+                        </ul>
+                    </div>
+                    <div class="block content section__item__returns">
+                        <h4 class="title is-6">Returns:</h4>
+                        <ul>
+                            <li class="return-value">
+                                <div class="field is-grouped is-grouped-multiline">
+                                    <div class="control">
+                                        <div class="tags has-addons">
+                                            <span class="tag is-dark">type</span>
+                                            <span class="tag return-value__type"><span><span class="type">boolean</span></span></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="block content section__item__usage">
+                        <h4 class="title is-6">Usage:</h4>
+                            <pre class="code-block code-block--lua"><span class="keyword">local</span> File = <span class="global">require</span>(<span class="string">"lgi-async-extra.file"</span>)
+<span class="keyword">local</span> f = File.new_for_path(<span class="string">"/tmp/foo.txt"</span>)
+<span class="global">assert</span>(File.is_instance(f))</pre>
                     </div>
                 </div>
             </div>
@@ -377,7 +454,7 @@ async.waterfall({
                 <div id="File:get_path" class="box section__item ">
                     <div class="block section__item__title">
                         <strong>File:get_path()</strong>
-                        <a class="source-ref" href="../source/file.lua.html#179">line 179</a>
+                        <a class="source-ref" href="../source/file.lua.html#204">line 204</a>
                     </div>
 
 
@@ -394,7 +471,7 @@ async.waterfall({
                                     <div class="control">
                                         <div class="tags has-addons">
                                             <span class="tag is-dark">type</span>
-                                            <span class="tag return-value__type"><a class="type" href="https://www.lua.org/manual/5.3/manual.html#6.4">string</a></span>
+                                            <span class="tag return-value__type"><span><a class="type" href="https://www.lua.org/manual/5.3/manual.html#6.4">string</a></span></span>
                                         </div>
                                     </div>
                                 </div>
@@ -405,7 +482,7 @@ async.waterfall({
                 <div id="File:read_stream" class="box section__item section__item--has-tags">
                     <div class="block section__item__title">
                         <strong>File:read_stream(cb)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#200">line 200</a>
+                        <a class="source-ref" href="../source/file.lua.html#225">line 225</a>
                     </div>
 
                     <div class="field is-grouped is-grouped-multiline section__item__tags">
@@ -443,7 +520,7 @@ end)
                                     <div class="control">
                                         <div class="tags has-addons">
                                             <span class="tag is-dark">type</span>
-                                            <span class="tag"><span class="type">function</span></span>
+                                            <span class="tag parameter__type"><span><span class="type">function</span></span></span>
                                         </div>
                                     </div>
                                 </div>
@@ -459,7 +536,7 @@ end)
                                     <div class="control">
                                         <div class="tags has-addons">
                                             <span class="tag is-dark">type</span>
-                                            <span class="tag return-value__type"><span class="type">GLib.Error</span></span>
+                                            <span class="tag return-value__type"><span><span class="type">GLib.Error</span></span></span>
                                         </div>
                                     </div>
                                 </div>
@@ -469,7 +546,7 @@ end)
                                     <div class="control">
                                         <div class="tags has-addons">
                                             <span class="tag is-dark">type</span>
-                                            <span class="tag return-value__type"><span class="type">Gio.FileInputStream</span></span>
+                                            <span class="tag return-value__type"><span><span class="type">Gio.FileInputStream</span></span></span>
                                         </div>
                                     </div>
                                 </div>
@@ -480,7 +557,7 @@ end)
                 <div id="File:write_stream" class="box section__item section__item--has-tags">
                     <div class="block section__item__title">
                         <strong>File:write_stream([mode="replace"], cb)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#230">line 230</a>
+                        <a class="source-ref" href="../source/file.lua.html#255">line 255</a>
                     </div>
 
                     <div class="field is-grouped is-grouped-multiline section__item__tags">
@@ -520,13 +597,13 @@ end)
                                     <div class="control">
                                         <div class="tags has-addons">
                                             <span class="tag is-dark">type</span>
-                                            <span class="tag"><a class="type" href="https://www.lua.org/manual/5.3/manual.html#6.4">string</a></span>
+                                            <span class="tag parameter__type"><span><a class="type" href="https://www.lua.org/manual/5.3/manual.html#6.4">string</a></span></span>
                                         </div>
                                     </div>
                                     <div class="control">
                                         <div class="tags has-addons">
                                             <span class="tag is-dark">default</span>
-                                            <span class="tag"><code>"replace"</code></span>
+                                            <span class="tag parameter__default"><code>"replace"</code></span>
                                         </div>
                                     </div>
                                 </div>
@@ -539,7 +616,7 @@ end)
                                     <div class="control">
                                         <div class="tags has-addons">
                                             <span class="tag is-dark">type</span>
-                                            <span class="tag"><span class="type">function</span></span>
+                                            <span class="tag parameter__type"><span><span class="type">function</span></span></span>
                                         </div>
                                     </div>
                                 </div>
@@ -555,7 +632,7 @@ end)
                                     <div class="control">
                                         <div class="tags has-addons">
                                             <span class="tag is-dark">type</span>
-                                            <span class="tag return-value__type"><span class="type">GLib.Error</span></span>
+                                            <span class="tag return-value__type"><span><span class="type">GLib.Error</span></span></span>
                                         </div>
                                     </div>
                                 </div>
@@ -565,7 +642,7 @@ end)
                                     <div class="control">
                                         <div class="tags has-addons">
                                             <span class="tag is-dark">type</span>
-                                            <span class="tag return-value__type"><span class="type">Gio.FileOutputStream</span></span>
+                                            <span class="tag return-value__type"><span><span class="type">Gio.FileOutputStream</span></span></span>
                                         </div>
                                     </div>
                                 </div>
@@ -576,7 +653,7 @@ end)
                 <div id="File:write" class="box section__item section__item--has-tags">
                     <div class="block section__item__title">
                         <strong>File:write(data[, mode="replace"], cb)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#274">line 274</a>
+                        <a class="source-ref" href="../source/file.lua.html#299">line 299</a>
                     </div>
 
                     <div class="field is-grouped is-grouped-multiline section__item__tags">
@@ -601,7 +678,7 @@ end)
                                     <div class="control">
                                         <div class="tags has-addons">
                                             <span class="tag is-dark">type</span>
-                                            <span class="tag"><a class="type" href="https://www.lua.org/manual/5.3/manual.html#6.4">string</a></span>
+                                            <span class="tag parameter__type"><span><a class="type" href="https://www.lua.org/manual/5.3/manual.html#6.4">string</a></span></span>
                                         </div>
                                     </div>
                                 </div>
@@ -617,13 +694,13 @@ end)
                                     <div class="control">
                                         <div class="tags has-addons">
                                             <span class="tag is-dark">type</span>
-                                            <span class="tag"><a class="type" href="https://www.lua.org/manual/5.3/manual.html#6.4">string</a></span>
+                                            <span class="tag parameter__type"><span><a class="type" href="https://www.lua.org/manual/5.3/manual.html#6.4">string</a></span></span>
                                         </div>
                                     </div>
                                     <div class="control">
                                         <div class="tags has-addons">
                                             <span class="tag is-dark">default</span>
-                                            <span class="tag"><code>"replace"</code></span>
+                                            <span class="tag parameter__default"><code>"replace"</code></span>
                                         </div>
                                     </div>
                                 </div>
@@ -636,7 +713,7 @@ end)
                                     <div class="control">
                                         <div class="tags has-addons">
                                             <span class="tag is-dark">type</span>
-                                            <span class="tag"><span class="type">function</span></span>
+                                            <span class="tag parameter__type"><span><span class="type">function</span></span></span>
                                         </div>
                                     </div>
                                 </div>
@@ -652,7 +729,7 @@ end)
                                     <div class="control">
                                         <div class="tags has-addons">
                                             <span class="tag is-dark">type</span>
-                                            <span class="tag return-value__type"><span class="type">GLib.Error</span></span>
+                                            <span class="tag return-value__type"><span><span class="type">GLib.Error</span></span></span>
                                         </div>
                                     </div>
                                 </div>
@@ -663,7 +740,7 @@ end)
                 <div id="File:read_bytes" class="box section__item section__item--has-tags">
                     <div class="block section__item__title">
                         <strong>File:read_bytes(size, cb)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#310">line 310</a>
+                        <a class="source-ref" href="../source/file.lua.html#335">line 335</a>
                     </div>
 
                     <div class="field is-grouped is-grouped-multiline section__item__tags">
@@ -694,7 +771,7 @@ end)
                                     <div class="control">
                                         <div class="tags has-addons">
                                             <span class="tag is-dark">type</span>
-                                            <span class="tag"><span class="type">number</span></span>
+                                            <span class="tag parameter__type"><span><span class="type">number</span></span></span>
                                         </div>
                                     </div>
                                 </div>
@@ -709,7 +786,7 @@ end)
                                     <div class="control">
                                         <div class="tags has-addons">
                                             <span class="tag is-dark">type</span>
-                                            <span class="tag"><span class="type">function</span></span>
+                                            <span class="tag parameter__type"><span><span class="type">function</span></span></span>
                                         </div>
                                     </div>
                                 </div>
@@ -729,7 +806,7 @@ end)
                                     <div class="control">
                                         <div class="tags has-addons">
                                             <span class="tag is-dark">type</span>
-                                            <span class="tag return-value__type"><span class="type">GLib.Error</span></span>
+                                            <span class="tag return-value__type"><span><span class="type">GLib.Error</span></span></span>
                                         </div>
                                     </div>
                                 </div>
@@ -739,7 +816,7 @@ end)
                                     <div class="control">
                                         <div class="tags has-addons">
                                             <span class="tag is-dark">type</span>
-                                            <span class="tag return-value__type"><span class="type">GLib.Bytes</span></span>
+                                            <span class="tag return-value__type"><span><span class="type">GLib.Bytes</span></span></span>
                                         </div>
                                     </div>
                                 </div>
@@ -750,7 +827,7 @@ end)
                 <div id="File:read_string" class="box section__item section__item--has-tags">
                     <div class="block section__item__title">
                         <strong>File:read_string(cb)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#343">line 343</a>
+                        <a class="source-ref" href="../source/file.lua.html#368">line 368</a>
                     </div>
 
                     <div class="field is-grouped is-grouped-multiline section__item__tags">
@@ -785,7 +862,7 @@ end)
                                     <div class="control">
                                         <div class="tags has-addons">
                                             <span class="tag is-dark">type</span>
-                                            <span class="tag"><span class="type">function</span></span>
+                                            <span class="tag parameter__type"><span><span class="type">function</span></span></span>
                                         </div>
                                     </div>
                                 </div>
@@ -805,7 +882,7 @@ end)
                                     <div class="control">
                                         <div class="tags has-addons">
                                             <span class="tag is-dark">type</span>
-                                            <span class="tag return-value__type"><span class="type">GLib.Error</span></span>
+                                            <span class="tag return-value__type"><span><span class="type">GLib.Error</span></span></span>
                                         </div>
                                     </div>
                                 </div>
@@ -818,7 +895,7 @@ end)
                                     <div class="control">
                                         <div class="tags has-addons">
                                             <span class="tag is-dark">type</span>
-                                            <span class="tag return-value__type"><a class="type" href="https://www.lua.org/manual/5.3/manual.html#6.4">string</a></span>
+                                            <span class="tag return-value__type"><span><a class="type" href="https://www.lua.org/manual/5.3/manual.html#6.4">string</a></span></span>
                                         </div>
                                     </div>
                                 </div>
@@ -829,7 +906,7 @@ end)
                 <div id="File:read_line" class="box section__item section__item--has-tags">
                     <div class="block section__item__title">
                         <strong>File:read_line(cb)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#370">line 370</a>
+                        <a class="source-ref" href="../source/file.lua.html#395">line 395</a>
                     </div>
 
                     <div class="field is-grouped is-grouped-multiline section__item__tags">
@@ -859,7 +936,7 @@ end)
                                     <div class="control">
                                         <div class="tags has-addons">
                                             <span class="tag is-dark">type</span>
-                                            <span class="tag"><span class="type">function</span></span>
+                                            <span class="tag parameter__type"><span><span class="type">function</span></span></span>
                                         </div>
                                     </div>
                                 </div>
@@ -879,7 +956,7 @@ end)
                                     <div class="control">
                                         <div class="tags has-addons">
                                             <span class="tag is-dark">type</span>
-                                            <span class="tag return-value__type"><span class="type">GLib.Error</span></span>
+                                            <span class="tag return-value__type"><span><span class="type">GLib.Error</span></span></span>
                                         </div>
                                     </div>
                                 </div>
@@ -893,7 +970,7 @@ end)
                                     <div class="control">
                                         <div class="tags has-addons">
                                             <span class="tag is-dark">type</span>
-                                            <span class="tag return-value__type"><a class="type" href="https://www.lua.org/manual/5.3/manual.html#6.4">string</a></span>
+                                            <span class="tag return-value__type"><span><a class="type" href="https://www.lua.org/manual/5.3/manual.html#6.4">string</a></span></span>
                                         </div>
                                     </div>
                                 </div>
@@ -904,7 +981,7 @@ end)
                 <div id="File:iterate_lines" class="box section__item section__item--has-tags">
                     <div class="block section__item__title">
                         <strong>File:iterate_lines(iteratee, cb)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#405">line 405</a>
+                        <a class="source-ref" href="../source/file.lua.html#430">line 430</a>
                     </div>
 
                     <div class="field is-grouped is-grouped-multiline section__item__tags">
@@ -938,7 +1015,7 @@ end)
                                     <div class="control">
                                         <div class="tags has-addons">
                                             <span class="tag is-dark">type</span>
-                                            <span class="tag"><span class="type">function</span></span>
+                                            <span class="tag parameter__type"><span><span class="type">function</span></span></span>
                                         </div>
                                     </div>
                                 </div>
@@ -953,7 +1030,7 @@ end)
                                     <div class="control">
                                         <div class="tags has-addons">
                                             <span class="tag is-dark">type</span>
-                                            <span class="tag"><span class="type">function</span></span>
+                                            <span class="tag parameter__type"><span><span class="type">function</span></span></span>
                                         </div>
                                     </div>
                                 </div>
@@ -964,8 +1041,8 @@ end)
                 </div>
                 <div id="File:move" class="box section__item section__item--has-tags">
                     <div class="block section__item__title">
-                        <strong>File:move(destination, cb)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#452">line 452</a>
+                        <strong>File:move(path, cb)</strong>
+                        <a class="source-ref" href="../source/file.lua.html#477">line 477</a>
                     </div>
 
                     <div class="field is-grouped is-grouped-multiline section__item__tags">
@@ -985,14 +1062,14 @@ end)
                         <ul>
                             <li class="parameter">
                                 <div>
-                                    <span class="parameter__name"><em>destination</em></span>
-                                    <span class="parameter__description">:&nbsp; New path to move to</span>
+                                    <span class="parameter__name"><em>path</em></span>
+                                    <span class="parameter__description">:&nbsp; New path to move to.</span>
                                 </div>
                                 <div class="field is-grouped is-grouped-multiline parameter__tags">
                                     <div class="control">
                                         <div class="tags has-addons">
                                             <span class="tag is-dark">type</span>
-                                            <span class="tag"><a class="type" href="https://www.lua.org/manual/5.3/manual.html#6.4">string</a></span>
+                                            <span class="tag parameter__type"><span><a class="type" href="https://www.lua.org/manual/5.3/manual.html#6.4">string</a>, <a class="type" href="../modules/file.html#file">file</a> or <span class="type">Gio.File</span></span></span>
                                         </div>
                                     </div>
                                 </div>
@@ -1005,7 +1082,7 @@ end)
                                     <div class="control">
                                         <div class="tags has-addons">
                                             <span class="tag is-dark">type</span>
-                                            <span class="tag"><span class="type">function</span></span>
+                                            <span class="tag parameter__type"><span><span class="type">function</span></span></span>
                                         </div>
                                     </div>
                                 </div>
@@ -1021,7 +1098,7 @@ end)
                                     <div class="control">
                                         <div class="tags has-addons">
                                             <span class="tag is-dark">type</span>
-                                            <span class="tag return-value__type"><span class="type">GLib.Error</span></span>
+                                            <span class="tag return-value__type"><span><span class="type">GLib.Error</span></span></span>
                                         </div>
                                     </div>
                                 </div>
@@ -1032,7 +1109,7 @@ end)
                 <div id="File:delete" class="box section__item section__item--has-tags">
                     <div class="block section__item__title">
                         <strong>File:delete(cb)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#476">line 476</a>
+                        <a class="source-ref" href="../source/file.lua.html#505">line 505</a>
                     </div>
 
                     <div class="field is-grouped is-grouped-multiline section__item__tags">
@@ -1062,7 +1139,7 @@ end)
                                     <div class="control">
                                         <div class="tags has-addons">
                                             <span class="tag is-dark">type</span>
-                                            <span class="tag"><span class="type">function</span></span>
+                                            <span class="tag parameter__type"><span><span class="type">function</span></span></span>
                                         </div>
                                     </div>
                                 </div>
@@ -1078,7 +1155,7 @@ end)
                                     <div class="control">
                                         <div class="tags has-addons">
                                             <span class="tag is-dark">type</span>
-                                            <span class="tag return-value__type"><span class="type">GLib.Error</span></span>
+                                            <span class="tag return-value__type"><span><span class="type">GLib.Error</span></span></span>
                                         </div>
                                     </div>
                                 </div>
@@ -1089,7 +1166,7 @@ end)
                 <div id="File:trash" class="box section__item section__item--has-tags">
                     <div class="block section__item__title">
                         <strong>File:trash(cb)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#495">line 495</a>
+                        <a class="source-ref" href="../source/file.lua.html#524">line 524</a>
                     </div>
 
                     <div class="field is-grouped is-grouped-multiline section__item__tags">
@@ -1116,7 +1193,7 @@ end)
                                     <div class="control">
                                         <div class="tags has-addons">
                                             <span class="tag is-dark">type</span>
-                                            <span class="tag"><span class="type">function</span></span>
+                                            <span class="tag parameter__type"><span><span class="type">function</span></span></span>
                                         </div>
                                     </div>
                                 </div>
@@ -1132,7 +1209,7 @@ end)
                                     <div class="control">
                                         <div class="tags has-addons">
                                             <span class="tag is-dark">type</span>
-                                            <span class="tag return-value__type"><span class="type">GLib.Error</span></span>
+                                            <span class="tag return-value__type"><span><span class="type">GLib.Error</span></span></span>
                                         </div>
                                     </div>
                                 </div>
@@ -1143,7 +1220,7 @@ end)
                 <div id="File:query_info" class="box section__item section__item--has-tags">
                     <div class="block section__item__title">
                         <strong>File:query_info(attribute, cb)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#524">line 524</a>
+                        <a class="source-ref" href="../source/file.lua.html#553">line 553</a>
                     </div>
 
                     <div class="field is-grouped is-grouped-multiline section__item__tags">
@@ -1178,7 +1255,7 @@ end)
                                     <div class="control">
                                         <div class="tags has-addons">
                                             <span class="tag is-dark">type</span>
-                                            <span class="tag"><a class="type" href="https://www.lua.org/manual/5.3/manual.html#6.4">string</a></span>
+                                            <span class="tag parameter__type"><span><a class="type" href="https://www.lua.org/manual/5.3/manual.html#6.4">string</a></span></span>
                                         </div>
                                     </div>
                                 </div>
@@ -1191,7 +1268,7 @@ end)
                                     <div class="control">
                                         <div class="tags has-addons">
                                             <span class="tag is-dark">type</span>
-                                            <span class="tag"><span class="type">function</span></span>
+                                            <span class="tag parameter__type"><span><span class="type">function</span></span></span>
                                         </div>
                                     </div>
                                 </div>
@@ -1207,7 +1284,7 @@ end)
                                     <div class="control">
                                         <div class="tags has-addons">
                                             <span class="tag is-dark">type</span>
-                                            <span class="tag return-value__type"><span class="type">GLib.Error</span></span>
+                                            <span class="tag return-value__type"><span><span class="type">GLib.Error</span></span></span>
                                         </div>
                                     </div>
                                 </div>
@@ -1217,7 +1294,7 @@ end)
                                     <div class="control">
                                         <div class="tags has-addons">
                                             <span class="tag is-dark">type</span>
-                                            <span class="tag return-value__type"><span class="type">Gio.FileInfo</span></span>
+                                            <span class="tag return-value__type"><span><span class="type">Gio.FileInfo</span></span></span>
                                         </div>
                                     </div>
                                 </div>
@@ -1228,7 +1305,7 @@ end)
                 <div id="File:exists" class="box section__item section__item--has-tags">
                     <div class="block section__item__title">
                         <strong>File:exists(cb)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#549">line 549</a>
+                        <a class="source-ref" href="../source/file.lua.html#578">line 578</a>
                     </div>
 
                     <div class="field is-grouped is-grouped-multiline section__item__tags">
@@ -1260,7 +1337,7 @@ end)
                                     <div class="control">
                                         <div class="tags has-addons">
                                             <span class="tag is-dark">type</span>
-                                            <span class="tag"><span class="type">function</span></span>
+                                            <span class="tag parameter__type"><span><span class="type">function</span></span></span>
                                         </div>
                                     </div>
                                 </div>
@@ -1276,7 +1353,7 @@ end)
                                     <div class="control">
                                         <div class="tags has-addons">
                                             <span class="tag is-dark">type</span>
-                                            <span class="tag return-value__type"><span class="type">GLib.Error</span></span>
+                                            <span class="tag return-value__type"><span><span class="type">GLib.Error</span></span></span>
                                         </div>
                                     </div>
                                 </div>
@@ -1289,7 +1366,7 @@ end)
                                     <div class="control">
                                         <div class="tags has-addons">
                                             <span class="tag is-dark">type</span>
-                                            <span class="tag return-value__type"><span class="type">boolean</span></span>
+                                            <span class="tag return-value__type"><span><span class="type">boolean</span></span></span>
                                         </div>
                                     </div>
                                 </div>
@@ -1300,7 +1377,7 @@ end)
                 <div id="File:size" class="box section__item section__item--has-tags">
                     <div class="block section__item__title">
                         <strong>File:size(cb)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#575">line 575</a>
+                        <a class="source-ref" href="../source/file.lua.html#604">line 604</a>
                     </div>
 
                     <div class="field is-grouped is-grouped-multiline section__item__tags">
@@ -1327,7 +1404,7 @@ end)
                                     <div class="control">
                                         <div class="tags has-addons">
                                             <span class="tag is-dark">type</span>
-                                            <span class="tag"><span class="type">function</span></span>
+                                            <span class="tag parameter__type"><span><span class="type">function</span></span></span>
                                         </div>
                                     </div>
                                 </div>
@@ -1343,7 +1420,7 @@ end)
                                     <div class="control">
                                         <div class="tags has-addons">
                                             <span class="tag is-dark">type</span>
-                                            <span class="tag return-value__type"><span class="type">GLib.Error</span></span>
+                                            <span class="tag return-value__type"><span><span class="type">GLib.Error</span></span></span>
                                         </div>
                                     </div>
                                 </div>
@@ -1353,7 +1430,7 @@ end)
                                     <div class="control">
                                         <div class="tags has-addons">
                                             <span class="tag is-dark">type</span>
-                                            <span class="tag return-value__type"><span class="type">number</span></span>
+                                            <span class="tag return-value__type"><span><span class="type">number</span></span></span>
                                         </div>
                                     </div>
                                 </div>
@@ -1364,7 +1441,7 @@ end)
                 <div id="File:type" class="box section__item section__item--has-tags">
                     <div class="block section__item__title">
                         <strong>File:type(cb)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#604">line 604</a>
+                        <a class="source-ref" href="../source/file.lua.html#633">line 633</a>
                     </div>
 
                     <div class="field is-grouped is-grouped-multiline section__item__tags">
@@ -1393,7 +1470,7 @@ end)
                                     <div class="control">
                                         <div class="tags has-addons">
                                             <span class="tag is-dark">type</span>
-                                            <span class="tag"><span class="type">function</span></span>
+                                            <span class="tag parameter__type"><span><span class="type">function</span></span></span>
                                         </div>
                                     </div>
                                 </div>
@@ -1409,7 +1486,7 @@ end)
                                     <div class="control">
                                         <div class="tags has-addons">
                                             <span class="tag is-dark">type</span>
-                                            <span class="tag return-value__type"><span class="type">GLib.Error</span></span>
+                                            <span class="tag return-value__type"><span><span class="type">GLib.Error</span></span></span>
                                         </div>
                                     </div>
                                 </div>
@@ -1419,7 +1496,7 @@ end)
                                     <div class="control">
                                         <div class="tags has-addons">
                                             <span class="tag is-dark">type</span>
-                                            <span class="tag return-value__type"><span class="type">Gio.FileType</span></span>
+                                            <span class="tag return-value__type"><span><span class="type">Gio.FileType</span></span></span>
                                         </div>
                                     </div>
                                 </div>
@@ -1438,13 +1515,73 @@ end)
 <span class="keyword">end</span>)</pre>
                     </div>
                 </div>
+                <div id="File:create" class="box section__item section__item--has-tags">
+                    <div class="block section__item__title">
+                        <strong>File:create(cb)</strong>
+                        <a class="source-ref" href="../source/file.lua.html#651">line 651</a>
+                    </div>
+
+                    <div class="field is-grouped is-grouped-multiline section__item__tags">
+                        <div class="control">
+                            <span class="tag" data-tooltip="Function returns before the operation has finished. The callback function is called with the return values">async</span>
+                        </div>
+                        <div class="control">
+                            <div class="tags has-addons" data-tooltip="This item has been added as part of release version v0.2.0.">
+                                <span class="tag is-dark">since</span>
+                                <span class="tag"><a href="https://github.com/sclu1034/lgi-async-extra/releases/tag/0.2.0">v0.2.0</a></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="block content section__item__description">Creates an empty file. </p>
+
+<p> The file must not exist already.</p>
+
+<p> Write operations, such as <a href="../modules/file.html#File:write">file.write</a> and <a href="../modules/file.html#File:write_stream">file.write_stream</a> also create files
+ when they don&rsquo;t yet, so those should be used when you intend to write to the new file immediately.</div>
+
+                    <div class="block content section__item__params">
+                        <h4 class="title is-6">Parameters:</h4>
+                        <ul>
+                            <li class="parameter">
+                                <div>
+                                    <span class="parameter__name"><em>cb</em></span>
+                                </div>
+                                <div class="field is-grouped is-grouped-multiline parameter__tags">
+                                    <div class="control">
+                                        <div class="tags has-addons">
+                                            <span class="tag is-dark">type</span>
+                                            <span class="tag parameter__type"><span><span class="type">function</span></span></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+
+                        </ul>
+                    </div>
+                    <div class="block content section__item__returns">
+                        <h4 class="title is-6">Callback parameters:</h4>
+                        <ul>
+                            <li class="return-value">
+                                <div class="field is-grouped is-grouped-multiline">
+                                    <div class="control">
+                                        <div class="tags has-addons">
+                                            <span class="tag is-dark">type</span>
+                                            <span class="tag return-value__type"><span><span class="type">GLib.Error</span></span></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
 
     <footer class="footer">
         <div class="content has-text-centered">
-            Generated by <a href="https://github/com/stevendonovan/LDoc">LDoc 1.4.6</a>, designed with <a href="https://github.com/jgthms/bulma">Bulma</a>. Last updated at 2022-03-11 22:22:19.
+            Generated by <a href="https://github/com/stevendonovan/LDoc">LDoc 1.4.6</a>, designed with <a href="https://github.com/jgthms/bulma">Bulma</a>. Last updated at 2022-03-16 19:34:58.
         </div>
     </footer>
 </div>
