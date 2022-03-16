@@ -1,8 +1,6 @@
 local lgi = require("lgi")
 local GLib = lgi.GLib
 
-local File = require("lgi-async-extra.file")
-
 local DEFAULT_TIMEOUT = 2000
 
 -- Runs a test function inside a GLib loop, to drive asynchronous operations.
