@@ -184,11 +184,12 @@
 </span>
 <span class="comment">--- Checks if a table is an instance of <a href="../modules/file.html#">file</a>.
 </span><span class="comment">--
+</span><span class="comment">-- @since 0.2.0
 </span><span class="comment">-- @usage local File = require("lgi-async-extra.file")
 </span><span class="comment">-- local f = File.new_for_path("/tmp/foo.txt")
 </span><span class="comment">-- assert(File.is_instance(f))
 </span><span class="comment">-- @tparam table f The value to check.
-</span><a id="152"></a><span class="comment">-- @treturn boolean
+</span><a id="153"></a><span class="comment">-- @treturn boolean
 </span><span class="keyword">function</span> file.is_instance(f)
     <span class="keyword">return</span> <span class="global">type</span>(f) == <span class="string">"table"</span> <span class="keyword">and</span> f.class == FILE_CLASS_MARKER
 <span class="keyword">end</span>
@@ -240,7 +241,8 @@
 </span><span class="comment">-- The path is guaranteed to be absolute, by may contain unresolved symlinks.
 </span><span class="comment">-- However, a path may not exist, in which case `nil` will be returned.
 </span><span class="comment">--
-</span><a id="204"></a><span class="comment">-- @treturn[opt] string
+</span><span class="comment">-- @since 0.2.0
+</span><a id="206"></a><span class="comment">-- @treturn[opt] string
 </span><span class="keyword">function</span> File:get_path()
     <span class="keyword">return</span> self._private.f:get_path()
 <span class="keyword">end</span>
@@ -261,7 +263,7 @@
 </span><span class="comment">-- @async
 </span><span class="comment">-- @tparam function cb
 </span><span class="comment">-- @treturn[opt] GLib.Error
-</span><a id="225"></a><span class="comment">-- @treturn[opt] Gio.FileInputStream
+</span><a id="227"></a><span class="comment">-- @treturn[opt] Gio.FileInputStream
 </span><span class="keyword">function</span> File:read_stream(cb)
     <span class="keyword">local</span> f = self._private.f
 
@@ -291,7 +293,7 @@
 </span><span class="comment">--  any existing content and add the new data at the end.
 </span><span class="comment">-- @tparam function cb
 </span><span class="comment">-- @treturn[opt] GLib.Error
-</span><a id="255"></a><span class="comment">-- @treturn Gio.FileOutputStream
+</span><a id="257"></a><span class="comment">-- @treturn Gio.FileOutputStream
 </span><span class="keyword">function</span> File:write_stream(mode, cb)
     <span class="keyword">local</span> f = self._private.f
     <span class="keyword">local</span> priority = GLib.PRIORITY_DEFAULT
@@ -335,7 +337,7 @@
 </span><span class="comment">--  `"replace"` will truncate the file before writing, `"append"` will keep
 </span><span class="comment">--  any existing content and add the new data at the end.
 </span><span class="comment">-- @tparam function cb
-</span><a id="299"></a><span class="comment">-- @treturn[opt] GLib.Error
+</span><a id="301"></a><span class="comment">-- @treturn[opt] GLib.Error
 </span><span class="keyword">function</span> File:write(data, mode, cb)
     <span class="keyword">local</span> priority = GLib.PRIORITY_DEFAULT
 
@@ -371,7 +373,7 @@
 </span><span class="comment">--   Signature: `function(err, data)`
 </span><span class="comment">-- @treturn[opt] GLib.Error An instance of `GError` if there was an error,
 </span><span class="comment">--   `nil` otherwise.
-</span><a id="335"></a><span class="comment">-- @treturn GLib.Bytes
+</span><a id="337"></a><span class="comment">-- @treturn GLib.Bytes
 </span><span class="keyword">function</span> File:read_bytes(size, cb)
     <span class="keyword">local</span> priority = GLib.PRIORITY_DEFAULT
 
@@ -404,7 +406,7 @@
 </span><span class="comment">--   Signature: `function(err, data)`
 </span><span class="comment">-- @treturn[opt] GLib.Error An instance of `GError` if there was an error,
 </span><span class="comment">--   `nil` otherwise.
-</span><a id="368"></a><span class="comment">-- @treturn[opt] string A string read from the file.
+</span><a id="370"></a><span class="comment">-- @treturn[opt] string A string read from the file.
 </span><span class="keyword">function</span> File:read_string(cb)
     async.dag({
         stream = <span class="keyword">function</span>(_, cb_inner)
@@ -431,7 +433,7 @@
 </span><span class="comment">-- @treturn[opt] GLib.Error An instance of `GError` if there was an error,
 </span><span class="comment">--   `nil` otherwise.
 </span><span class="comment">-- @treturn[opt] string A string read from the file,
-</span><a id="395"></a><span class="comment">--   or `nil` if the end was reached.
+</span><a id="397"></a><span class="comment">--   or `nil` if the end was reached.
 </span><span class="keyword">function</span> File:read_line(cb)
     <span class="keyword">local</span> priority = GLib.PRIORITY_DEFAULT
 
@@ -462,11 +464,14 @@
 </span><span class="comment">-- is `cb(err, stop)`. If `err ~= nil` or a value for `stop` is given, iteration stops
 </span><span class="comment">-- immediately and `cb` will be called.
 </span><span class="comment">--
+</span><span class="comment">-- Changed 0.2.0: Renamed from `read_lines`.
+</span><span class="comment">--
+</span><span class="comment">-- @since 0.2.0
 </span><span class="comment">-- @async
 </span><span class="comment">-- @tparam function iteratee Function to call per line in the file. Signature:
 </span><span class="comment">--   `function(err, line, cb)`
 </span><span class="comment">-- @tparam function cb Function to call when iteration has stopped.
-</span><a id="430"></a><span class="comment">--   Signature: `function(err)`.
+</span><a id="435"></a><span class="comment">--   Signature: `function(err)`.
 </span><span class="keyword">function</span> File:iterate_lines(iteratee, cb)
     <span class="keyword">local</span> priority = GLib.PRIORITY_DEFAULT
 
@@ -513,7 +518,7 @@
 </span><span class="comment">-- @async
 </span><span class="comment">-- @tparam string|file|Gio.File path New path to move to.
 </span><span class="comment">-- @tparam function cb
-</span><a id="477"></a><span class="comment">-- @treturn[opt] GLib.Error
+</span><a id="482"></a><span class="comment">-- @treturn[opt] GLib.Error
 </span><span class="keyword">function</span> File:move(path, cb)
     <span class="keyword">local</span> priority = GLib.PRIORITY_DEFAULT
     <span class="keyword">local</span> f = self._private.f
@@ -541,7 +546,7 @@
 </span><span class="comment">--
 </span><span class="comment">-- @async
 </span><span class="comment">-- @tparam function cb
-</span><a id="505"></a><span class="comment">-- @treturn[opt] GLib.Error
+</span><a id="510"></a><span class="comment">-- @treturn[opt] GLib.Error
 </span><span class="keyword">function</span> File:delete(cb)
     <span class="keyword">local</span> f = self._private.f
     <span class="keyword">local</span> priority = GLib.PRIORITY_DEFAULT
@@ -560,7 +565,7 @@
 </span><span class="comment">--
 </span><span class="comment">-- @async
 </span><span class="comment">-- @tparam function cb
-</span><a id="524"></a><span class="comment">-- @treturn[opt] GLib.Error
+</span><a id="529"></a><span class="comment">-- @treturn[opt] GLib.Error
 </span><span class="keyword">function</span> File:trash(cb)
     <span class="keyword">local</span> f = self._private.f
     <span class="keyword">local</span> priority = GLib.PRIORITY_DEFAULT
@@ -589,7 +594,7 @@
 </span><span class="comment">-- @tparam string attribute The GIO file info attribute to query for.
 </span><span class="comment">-- @tparam function cb
 </span><span class="comment">-- @treturn[opt] GLib.Error
-</span><a id="553"></a><span class="comment">-- @treturn[opt] Gio.FileInfo
+</span><a id="558"></a><span class="comment">-- @treturn[opt] Gio.FileInfo
 </span><span class="keyword">function</span> File:query_info(attribute, cb)
     <span class="keyword">local</span> f = self._private.f
     <span class="keyword">local</span> priority = GLib.PRIORITY_DEFAULT
@@ -614,7 +619,7 @@
 </span><span class="comment">-- @async
 </span><span class="comment">-- @tparam function cb
 </span><span class="comment">-- @treturn[opt] GLib.Error
-</span><a id="578"></a><span class="comment">-- @treturn boolean `true` if the file exists at its specified location.
+</span><a id="583"></a><span class="comment">-- @treturn boolean `true` if the file exists at its specified location.
 </span><span class="keyword">function</span> File:exists(cb)
     self:query_info(<span class="string">"standard::type"</span>, <span class="keyword">function</span> (err)
         <span class="keyword">if</span> err <span class="keyword">then</span>
@@ -640,7 +645,7 @@
 </span><span class="comment">-- @async
 </span><span class="comment">-- @tparam function cb
 </span><span class="comment">-- @treturn[opt] GLib.Error
-</span><a id="604"></a><span class="comment">-- @treturn[opt] number
+</span><a id="609"></a><span class="comment">-- @treturn[opt] number
 </span><span class="keyword">function</span> File:size(cb)
     self:query_info(<span class="string">"standard::size"</span>, <span class="keyword">function</span> (err, info)
         <span class="comment">-- For some reason, the bindings return a float for a byte size
@@ -669,7 +674,7 @@
 </span><span class="comment">-- @async
 </span><span class="comment">-- @tparam function cb
 </span><span class="comment">-- @treturn[opt] GLib.Error
-</span><a id="633"></a><span class="comment">-- @treturn[opt] Gio.FileType
+</span><a id="638"></a><span class="comment">-- @treturn[opt] Gio.FileType
 </span><span class="keyword">function</span> File:<span class="global">type</span>(cb)
     self:query_info(<span class="string">"standard::type"</span>, <span class="keyword">function</span> (err, info)
         cb(err, info <span class="keyword">and</span> Gio.FileType[info:get_file_type()])
@@ -687,7 +692,7 @@
 </span><span class="comment">-- @since 0.2.0
 </span><span class="comment">-- @async
 </span><span class="comment">-- @tparam function cb
-</span><a id="651"></a><span class="comment">-- @treturn[opt] GLib.Error
+</span><a id="656"></a><span class="comment">-- @treturn[opt] GLib.Error
 </span><span class="keyword">function</span> File:create(cb)
     <span class="keyword">local</span> f = self._private.f
     f:create_async(Gio.FileCreateFlags.NONE, GLib.PRIORITY_DEFAULT, <span class="keyword">nil</span>, <span class="keyword">function</span>(_, token)
@@ -703,7 +708,7 @@
 
     <footer class="footer">
         <div class="content has-text-centered">
-            Generated by <a href="https://github/com/stevendonovan/LDoc">LDoc 1.4.6</a>, designed with <a href="https://github.com/jgthms/bulma">Bulma</a>. Last updated at 2022-03-16 19:34:58.
+            Generated by <a href="https://github/com/stevendonovan/LDoc">LDoc 1.4.6</a>, designed with <a href="https://github.com/jgthms/bulma">Bulma</a>. Last updated at 2022-03-16 19:50:05.
         </div>
     </footer>
 </div>
