@@ -1,8 +1,6 @@
 local lgi = require("lgi")
 local GLib = lgi.GLib
 
-local File = require("lgi-async-extra.file")
-
 local DEFAULT_TIMEOUT = 2000
 
 -- Runs a test function inside a GLib loop, to drive asynchronous operations.
@@ -20,12 +18,9 @@ function run(timeout, fn)
         local err
 
         GLib.idle_add(GLib.PRIORITY_DEFAULT, function()
-            local f = File.new_tmp()
-            fn(f, function(e)
-                f:delete(function(err_inner)
-                    err = e or err_inner
-                    loop:quit()
-                end)
+            fn(function(e)
+                err = e
+                loop:quit()
             end)
         end)
 
@@ -61,6 +56,7 @@ function wrap_asserts(cb, err, fn)
     if ok then
         cb(nil)
     else
-        cb(debug.traceback(err.message .. "\n", 2))
+        local msg = err.message or tostring(err)
+        cb(debug.traceback(msg .. "\n", 2))
     end
 end

@@ -2,11 +2,51 @@ local assert = require("luassert")
 local spy = require("luassert.spy")
 local async = require("async")
 
+local lgi = require("lgi")
+local GLib = lgi.GLib
+local Gio = lgi.Gio
 local File = require("lgi-async-extra.file")
 
+local function run_file(fn)
+    return run(function(cb)
+        local f = File.new_tmp()
+        fn(f, function(err)
+            f:delete(function(err_inner)
+                cb(err or err_inner)
+            end)
+        end)
+    end)
+end
+
 describe('file', function()
+    describe('is_instance', function()
+        it('returns true for Files', function()
+            assert(File.is_instance(File.new_for_path("/tmp/foo.txt")))
+        end)
+
+        it('returns false for strings', function()
+            assert(not File.is_instance(""))
+            assert(not File.is_instance("/tmp/foo.txt"))
+        end)
+
+        it('returns false for tables', function()
+            assert(not File.is_instance({}))
+            assert(not File.is_instance({ foo = "bar", "baz" }))
+        end)
+
+        it('returns false for numbers', function()
+            assert(not File.is_instance(1))
+            assert(not File.is_instance(100))
+        end)
+
+        it('returns false for userdata', function()
+            assert(not File.is_instance(lgi.Gio.File.new_for_path("/tmp/foo.txt")))
+            assert(not File.is_instance(lgi.GLib.Bytes.new()))
+        end)
+    end)
+
     describe('exists', function()
-        it('returns false for non-existant file', run(function (_, cb)
+        it('returns false for non-existent file', run(function(cb)
             local f = File.new_for_path("/this_should_not.exist")
 
             f:exists(function(err, exists)
@@ -17,7 +57,7 @@ describe('file', function()
             end)
         end))
 
-        it('handles file deletion', run(function(_, cb)
+        it('handles file deletion', run(function(cb)
             local f = File.new_tmp()
 
             local check_exists = spy(function(exists, cb)
@@ -49,7 +89,7 @@ describe('file', function()
         end))
     end)
 
-    it('writes and reads', run(function(f, cb)
+    it('writes and reads', run_file(function(f, cb)
         local str = "Hello, World!"
 
         local check_read_empty = spy(function(cb)
@@ -80,7 +120,7 @@ describe('file', function()
     end))
 
     describe('read_bytes', function()
-        it('returns empty bytes for empty file', run(function(f, cb)
+        it('returns empty bytes for empty file', run_file(function(f, cb)
             f:read_bytes(4096, function(err, bytes)
                 wrap_asserts(cb, err, function()
                     assert.is_nil(err)
@@ -90,7 +130,7 @@ describe('file', function()
             end)
         end))
 
-        it('reads the specified number of bytes, if possible', run(function(f, cb)
+        it('reads the specified number of bytes, if possible', run_file(function(f, cb)
             local data = "Hello, world!"
 
             async.waterfall({
@@ -108,7 +148,7 @@ describe('file', function()
             }, cb)
         end))
 
-        it('reads less if not enough data', run(function(f, cb)
+        it('reads less if not enough data', run_file(function(f, cb)
             local BUFFER_SIZE = 4096
             local data = "Hello, world!"
 
@@ -128,7 +168,7 @@ describe('file', function()
             }, cb)
         end))
 
-        it('reads binary data', run(function(_, cb)
+        it('reads binary data', run(function(cb)
             local f = File.new_for_path("/dev/random")
             local BUFFER_SIZE = 100
 
@@ -144,7 +184,7 @@ describe('file', function()
     end)
 
     describe('read_string', function()
-        it('returns nil for empty file', run(function(f, cb)
+        it('returns nil for empty file', run_file(function(f, cb)
             f:read_string(function(err, str)
                 wrap_asserts(cb, err, function()
                     assert.is_nil(err)
@@ -153,7 +193,7 @@ describe('file', function()
             end)
         end))
 
-        it('reads a short file, less than buffer size', run(function(f, cb)
+        it('reads a short file, less than buffer size', run_file(function(f, cb)
             local data = "Hello, world!"
 
             async.waterfall({
@@ -170,7 +210,7 @@ describe('file', function()
             }, cb)
         end))
 
-        it('reads a long file', run(function(f, cb)
+        it('reads a long file', run_file(function(f, cb)
             local data = {}
             for _ = 1, 1000 do
                 table.insert(data, "Hello, world!")
@@ -191,7 +231,7 @@ describe('file', function()
             }, cb)
         end))
 
-        it('reads virtual files', run(function(_, cb)
+        it('reads virtual files', run(function(cb)
             local f = File.new_for_path("/proc/meminfo")
 
             local check_read_string = spy(function(data, cb)
@@ -213,7 +253,7 @@ describe('file', function()
     end)
 
     describe('read_line', function()
-        it('returns nil for empty file', run(function(f, cb)
+        it('returns nil for empty file', run_file(function(f, cb)
             f:read_line(function(err, line)
                 wrap_asserts(cb, err, function()
                     assert.is_nil(err)
@@ -222,7 +262,7 @@ describe('file', function()
             end)
         end))
 
-        it('always reads the first line', run(function(f, cb)
+        it('always reads the first line', run_file(function(f, cb)
             local lines = { "Hello, World!", "Second Line" }
 
             local check_line = spy(function(data, cb)
@@ -245,7 +285,7 @@ describe('file', function()
             end)
         end))
 
-        it('reads virtual files', run(function(_, cb)
+        it('reads virtual files', run(function(cb)
             local f = File.new_for_path("/proc/meminfo")
 
             f:read_line(function(err, line)
@@ -258,7 +298,7 @@ describe('file', function()
     end)
 
     describe('iterate_lines', function()
-        it('iterates over lines', run(function(f, cb)
+        it('iterates over lines', run_file(function(f, cb)
             local lines = { "Hello, World!", "Second Line" }
             local count = 1
 
@@ -287,6 +327,66 @@ describe('file', function()
             }, function(err)
                 wrap_asserts(cb, err, function()
                     assert.spy(check_line).was_called(3)
+                end)
+            end)
+        end))
+    end)
+
+    describe('delete', function()
+        it('does not delete directory with content', run(function(cb)
+            local dir = string.format("%s/lgi-async-extra_tests_delete", GLib.get_tmp_dir())
+            os.execute(string.format('mkdir %s', dir))
+            os.execute(string.format('bash -c "touch %s/{1,2,3}"', dir))
+
+            local f = File.new_for_path(dir)
+            f:delete(function(err)
+                os.execute(string.format("rm -r %s", dir))
+                wrap_asserts(cb, function()
+                    assert.is_not_nil(err)
+                    assert.is_same(Gio.IOErrorEnum, err.domain)
+                    assert.is_same(Gio.IOErrorEnum.NOT_EMPTY, Gio.IOErrorEnum[err.code])
+                end)
+            end)
+        end))
+    end)
+
+    describe('create', function()
+        it('creates the file', run(function(cb)
+            local path = string.format("%s/lgi-async-extra_tests_create", GLib.get_tmp_dir())
+            local f = File.new_for_path(path)
+
+            local check_exists = spy(function(exists, cb)
+                wrap_asserts(cb, function()
+                    assert.is_true(exists)
+                    assert.is_function(cb)
+                end)
+            end)
+
+            async.waterfall({
+                async.callback(f, f.create),
+                async.callback(f, f.exists),
+                check_exists,
+            }, function(err)
+                os.execute(string.format("rm %s", path))
+                wrap_asserts(cb, err, function()
+                    assert.is_nil(err)
+                    assert.spy(check_exists).was_called()
+                end)
+            end)
+        end))
+
+        it('fails when the file exists', run(function(cb)
+            local path = string.format("%s/lgi-async-extra_tests_create", GLib.get_tmp_dir())
+            local f = File.new_for_path(path)
+
+            os.execute(string.format("touch %s", path))
+
+            f:create(function(err)
+                os.execute(string.format("rm %s", path))
+                wrap_asserts(cb, function()
+                    assert.is_not_nil(err)
+                    assert.is_same(Gio.IOErrorEnum, err.domain)
+                    assert.is_same(Gio.IOErrorEnum.EXISTS, Gio.IOErrorEnum[err.code])
                 end)
             end)
         end))

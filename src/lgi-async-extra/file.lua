@@ -21,7 +21,10 @@
 --
 -- Example to write and read-back a file:
 --
---    local f = File.new_for_path("/tmp/foo.txt")
+--    local lgi = require("lgi")
+--    local File = require("lgi-async-extra.file")
+--    local path = "%s/foo.txt":format(lgi.GLib.get_tmp_dir())
+--    local f = File.new_for_path(path)
 --    async.waterfall({
 --        function(cb)
 --            -- By default, writing replaces any existing content
@@ -52,8 +55,15 @@ local GFile = Gio.File
 local stream_utils = require("lgi-async-extra.stream")
 
 
-local File = {}
+-- Class marker
+local FILE_CLASS_MARKER = setmetatable({}, { __newindex = function() end, __tostring = "File" })
+
+
+local File = {
+    class = FILE_CLASS_MARKER,
+}
 local file = {}
+
 
 --- Constructors
 -- @section constructors
@@ -126,6 +136,21 @@ function file.new_tmp(template)
         }
     }
     return setmetatable(ret, { __index = File  }), stream, err
+end
+
+
+--- Static functions
+-- @section static_functions
+
+--- Checks if a table is an instance of @{file}.
+--
+-- @usage local File = require("lgi-async-extra.file")
+-- local f = File.new_for_path("/tmp/foo.txt")
+-- assert(File.is_instance(f))
+-- @tparam table f The value to check.
+-- @treturn boolean
+function file.is_instance(f)
+    return type(f) == "table" and f.class == FILE_CLASS_MARKER
 end
 
 
@@ -446,16 +471,20 @@ end
 -- Requires GLib version 2.71.2 or newer (2022-02-15).
 --
 -- @async
--- @tparam string destination New path to move to
+-- @tparam string|file|Gio.File path New path to move to.
 -- @tparam function cb
 -- @treturn[opt] GLib.Error
-function File:move(destination, cb)
-    local f = self._private.f
+function File:move(path, cb)
     local priority = GLib.PRIORITY_DEFAULT
+    local f = self._private.f
+    local dest = path
+    if type(dest) == "string" then
+        dest = GFile.new_for_path(dest)
+    elseif file.is_instance(dest) then
+        dest = dest._private.f
+    end
 
-    destination = GFile.new_for_path(destination)
-
-    f:move_async(destination, 0, priority, nil, nil, function(_, token)
+    f:move_async(dest, Gio.FileCopyFlags.NONE, priority, nil, nil, function(_, token)
         local _, err = f:move_finish(token)
         cb(err)
     end)
@@ -606,5 +635,26 @@ function File:type(cb)
         cb(err, info and Gio.FileType[info:get_file_type()])
     end)
 end
+
+
+--- Creates an empty file.
+--
+-- The file must not exist already.
+--
+-- Write operations, such as @{file.write} and @{file.write_stream} also create files
+-- when they don't yet, so those should be used when you intend to write to the new file immediately.
+--
+-- @since 0.2.0
+-- @async
+-- @tparam function cb
+-- @treturn[opt] GLib.Error
+function File:create(cb)
+    local f = self._private.f
+    f:create_async(Gio.FileCreateFlags.NONE, GLib.PRIORITY_DEFAULT, nil, function(_, token)
+        local _, err = f:create_finish(token)
+        cb(err)
+    end)
+end
+
 
 return file
