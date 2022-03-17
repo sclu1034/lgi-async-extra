@@ -130,7 +130,7 @@
                     <div class="field is-grouped is-grouped-multiline section__item__tags">
 #         if item.tags["async"] then
                         <div class="control">
-                            <span class="tag" data-tooltip="Function returns before the operation has finished. The callback function is called with the return values">async</span>
+                            <span class="tag" data-tooltip="This function returns before the operation has finished. The callback function is called with the return values.">async</span>
                         </div>
 #         end
                         <div class="control">
