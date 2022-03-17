@@ -122,7 +122,7 @@
                     <div class="block section__item__title">
                         <strong>$(ldoc.display_name(item))</strong>
 #       if ldoc.prettify_files and ldoc.is_file_prettified[item.module.file.filename] then
-                        <a class="source-ref" href="$(ldoc.source_ref(item))">line $(item.lineno)</a>
+                        <a class="source-ref" href="$(ldoc.source_ref(item))">[src]</a>
 #       end
                     </div>
 
