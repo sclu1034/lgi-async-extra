@@ -21,7 +21,7 @@
     <nav class="menu">
 # if not ldoc.single then
         <ul class="menu-list">
-            <li><a class="$(not module and 'is-active')" href="../$(ldoc.output).html">Index</a></li>
+            <li><a class="$(not module and 'is-active')" href="$(module and '../' or '')$(ldoc.output).html">Index</a></li>
         </ul>
 # end
 # local this_mod = module and module.name
