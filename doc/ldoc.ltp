@@ -17,11 +17,11 @@
 # end
 
 <aside id="sidebar" class="has-background-white-ter">
-    <h1 class="title">$(ldoc.project)</h1>
+    <h1 class="title"><a href="https://github.com/sclu1034/lgi-async-extra">$(ldoc.project)</a></h1>
     <nav class="menu">
 # if not ldoc.single then
         <ul class="menu-list">
-            <li><a class="$(not module and 'is-active')" href="../$(ldoc.output).html">Index</a></li>
+            <li><a class="$(not module and 'is-active')" href="$(module and '../' or '')$(ldoc.output).html">Index</a></li>
         </ul>
 # end
 # local this_mod = module and module.name
@@ -122,7 +122,7 @@
                     <div class="block section__item__title">
                         <strong>$(ldoc.display_name(item))</strong>
 #       if ldoc.prettify_files and ldoc.is_file_prettified[item.module.file.filename] then
-                        <a class="source-ref" href="$(ldoc.source_ref(item))">line $(item.lineno)</a>
+                        <a class="source-ref" href="$(ldoc.source_ref(item))">[src]</a>
 #       end
                     </div>
 
@@ -130,15 +130,23 @@
                     <div class="field is-grouped is-grouped-multiline section__item__tags">
 #         if item.tags["async"] then
                         <div class="control">
-                            <span class="tag" data-tooltip="Function returns before the operation has finished. The callback function is called with the return values">async</span>
+                            <span class="tag" data-tooltip="This function returns before the operation has finished. The callback function is called with the return values.">async</span>
                         </div>
 #         end
                         <div class="control">
 #         if item.tags["since"] then
-                            <div class="tags has-addons" data-tooltip="This item has been added as part of release version v$(item.tags['since'][1]).">
+#           local version = item.tags["since"]
+#           if version == "git" then
+                            <div class="tags has-addons" data-tooltip="This item has not been released yet.">
                                 <span class="tag is-dark">since</span>
-                                <span class="tag"><a href="https://github.com/sclu1034/lgi-async-extra/releases/tag/$(item.tags['since'][1])">v$(item.tags["since"][1])</a></span>
+                                <span class="tag"><a href="https://github.com/sclu1034/lgi-async-extra">git</a></span>
                             </div>
+#           else
+                            <div class="tags has-addons" data-tooltip="This item has been added as part of release version v$(version).">
+                                <span class="tag is-dark">since</span>
+                                <span class="tag"><a href="https://github.com/sclu1034/lgi-async-extra/releases/tag/v$(version)">v$(version)</a></span>
+                            </div>
+#           end
 #         end
                         </div>
                     </div>
@@ -155,9 +163,22 @@
 #           end
                         <ul>
 #           for parm in ldoc.modules.iter(item.params) do
-#             local param,sublist = item:subparam(parm)
+#             local param, sublist = item:subparam(parm)
 #             if sublist then
-                            <li><span class="tag parameter__type">$(sublist)</span>$(M(item.params.map[sublist], item))
+                            <li class="parameter">
+                                <div>
+                                    <span class="parameter__name"><em>$(sublist)</em></span>
+#               local description = item.params.map[sublist]
+#               if description and description ~= "" then
+                                    <span class="parameter__description">:&nbsp;$(M(description, item))</span>
+#               end
+                                </div>
+                                <div class="control">
+                                    <div class="tags has-addons">
+                                        <span class="tag is-dark">type</span>
+                                        <span class="tag parameter__type"><span>$(ldoc.typename('table'))</span></span>
+                                    </div>
+                                </div>
                             <ul>
 #             end
 #             for p in ldoc.modules.iter(param) do
