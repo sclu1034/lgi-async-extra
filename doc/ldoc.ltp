@@ -135,7 +135,7 @@
 #         end
                         <div class="control">
 #         if item.tags["since"] then
-#           local version = item.tags["since"]
+#           local version = item.tags["since"][1]
 #           if version == "git" then
                             <div class="tags has-addons" data-tooltip="This item has not been released yet.">
                                 <span class="tag is-dark">since</span>
