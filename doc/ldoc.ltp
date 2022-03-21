@@ -135,10 +135,18 @@
 #         end
                         <div class="control">
 #         if item.tags["since"] then
-                            <div class="tags has-addons" data-tooltip="This item has been added as part of release version v$(item.tags['since'][1]).">
+#           local version = item.tags["since"][1]
+#           if version == "git" then
+                            <div class="tags has-addons" data-tooltip="This item has not been released yet.">
                                 <span class="tag is-dark">since</span>
-                                <span class="tag"><a href="https://github.com/sclu1034/lgi-async-extra/releases/tag/$(item.tags['since'][1])">v$(item.tags["since"][1])</a></span>
+                                <span class="tag"><a href="https://github.com/sclu1034/lgi-async-extra">git</a></span>
                             </div>
+#           else
+                            <div class="tags has-addons" data-tooltip="This item has been added as part of release version v$(version).">
+                                <span class="tag is-dark">since</span>
+                                <span class="tag"><a href="https://github.com/sclu1034/lgi-async-extra/releases/tag/$(version)">v$(version)</a></span>
+                            </div>
+#           end
 #         end
                         </div>
                     </div>

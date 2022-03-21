@@ -14,7 +14,8 @@ description = {
 dependencies = {
     "lua >= 5.1",
     "lgi",
-    "async.lua"
+    "async.lua",
+    "lua-cjson"
 }
 
 build = {
