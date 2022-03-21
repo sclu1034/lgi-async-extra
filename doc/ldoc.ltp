@@ -17,7 +17,7 @@
 # end
 
 <aside id="sidebar" class="has-background-white-ter">
-    <h1 class="title">$(ldoc.project)</h1>
+    <h1 class="title"><a href="https://github.com/sclu1034/lgi-async-extra">$(ldoc.project)</a></h1>
     <nav class="menu">
 # if not ldoc.single then
         <ul class="menu-list">
