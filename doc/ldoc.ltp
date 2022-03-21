@@ -155,9 +155,22 @@
 #           end
                         <ul>
 #           for parm in ldoc.modules.iter(item.params) do
-#             local param,sublist = item:subparam(parm)
+#             local param, sublist = item:subparam(parm)
 #             if sublist then
-                            <li><span class="tag parameter__type">$(sublist)</span>$(M(item.params.map[sublist], item))
+                            <li class="parameter">
+                                <div>
+                                    <span class="parameter__name"><em>$(sublist)</em></span>
+#               local description = item.params.map[sublist]
+#               if description and description ~= "" then
+                                    <span class="parameter__description">:&nbsp;$(M(description, item))</span>
+#               end
+                                </div>
+                                <div class="control">
+                                    <div class="tags has-addons">
+                                        <span class="tag is-dark">type</span>
+                                        <span class="tag parameter__type"><span>$(ldoc.typename('table'))</span></span>
+                                    </div>
+                                </div>
                             <ul>
 #             end
 #             for p in ldoc.modules.iter(param) do
