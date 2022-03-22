@@ -1,0 +1,3 @@
+[submodule "tools/ldoc"]
+	path = tools/ldoc
+	url = git@github.com:sclu1034/LDoc.git

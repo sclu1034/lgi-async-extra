@@ -34,6 +34,9 @@ custom_tags = {
         hidden = true,
     },
     {
+        "property",
+    },
+    {
         "since",
     }
 }

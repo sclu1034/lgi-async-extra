@@ -10,10 +10,14 @@
 <body>
 
 # local function M(txt, item) return ldoc.markup(txt, item, ldoc.plain) end
-# -- LDoc doesn't expose this, even though it does expose `pairs`. *insert confused face*
-# local function next(tbl)
-#   local n, t = ldoc.pairs(tbl)
-#   return n(t)
+#
+# local function split_first_whitespace(str)
+#   local chunks = {}
+#   for chunk in str:gmatch("%S+") do
+#     ldoc.table.insert(chunks, chunk)
+#   end
+#   local first = ldoc.table.remove(chunks, 1)
+#   return first, ldoc.table.concat(chunks, " ")
 # end
 
 <aside id="sidebar" class="has-background-white-ter">
@@ -58,6 +62,7 @@
         <div class="container content">$(ldoc.body)</div>
     </section>
 # elseif module then
+# -- Module description
     <section class="section section__module-description">
         <div class="container">
             <h1 class="title is-1">$(ldoc.module_typename(module)) <em>$(module.name)</em></h1>
@@ -65,7 +70,7 @@
             <div class="content">
                 <p>$(M(module.description, module))</p>
             </div>
-#   if module.info or next(module.tags) then
+#   if module.info or ldoc.next(module.tags) then
             <div class="field is-grouped is-grouped-multiline">
 #     for tag, value in module.info:iter() do
                 <div class="control">
@@ -79,6 +84,7 @@
 #   end
         </div>
     </section>
+# -- Table of contents
 #   if not ldoc.no_summary then
     <section class="section section__module-summary">
         <div class="container">
@@ -100,6 +106,7 @@
     </section>
 #   end
 
+# -- Module contents
 #   for kind, items in module.kinds() do
 #     local kitem = module.kinds:get_item(kind)
 #     local has_description = kitem and ldoc.descript(kitem) ~= ""
@@ -116,8 +123,43 @@
             </div>
 #     end
             <div class="section__content">
+#     if kitem and kitem.type == "type" and kitem.tags.property then
+                <div class="box content section__class-properties">
+                    <h4>Class properties</h4>
+                    <ul>
+#       for i, property in ldoc.ipairs(kitem.tags.property) do
+#         local modifiers = kitem.modifiers.property[i]
+#         local name, description = split_first_whitespace(property)
+                        <li class=class-property>
+                            <div>
+                                <span class="class-property__name"><em>$(name)</em></span>
+#         if description and description ~= "" then
+                                <span class="class-property__description">:&nbsp;$(M(description, kitem))</span>
+#         end
+                            </div>
+                            <div class="field is-grouped is-grouped-multiline parameter__tags">
+                                <div class="control">
+                                    <div class="tags has-addons">
+                                        <span class="tag is-dark">type</span>
+                                        <span class="tag parameter__type"><span>$(ldoc.typename(modifiers.type))</span></span>
+                                    </div>
+                                </div>
+#         if modifiers.opt == true then
+                                <div class="control">
+                                    <div class="tags">
+                                        <span class="tag parameter__optional">optional</span>
+                                    </div>
+                                </div>
+#         end
+                            </div>
+                        </li>
+#       end
+                    </ul>
+                </div>
+#     end
+
 #     for item in items() do
-#       local has_tags = next(item.tags) ~= nil
+#       local has_tags = ldoc.next(item.tags) ~= nil
                 <div id="$(item.name)" class="box section__item $(has_tags and 'section__item--has-tags')">
                     <div class="block section__item__title">
                         <strong>$(ldoc.display_name(item))</strong>

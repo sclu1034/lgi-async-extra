@@ -6,7 +6,7 @@ lua := `command -v lua5.3 2>/dev/null || command -v lua`
 doc:
     @mkdir -p "{{outdir}}/doc" "{{outdir}}/src"
     @sh tools/process_docs.sh "{{outdir}}"
-    ldoc --config=doc/config.ld --dir "{{outdir}}/doc" --project lgi-async-extra "{{outdir}}/src"
+    tools/ldoc/ldoc.lua --config=doc/config.ld --dir "{{outdir}}/doc" --project lgi-async-extra "{{outdir}}/src"
     sass doc/ldoc.scss "{{outdir}}/doc/ldoc.css"
 
 test *ARGS:
