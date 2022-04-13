@@ -461,7 +461,7 @@ end
 -- Due to limitations in GObject Introspection, this can currently only be implemented as
 -- "copy and delete" operation.
 --
--- @since git
+-- @since 0.3.0
 -- @async
 -- @tparam string|file path New path to move to.
 -- @tparam function cb
@@ -522,7 +522,7 @@ end
 
 --- Copies the file to a new location.
 --
--- @since git
+-- @since 0.3.0
 -- @async
 -- @tparam string|file dest_path Path to copy to.
 -- @tparam table options

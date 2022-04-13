@@ -6,6 +6,16 @@
 
 == [Unreleased]
 
+== [v0.3.0] - 2022-04-13
+
+=== Added
+
+* `file.copy`: Copy files and directories
+
+=== Fixed
+
+* `file.move`: Fixed exception due to introspection issues
+
 == [v0.2.0] - 2022-03-16
 
 === Added
