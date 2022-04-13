@@ -723,10 +723,12 @@ end
 
 --- Creates an empty file.
 --
--- The file must not exist already.
+-- Attempting to call this on an existing file will result in an error with type
+-- `Gio.IOErrorEnum.EXISTS`.
 --
--- Write operations, such as @{file.write} and @{file.write_stream} also create files
--- when they don't yet, so those should be used when you intend to write to the new file immediately.
+-- Do not use this when you intend to write to the file immediately after creation, as it is subject
+-- to race conditions.
+-- Write operations, such as @{file.write} and @{file.write_stream} create files when needed.
 --
 -- @since 0.2.0
 -- @async
