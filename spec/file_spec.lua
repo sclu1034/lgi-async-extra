@@ -392,5 +392,71 @@ describe('file', function()
         end))
     end)
 
+    describe('copy', function()
+        it('copies regular file', run_file(function(f, cb)
+            local path = string.format("%s/lgi-async-extra_tests_copy", GLib.get_tmp_dir())
+
+            local check_exists = spy(function(exists, cb)
+                wrap_asserts(cb, function()
+                    assert.is_true(exists)
+                    assert.is_function(cb)
+                end)
+            end)
+
+            async.waterfall({
+                function(cb)
+                    f:copy(path, {}, cb)
+                end,
+                async.callback(f, f.exists),
+                check_exists,
+            }, function(err)
+                os.execute(string.format("rm %s", path))
+                wrap_asserts(cb, err, function()
+                    assert.is_nil(err)
+                    assert.spy(check_exists).was_called()
+                end)
+            end)
+        end))
+
+        it('copies a symlink', run(function(cb)
+            local path = string.format("%s/lgi-async-extra_tests_copy", GLib.get_tmp_dir())
+            local dest_path = string.format("%s/lgi-async-extra_tests_copy_dest", GLib.get_tmp_dir())
+            local f = File.new_for_path(path)
+            os.execute(string.format("ln -s foo %s", path))
+
+            local data = "Hello, world!"
+
+            local check_exists = spy(function(exists, cb)
+                wrap_asserts(cb, function()
+                    assert.is_true(exists)
+                    assert.is_function(cb)
+                end)
+            end)
+
+            async.waterfall({
+                function(cb)
+                    f:write(data, cb)
+                end,
+                function(cb)
+                    f:copy(dest_path, {}, cb)
+                end,
+                function(cb)
+                    f:exists(cb)
+                end,
+                check_exists,
+                function(cb)
+                    File.new_for_path(dest_path):exists(cb)
+                end,
+                check_exists,
+            }, function(err)
+                os.execute(string.format("rm %s %s", path, dest_path))
+                wrap_asserts(cb, err, function()
+                    assert.is_nil(err)
+                    assert.spy(check_exists).was_called(2)
+                end)
+            end)
+        end))
+    end)
+
     -- TODO: Create test case for `f:move()`. Requires GLib 2.71.2
 end)
