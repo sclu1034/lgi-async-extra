@@ -468,26 +468,23 @@ end
 
 --- Move the file to a new location.
 --
--- Requires GLib version 2.71.2 or newer (2022-02-15).
+-- Due to limitations in GObject Introspection, this can currently only be implemented as
+-- "copy and delete" operation.
 --
+-- @since git
 -- @async
--- @tparam string|file|Gio.File path New path to move to.
+-- @tparam string|file path New path to move to.
 -- @tparam function cb
 -- @treturn[opt] GLib.Error
 function File:move(path, cb)
-    local priority = GLib.PRIORITY_DEFAULT
-    local f = self._private.f
-    local dest = path
-    if type(dest) == "string" then
-        dest = GFile.new_for_path(dest)
-    elseif file.is_instance(dest) then
-        dest = dest._private.f
-    end
-
-    f:move_async(dest, Gio.FileCopyFlags.NONE, priority, nil, nil, function(_, token)
-        local _, err = f:move_finish(token)
-        cb(err)
-    end)
+    async.waterfall({
+        function(cb)
+            self:copy(path, { recursive = true }, cb)
+        end,
+        function(cb)
+            self:delete(cb)
+        end
+    }, function(err) cb(err) end)
 end
 
 
