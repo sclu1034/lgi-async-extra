@@ -458,26 +458,120 @@ end
 
 --- Move the file to a new location.
 --
--- Requires GLib version 2.71.2 or newer (2022-02-15).
+-- Due to limitations in GObject Introspection, this can currently only be implemented as
+-- "copy and delete" operation.
 --
+-- @since git
 -- @async
--- @tparam string|file|Gio.File path New path to move to.
+-- @tparam string|file path New path to move to.
 -- @tparam function cb
 -- @treturn[opt] GLib.Error
 function File:move(path, cb)
-    local priority = GLib.PRIORITY_DEFAULT
-    local f = self._private.f
-    local dest = path
+    async.waterfall({
+        function(cb)
+            self:copy(path, { recursive = true }, cb)
+        end,
+        function(cb)
+            self:delete(cb)
+        end
+    }, function(err) cb(err) end)
+end
+
+
+local function _file_copy_impl(self, dest, options, cb)
+    async.dag({
+        check_overwrite = function(_, cb)
+            if options.overwrite then
+                return cb(nil)
+            end
+
+            dest:exists(function(err, exists)
+                if not err and exists then
+                    err = GLib.Error(
+                        Gio.IOErrorEnum,
+                        Gio.IOErrorEnum.EXISTS,
+                        "Destination exists already"
+                    )
+                end
+
+                cb(err)
+            end)
+        end,
+        out_stream = { "check_overwrite", function(_, cb)
+            dest:write_stream("replace", cb)
+        end },
+        in_stream = { "check_overwrite", function(_, cb)
+            self:read_stream(cb)
+        end },
+        splice = { "out_stream", "in_stream", function(results, cb)
+            local in_stream = table.unpack(results.in_stream)
+            local out_stream = table.unpack(results.out_stream)
+            local flags = {
+                Gio.OutputStreamSpliceFlags.CLOSE_SOURCE,
+                Gio.OutputStreamSpliceFlags.CLOSE_TARGET
+            }
+
+            out_stream:splice_async(in_stream, flags, GLib.PRIORITY_DEFAULT, nil, function(_, token)
+                local _, err = out_stream:splice_finish(token)
+                cb(err)
+            end)
+        end },
+    }, function(err) cb(err) end)
+end
+
+
+--- Copies the file to a new location.
+--
+-- @since git
+-- @async
+-- @tparam string|file dest_path Path to copy to.
+-- @tparam table options
+-- @tparam boolean recursive Copy directory contents recursively.
+-- @tparam boolean overwrite Overwrite files at the destination path.
+-- @tparam function cb
+-- @treturn[opt] GLib.Error
+function File:copy(dest_path, options, cb)
+    local dest = dest_path
     if type(dest) == "string" then
-        dest = GFile.new_for_path(dest)
-    elseif file.is_instance(dest) then
-        dest = dest._private.f
+        dest = file.new_for_path(dest_path)
     end
 
-    f:move_async(dest, Gio.FileCopyFlags.NONE, priority, nil, nil, function(_, token)
-        local _, err = f:move_finish(token)
-        cb(err)
-    end)
+    if not options.recursive then
+        return _file_copy_impl(self, dest, options, cb)
+    end
+
+    async.dag({
+        file_type = function(_, cb)
+            self:type(cb)
+        end,
+        copy = { "file_type", function(results, cb)
+            local file_type = table.unpack(results.file_type)
+
+            if file_type ~= Gio.FileType.DIRECTORY then
+                return _file_copy_impl(self, dest, options, cb)
+            elseif not options.recursive then
+                local err = GLib.Error(
+                    Gio.IOErrorEnum,
+                    Gio.IOErrorEnum.IS_DIRECTORY,
+                    "Directories can only be copied recursively"
+                )
+                return cb(err)
+            end
+
+            local filesystem = require("lgi-async-extra.filesystem")
+            local path = self:get_path()
+
+            local function iteratee(info, cb)
+                local child = file.new_for_path(string.format("%s/%s", path, info:get_name()))
+                local child_dest = file.new_for_path(
+                    string.format("%s/%s", dest_path, info:get_name())
+                )
+                child:copy(child_dest, options, cb)
+            end
+
+            filesystem.iterate_contents(path, iteratee, cb)
+        end },
+    }, function(err) cb(err) end)
 end
 
 
