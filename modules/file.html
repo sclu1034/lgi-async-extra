@@ -153,6 +153,10 @@ async.waterfall({
                         <td class="summary">Move the file to a new location.</td>
                     </tr>
                     <tr>
+                        <td class="name"><a href="#File:copy">File:copy(dest_path, options, recursive, overwrite, cb)</a></td>
+                        <td class="summary">Copies the file to a new location.</td>
+                    </tr>
+                    <tr>
                         <td class="name"><a href="#File:delete">File:delete(cb)</a></td>
                         <td class="summary">Delete the file.</td>
                     </tr>
@@ -1046,7 +1050,7 @@ end)
                 <div id="File:move" class="box section__item section__item--has-tags">
                     <div class="block section__item__title">
                         <strong>File:move(path, cb)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#467">[src]</a>
+                        <a class="source-ref" href="../source/file.lua.html#469">[src]</a>
                     </div>
 
                     <div class="field is-grouped is-grouped-multiline section__item__tags">
@@ -1054,12 +1058,17 @@ end)
                             <span class="tag" data-tooltip="This function returns before the operation has finished. The callback function is called with the return values.">async</span>
                         </div>
                         <div class="control">
+                            <div class="tags has-addons" data-tooltip="This item has not been released yet.">
+                                <span class="tag is-dark">since</span>
+                                <span class="tag"><a href="https://github.com/sclu1034/lgi-async-extra">git</a></span>
+                            </div>
                         </div>
                     </div>
 
                     <div class="block content section__item__description">Move the file to a new location. </p>
 
-<p> Requires GLib version 2.71.2 or newer (2022-02-15).</div>
+<p> Due to limitations in GObject Introspection, this can currently only be implemented as
+ &ldquo;copy and delete&rdquo; operation.</div>
 
                     <div class="block content section__item__params">
                         <h4 class="title is-6">Parameters:</h4>
@@ -1073,7 +1082,117 @@ end)
                                     <div class="control">
                                         <div class="tags has-addons">
                                             <span class="tag is-dark">type</span>
-                                            <span class="tag parameter__type"><span><a class="type" href="https://www.lua.org/manual/5.3/manual.html#6.4">string</a>, <a class="type" href="../modules/file.html#file">file</a> or <span class="type">Gio.File</span></span></span>
+                                            <span class="tag parameter__type"><span><a class="type" href="https://www.lua.org/manual/5.3/manual.html#6.4">string</a> or <a class="type" href="../modules/file.html#file">file</a></span></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="parameter">
+                                <div>
+                                    <span class="parameter__name"><em>cb</em></span>
+                                </div>
+                                <div class="field is-grouped is-grouped-multiline parameter__tags">
+                                    <div class="control">
+                                        <div class="tags has-addons">
+                                            <span class="tag is-dark">type</span>
+                                            <span class="tag parameter__type"><span><span class="type">function</span></span></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+
+                        </ul>
+                    </div>
+                    <div class="block content section__item__returns">
+                        <h4 class="title is-6">Callback parameters:</h4>
+                        <ul>
+                            <li class="return-value">
+                                <div class="field is-grouped is-grouped-multiline">
+                                    <div class="control">
+                                        <div class="tags has-addons">
+                                            <span class="tag is-dark">type</span>
+                                            <span class="tag return-value__type"><span><span class="type">GLib.Error</span></span></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div id="File:copy" class="box section__item section__item--has-tags">
+                    <div class="block section__item__title">
+                        <strong>File:copy(dest_path, options, recursive, overwrite, cb)</strong>
+                        <a class="source-ref" href="../source/file.lua.html#533">[src]</a>
+                    </div>
+
+                    <div class="field is-grouped is-grouped-multiline section__item__tags">
+                        <div class="control">
+                            <span class="tag" data-tooltip="This function returns before the operation has finished. The callback function is called with the return values.">async</span>
+                        </div>
+                        <div class="control">
+                            <div class="tags has-addons" data-tooltip="This item has not been released yet.">
+                                <span class="tag is-dark">since</span>
+                                <span class="tag"><a href="https://github.com/sclu1034/lgi-async-extra">git</a></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="block content section__item__description">Copies the file to a new location.</div>
+
+                    <div class="block content section__item__params">
+                        <h4 class="title is-6">Parameters:</h4>
+                        <ul>
+                            <li class="parameter">
+                                <div>
+                                    <span class="parameter__name"><em>dest_path</em></span>
+                                    <span class="parameter__description">:&nbsp; Path to copy to.</span>
+                                </div>
+                                <div class="field is-grouped is-grouped-multiline parameter__tags">
+                                    <div class="control">
+                                        <div class="tags has-addons">
+                                            <span class="tag is-dark">type</span>
+                                            <span class="tag parameter__type"><span><a class="type" href="https://www.lua.org/manual/5.3/manual.html#6.4">string</a> or <a class="type" href="../modules/file.html#file">file</a></span></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="parameter">
+                                <div>
+                                    <span class="parameter__name"><em>options</em></span>
+                                </div>
+                                <div class="field is-grouped is-grouped-multiline parameter__tags">
+                                    <div class="control">
+                                        <div class="tags has-addons">
+                                            <span class="tag is-dark">type</span>
+                                            <span class="tag parameter__type"><span><a class="type" href="https://www.lua.org/manual/5.3/manual.html#6.6">table</a></span></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="parameter">
+                                <div>
+                                    <span class="parameter__name"><em>recursive</em></span>
+                                    <span class="parameter__description">:&nbsp; Copy directory contents recursively.</span>
+                                </div>
+                                <div class="field is-grouped is-grouped-multiline parameter__tags">
+                                    <div class="control">
+                                        <div class="tags has-addons">
+                                            <span class="tag is-dark">type</span>
+                                            <span class="tag parameter__type"><span><span class="type">boolean</span></span></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="parameter">
+                                <div>
+                                    <span class="parameter__name"><em>overwrite</em></span>
+                                    <span class="parameter__description">:&nbsp; Overwrite files at the destination path.</span>
+                                </div>
+                                <div class="field is-grouped is-grouped-multiline parameter__tags">
+                                    <div class="control">
+                                        <div class="tags has-addons">
+                                            <span class="tag is-dark">type</span>
+                                            <span class="tag parameter__type"><span><span class="type">boolean</span></span></span>
                                         </div>
                                     </div>
                                 </div>
@@ -1113,7 +1232,7 @@ end)
                 <div id="File:delete" class="box section__item section__item--has-tags">
                     <div class="block section__item__title">
                         <strong>File:delete(cb)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#495">[src]</a>
+                        <a class="source-ref" href="../source/file.lua.html#589">[src]</a>
                     </div>
 
                     <div class="field is-grouped is-grouped-multiline section__item__tags">
@@ -1170,7 +1289,7 @@ end)
                 <div id="File:trash" class="box section__item section__item--has-tags">
                     <div class="block section__item__title">
                         <strong>File:trash(cb)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#514">[src]</a>
+                        <a class="source-ref" href="../source/file.lua.html#608">[src]</a>
                     </div>
 
                     <div class="field is-grouped is-grouped-multiline section__item__tags">
@@ -1224,7 +1343,7 @@ end)
                 <div id="File:query_info" class="box section__item section__item--has-tags">
                     <div class="block section__item__title">
                         <strong>File:query_info(attribute, cb)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#543">[src]</a>
+                        <a class="source-ref" href="../source/file.lua.html#637">[src]</a>
                     </div>
 
                     <div class="field is-grouped is-grouped-multiline section__item__tags">
@@ -1309,7 +1428,7 @@ end)
                 <div id="File:exists" class="box section__item section__item--has-tags">
                     <div class="block section__item__title">
                         <strong>File:exists(cb)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#568">[src]</a>
+                        <a class="source-ref" href="../source/file.lua.html#662">[src]</a>
                     </div>
 
                     <div class="field is-grouped is-grouped-multiline section__item__tags">
@@ -1381,7 +1500,7 @@ end)
                 <div id="File:size" class="box section__item section__item--has-tags">
                     <div class="block section__item__title">
                         <strong>File:size(cb)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#594">[src]</a>
+                        <a class="source-ref" href="../source/file.lua.html#688">[src]</a>
                     </div>
 
                     <div class="field is-grouped is-grouped-multiline section__item__tags">
@@ -1445,7 +1564,7 @@ end)
                 <div id="File:type" class="box section__item section__item--has-tags">
                     <div class="block section__item__title">
                         <strong>File:type(cb)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#623">[src]</a>
+                        <a class="source-ref" href="../source/file.lua.html#717">[src]</a>
                     </div>
 
                     <div class="field is-grouped is-grouped-multiline section__item__tags">
@@ -1522,7 +1641,7 @@ end)
                 <div id="File:create" class="box section__item section__item--has-tags">
                     <div class="block section__item__title">
                         <strong>File:create(cb)</strong>
-                        <a class="source-ref" href="../source/file.lua.html#641">[src]</a>
+                        <a class="source-ref" href="../source/file.lua.html#735">[src]</a>
                     </div>
 
                     <div class="field is-grouped is-grouped-multiline section__item__tags">
@@ -1585,7 +1704,7 @@ end)
 
     <footer class="footer">
         <div class="content has-text-centered">
-            Generated by <a href="https://github/com/stevendonovan/LDoc">LDoc 1.4.6</a>, designed with <a href="https://github.com/jgthms/bulma">Bulma</a>. Last updated at 2022-03-21 22:27:24.
+            Generated by <a href="https://github/com/stevendonovan/LDoc">LDoc 1.4.6</a>, designed with <a href="https://github.com/jgthms/bulma">Bulma</a>. Last updated at 2022-04-13 12:19:25.
         </div>
     </footer>
 </div>
