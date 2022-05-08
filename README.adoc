@@ -39,7 +39,42 @@ _lgi-async-extra_ is available via LuaRocks:
 luarocks install lgi-async-extra
 ----
 
-When cloning/vendoring the library, the following dependencies are required:
+== Quick Start
 
-* https://github.com/lgi-devs/lgi[lgi]
-* https://github.com/sclu1034/async.lua[async.lua]
+Install https://github.com/lgi-devs/lgi[lgi] and _lgi-async-extra_, and optionally https://github.com/sclu1034/async.lua[async.lua], via LuaRocks:
+
+[source,shell]
+----
+luarocks install lgi
+luarocks install lgi-async-extra
+luarocks install async.lua
+----
+
+[source,lua]
+----
+local lgi = require("lgi")
+local async = require("async")
+local File = require("lgi-async-extra.file")
+
+local path = string.format("%s/foo.txt", lgi.GLib.get_tmp_dir())
+local f = File.new_for_path(path)
+
+async.waterfall({
+    function(cb)
+        -- By default, writing replaces any existing content
+        f:write("hello", cb)
+    end,
+    function(cb)
+        -- But we can also append to the file
+        f:write("world", "append", cb)
+    end,
+    function(cb)
+        f:read_string(cb)
+    end,
+}, function(err, data)
+    print(err)
+    print(data)
+end)
+----
+
+Make sure to have a GLib Main Loop running.
