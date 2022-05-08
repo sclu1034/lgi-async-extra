@@ -30,15 +30,6 @@ image:{url-luarocks-badge}[LuaRocks Package, link={url-luarocks-link}]
 
 An asynchronous high(er)-level API wrapper for https://github.com/lgi-devs/lgi/[LGI].
 
-== Installation
-
-_lgi-async-extra_ is available via LuaRocks:
-
-[source,shell]
-----
-luarocks install lgi-async-extra
-----
-
 == Quick Start
 
 Install https://github.com/lgi-devs/lgi[lgi] and _lgi-async-extra_, and optionally https://github.com/sclu1034/async.lua[async.lua], via LuaRocks:
